@@ -35,6 +35,7 @@ public class User {
         this.followers = new ArrayList<>();
         this.followed = new ArrayList<>();
         this.favorites_recipes = new ArrayList<>();
+
         this.rol = Rol.USER;
         this.token = token;
     }
