@@ -34,6 +34,7 @@ public class Petitions {
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.e("Petitions", "Request failed", e);
                 callback.onError(e);
+
             }
 
             @Override
