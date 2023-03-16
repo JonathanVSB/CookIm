@@ -1,4 +1,4 @@
-package com.example.cookim.user;
+package com.example.cookim.model.user;
 
 public class Rol {
     final static int ADMIN = 1;

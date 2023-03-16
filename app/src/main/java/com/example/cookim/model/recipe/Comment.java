@@ -1,4 +1,4 @@
-package com.example.cookim.recipe;
+package com.example.cookim.model.recipe;
 
 import java.util.Date;
 

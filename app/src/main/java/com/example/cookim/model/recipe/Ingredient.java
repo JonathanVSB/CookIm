@@ -1,4 +1,4 @@
-package com.example.cookim.recipe;
+package com.example.cookim.model.recipe;
 
 public class Ingredient {
     int id;

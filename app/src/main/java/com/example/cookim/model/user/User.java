@@ -1,9 +1,6 @@
-package com.example.cookim.user;
+package com.example.cookim.model.user;
 
-import android.media.Image;
-import android.media.session.MediaSession;
-
-import com.example.cookim.recipe.Recipe;
+import com.example.cookim.model.recipe.Recipe;
 
 import java.util.ArrayList;
 import java.util.List;
