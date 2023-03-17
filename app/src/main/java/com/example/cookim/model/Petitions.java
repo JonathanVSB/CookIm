@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.cookim.model.user.LoginModel;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class Petitions {
 
         Request req = new Request.Builder().url(url).build();
 
-        client.newCall(req).enqueue(new Callback() {
+        client.newCall(req).enqueue(new Callback<LoginModel>() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.e("Petitions", "Request failed", e);
