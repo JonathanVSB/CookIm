@@ -1,6 +1,5 @@
 package com.example.cookim.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -37,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         model = new Model();
 
+        String username = binding.etUsername.getText().toString();
         initElements();
 
 

@@ -120,13 +120,13 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/recommendations_title"
-            android:layout_width="150dp"
+            android:layout_width="174dp"
             android:layout_height="30dp"
             android:text="Recommendations"
-            android:textSize="16dp"
+            android:textSize="19dp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recommendations_rv"
