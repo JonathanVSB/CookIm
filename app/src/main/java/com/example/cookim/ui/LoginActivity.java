@@ -19,6 +19,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
 
+
     View.OnClickListener listener;
     Switch swLogOption;
 
