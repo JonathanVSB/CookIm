@@ -30,7 +30,7 @@ public class Petitions {
 
         Request req = new Request.Builder().url(url).build();
 
-        client.newCall(req).enqueue(new Callback<LoginModel>() {
+        client.newCall(req).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.e("Petitions", "Request failed", e);
