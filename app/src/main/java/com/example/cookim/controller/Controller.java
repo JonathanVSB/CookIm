@@ -7,9 +7,14 @@ import com.example.cookim.HomePage;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.user.LoginModel;
 import com.example.cookim.model.user.UserModel;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -51,49 +56,61 @@ public class Controller {
 
     public boolean validateUserServer(LoginModel loginModel){
         boolean validation = false;
-            String url = "http://192.168.127.8:7070/login";
-            String username = loginModel.getUserName();
-            String password = loginModel.getPassword();
-            String parametros = "username=" + username + "&password=" + password;
+        String url = "http://192.168.1.47:7070/login";
+        String username = loginModel.getUserName();
+        String password = loginModel.getPassword();
 
-        URL obj = null;
         try {
-            obj = new URL(url);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            // Creamos instancia URL
+            URL obj = new URL(url);
+
+            // Creamos una conexión HTTP con el servidor
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+            // Establecemos el método de solicitud POST
             con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            // Establecemos el tipo de contenido de la solicitud como JSON
+            con.setRequestProperty("Content-Type", "application/json");
             con.setDoOutput(true);
 
+            // Creamos un objeto JSON para enviar las credenciales del usuario
+            JSONObject requestJson = new JSONObject();
+            requestJson.put("username", username);
+            requestJson.put("password", password);
+
+            // Escribimos los datos de la solicitud al servidor se escriben los parámetros de la
+            // solicitud en él en forma de bytes.
             try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-                wr.write(parametros.getBytes(StandardCharsets.UTF_8));
+                wr.write(requestJson.toString().getBytes(StandardCharsets.UTF_8));
             }
 
-            int responseCode = con.getResponseCode();
-            System.out.println("Código de respuesta: " + responseCode);
-
+            // Obtenemos la respuesta del servidor y la leemos como un objeto JSON
+            JSONObject responseJson;
             try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
                 String inputLine;
                 StringBuilder response = new StringBuilder();
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
-                System.out.println("Respuesta del servidor: " + response.toString());
-
-//            User[] users = new Gson().fromJson(in, User[].class);
-//            for (User user : users) {
-//                System.out.println(user.toString());
-//            }
-
+                responseJson = new JSONObject(response.toString());
             }
+
+            // Verificamos si las credenciales son válidas y obtenemos el token de sesión
+            if (responseJson.getBoolean("success")) {
+                String token = responseJson.getString("token");
+                // Aquí podemos guardar el token en una variable global o en SharedPreferences para mantener
+                // la sesión iniciada en futuras solicitudes.
+                validation = true;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-    }
-
-
 
         return validation;
-    }
 
 }
