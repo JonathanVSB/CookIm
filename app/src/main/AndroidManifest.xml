@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CookIm"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
 
         <activity
             android:name=".ui.LoginActivity"
@@ -22,9 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".HomePage"
-            >
+        <activity android:name=".HomePage">
 
 
             <meta-data
@@ -32,9 +34,7 @@
                 android:value="" />
         </activity>
 
-        <activity
-            android:name=".ui.RecipePage"
-            >
+        <activity android:name=".ui.RecipePage">
 
 
             <meta-data

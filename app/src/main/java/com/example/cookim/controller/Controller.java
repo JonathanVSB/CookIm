@@ -2,6 +2,7 @@ package com.example.cookim.controller;
 
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.cookim.HomePage;
 import com.example.cookim.model.Model;
@@ -18,9 +19,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Controller {
@@ -29,7 +32,8 @@ public class Controller {
     private List<UserModel> userList = new ArrayList<>();
 
     Model model;
-    public Controller(){
+
+    public Controller() {
 
         userList.add(new UserModel("user1", "user1"));
         userList.add(new UserModel("alumne", "alumne"));
@@ -43,9 +47,9 @@ public class Controller {
         boolean result = false;
 
         //Search matches in list of users
-        for (UserModel usr: userList) {
+        for (UserModel usr : userList) {
             //if find matches result is true
-            if (usr.getUsername().equals(loginModel.getUserName()) && usr.getPass().equals(loginModel.getPassword())){
+            if (usr.getUsername().equals(loginModel.getUserName()) && usr.getPass().equals(loginModel.getPassword())) {
                 result = true;
             }
 
@@ -54,63 +58,52 @@ public class Controller {
         return result;
     }
 
-    public boolean validateUserServer(LoginModel loginModel){
+    public boolean validateUserServer(LoginModel loginModel) {
         boolean validation = false;
-        String url = "http://192.168.1.47:7070/login";
-        String username = loginModel.getUserName();
-        String password = loginModel.getPassword();
 
         try {
-            // Creamos instancia URL
+            String url = "http://localhost:7070/login";
+            String username = loginModel.getUserName();
+            String password = loginModel.getPassword();
+            String parametros = "username=" + username + "&password=" + password;
+
             URL obj = new URL(url);
-
-            // Creamos una conexión HTTP con el servidor
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-            // Establecemos el método de solicitud POST
             con.setRequestMethod("POST");
-
-            // Establecemos el tipo de contenido de la solicitud como JSON
-            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             con.setDoOutput(true);
 
-            // Creamos un objeto JSON para enviar las credenciales del usuario
-            JSONObject requestJson = new JSONObject();
-            requestJson.put("username", username);
-            requestJson.put("password", password);
-
-            // Escribimos los datos de la solicitud al servidor se escriben los parámetros de la
-            // solicitud en él en forma de bytes.
             try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-                wr.write(requestJson.toString().getBytes(StandardCharsets.UTF_8));
+                wr.write(parametros.getBytes(StandardCharsets.UTF_8));
             }
 
-            // Obtenemos la respuesta del servidor y la leemos como un objeto JSON
-            JSONObject responseJson;
+            int responseCode = con.getResponseCode();
+            System.out.println("Código de respuesta: " + responseCode);
+
             try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+                UserModel[] users = new Gson().fromJson(in, UserModel[].class);
+                List<UserModel> userList = Arrays.asList(users);
+                for (UserModel user : userList) {
+                    System.out.println(user.toString());
                 }
-                responseJson = new JSONObject(response.toString());
+                if (userList.size()>0){
+                    validation = true;
+                }
             }
+        } catch (ProtocolException ex) {
+           // ex.getMessage();
+            //Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show();
+        } catch (MalformedURLException ex) {
+            //ex.getMessage();
+            //Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show();
+        } catch (IOException ex) {
+           // ex.getMessage();
+            //Toast.makeText(this, ex.toString(), Toast.LENGTH_LONG).show();
 
-            // Verificamos si las credenciales son válidas y obtenemos el token de sesión
-            if (responseJson.getBoolean("success")) {
-                String token = responseJson.getString("token");
-                // Aquí podemos guardar el token en una variable global o en SharedPreferences para mantener
-                // la sesión iniciada en futuras solicitudes.
-                validation = true;
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
+
 
         return validation;
 
+    }
 }
