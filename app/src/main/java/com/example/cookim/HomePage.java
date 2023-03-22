@@ -40,7 +40,7 @@ public class HomePage extends Activity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        loadRecipes();
+        //loadRecipes();
 
 
 

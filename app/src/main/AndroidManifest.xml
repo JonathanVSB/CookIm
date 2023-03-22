@@ -18,7 +18,7 @@
 
 
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".views.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +34,7 @@
                 android:value="" />
         </activity>
 
-        <activity android:name=".ui.RecipePage">
+        <activity android:name=".views.RecipePage">
 
 
             <meta-data

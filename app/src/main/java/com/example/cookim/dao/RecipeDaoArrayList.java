@@ -1,4 +1,4 @@
-package com.example.cookim.model;
+package com.example.cookim.dao;
 
 import com.example.cookim.model.recipe.Recipe;
 
