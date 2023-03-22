@@ -1,13 +1,11 @@
-package com.example.cookim;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.cookim.controller;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.example.cookim.R;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.model.Data;
 import com.example.cookim.model.recipe.Recipe;
@@ -33,13 +31,13 @@ public class HomePage extends Activity {
     List<Recipe> recipes;
     final String URL_PATH = "http://192.168.127.80:7070/";
 
-    UserModel user = (UserModel) getIntent().getSerializableExtra("userModel");
+    //UserModel user = (UserModel) getIntent().getSerializableExtra("userModel");
 
     Executor executor = Executors.newSingleThreadExecutor();
 
 
     TextView tvUsername;
-
+    UserModel user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +46,7 @@ public class HomePage extends Activity {
         recipes = new ArrayList<>();
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        user = (UserModel) getIntent().getSerializableExtra("userModel");
         binding.tvUsername.setText(user.getUsername());
 
 //        executor.execute(() -> {

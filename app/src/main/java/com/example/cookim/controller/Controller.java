@@ -1,13 +1,8 @@
 package com.example.cookim.controller;
 
-import android.content.Intent;
-import android.util.Log;
-
-import com.example.cookim.HomePage;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.user.LoginModel;
 import com.example.cookim.model.user.UserModel;
-import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package com.example.cookim.views;
+package com.example.cookim.controller;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,20 +6,21 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cookim.HomePage;
+import com.example.cookim.controller.HomePage;
 import com.example.cookim.controller.Controller;
 import com.example.cookim.databinding.ActivityLoginBinding;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.user.LoginModel;
 import com.example.cookim.model.user.UserModel;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -120,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
-        String url = "http://192.168.127.80:7070/login";
+        String url = "http://192.168.1.55:7070/login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
         String parametros = "username=" + username + "&password=" + password;
@@ -144,7 +145,13 @@ public class LoginActivity extends AppCompatActivity {
                         });
                     } else {
                         //Toast.makeText(this, "credential incorrect", Toast.LENGTH_LONG).show();
-                        binding.errormsg.setVisibility(View.VISIBLE);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                binding.errormsg.setVisibility(View.VISIBLE);
+                            }
+                        });
+
                     }
                 }
             });
@@ -226,24 +233,43 @@ public class LoginActivity extends AppCompatActivity {
         return user; // Retornar el objeto UserModel creado
     }
 
-    private UserModel parseUser(InputStream inputStream) {
-        UserModel user = new UserModel();
 
+    private UserModel parseUser(InputStream inputStream) {
+        UserModel user = null;
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder stringBuilder = new StringBuilder();
             String linea;
             while ((linea = bufferedReader.readLine()) != null) {
-                // Analizar la respuesta y actualizar el objeto UserModel
-                // según el formato esperado
+                stringBuilder.append(linea);
             }
             bufferedReader.close();
-        } catch (Exception e) {
-            System.out.println("Error al analizar la respuesta: " + e.toString());
+
+            String jsonString = stringBuilder.toString();
+            jsonString = jsonString.replaceAll("\\\\u003d", ":");
+            jsonString = jsonString.replaceAll("^\"|\"$", "");
+            jsonString = jsonString.replaceAll("User\\{", "{");
+
+            // Agrega comillas dobles alrededor de los valores de la cadena
+            jsonString = jsonString.replaceAll(":(\\s*[^,\\s]+)(,|\\})", ":\"$1\"$2");
+
+            System.out.println("Respuesta JSON modificada: " + jsonString); // Añadido para depurar
+
+            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
+                Gson gson = new Gson();
+                user = gson.fromJson(jsonString, UserModel.class);
+            } else {
+                System.out.println("La respuesta no es un objeto JSON válido");
+            }
+        } catch (IOException e) {
+            System.out.println("Error al leer la respuesta: " + e.toString());
+        } catch (JsonSyntaxException e) {
+            System.out.println("Error al analizar la respuesta JSON: " + e.toString());
         }
 
         return user;
-
     }
+
 }
 
 

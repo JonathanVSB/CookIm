@@ -1,4 +1,4 @@
-package com.example.cookim.views;
+package com.example.cookim.controller;
 
 import android.app.Activity;
 import android.os.Bundle;
