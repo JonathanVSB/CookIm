@@ -2,10 +2,11 @@ package com.example.cookim.model.user;
 
 import com.example.cookim.model.recipe.Recipe;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserModel {
+public class UserModel implements Serializable {
 
     int id;
     String username;
@@ -59,8 +60,16 @@ public class UserModel {
         this.pass = pass;
     }
 
+    public UserModel() {
+
+    }
+
     //GETTERS AND SETTERS
 
+
+    public String getPath() {
+        return path;
+    }
 
     public String getUsername() {
         return username;

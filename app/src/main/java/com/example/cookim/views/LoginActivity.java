@@ -16,6 +16,7 @@ import com.example.cookim.controller.Controller;
 import com.example.cookim.databinding.ActivityLoginBinding;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.user.LoginModel;
+import com.example.cookim.model.user.UserModel;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -64,8 +65,10 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Displays the home page of the app
      */
-    private void showHomePage() {
+    private void showHomePage(UserModel user) {
         Intent intent = new Intent(this, HomePage.class);
+
+        intent.putExtra("userModel", user);
 
         startActivity(intent);
     }
@@ -87,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * gets the parameters introduced by the user to log in the app
      * to prepare a validation of them.
+     *
      * @param v
      */
     private void loginAction(View v) {
@@ -112,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Prepares the http request and gestionated the action if validation is correct
+     *
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
@@ -126,19 +131,19 @@ public class LoginActivity extends AppCompatActivity {
                 public void run() {
                     //Background work here
                     //System.out.println("ENTRA");
-                    if (readResponse(url, parametros)) {
+                    UserModel userModel = readResponse(url, parametros);
+                    if (userModel != null) {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 // Post Execute
 
-                                showHomePage();
+                                showHomePage(userModel);
                                 // Una Vegada finalitza el Background work (Thread.sleep(6000);) s'executa això
                             }
                         });
-                    }
-                    else{
-                       //Toast.makeText(this, "credential incorrect", Toast.LENGTH_LONG).show();
+                    } else {
+                        //Toast.makeText(this, "credential incorrect", Toast.LENGTH_LONG).show();
                         binding.errormsg.setVisibility(View.VISIBLE);
                     }
                 }
@@ -156,8 +161,9 @@ public class LoginActivity extends AppCompatActivity {
      * @param urlString  : Url to read File
      * @param parameters : Parameters for the HTTP POST request
      */
-    private boolean readResponse(String urlString, String parameters) {
+    private UserModel readResponse(String urlString, String parameters) {
         boolean respuesta = false;
+        UserModel user = null;
         int i = 0;
         try {
             // Petició HTTP
@@ -178,27 +184,37 @@ public class LoginActivity extends AppCompatActivity {
             connection.connect();
 
             // If the response does not enclose an entity, there is no need
-            // to worry about connection release
+//            // to worry about connection release
+//            if (connection != null) {
+//                // Read Stream
+//                InputStream inputStream = connection.getInputStream();
+//
+////                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+////                StringBuilder stringBuilder = new StringBuilder();
+////                String linea;
+////                while ((linea = bufferedReader.readLine()) != null) {
+////                    stringBuilder.append(linea).append("");
+////                }
+////                bufferedReader.close();
+////                String contenido = stringBuilder.toString();
+////
+////                System.out.println("Respuesta: " + contenido);
+////
+////                respuesta = Boolean.parseBoolean(contenido);
+//
+//                // Handle the response here (e.g., parse JSON, update UI, etc.)
+//
+//                // Close the input stream
+//                inputStream.close();
+
             if (connection != null) {
-                // Read Stream
+                // Leer Stream
                 InputStream inputStream = connection.getInputStream();
 
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                StringBuilder stringBuilder = new StringBuilder();
-                String linea;
-                while ((linea = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(linea).append("");
-                }
-                bufferedReader.close();
-                String contenido = stringBuilder.toString();
+                // Parsear la respuesta y crear un objeto UserModel
+                user = parseUser(inputStream);
 
-                System.out.println("Respuesta: " + contenido);
-
-                respuesta = Boolean.parseBoolean(contenido);
-
-                // Handle the response here (e.g., parse JSON, update UI, etc.)
-
-                // Close the input stream
+                // Cerrar el input stream
                 inputStream.close();
 
             }
@@ -207,9 +223,27 @@ public class LoginActivity extends AppCompatActivity {
             System.out.println("Ex: " + i + e.toString());
         }
 
-        return respuesta;
+        return user; // Retornar el objeto UserModel creado
     }
 
+    private UserModel parseUser(InputStream inputStream) {
+        UserModel user = new UserModel();
 
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                // Analizar la respuesta y actualizar el objeto UserModel
+                // según el formato esperado
+            }
+            bufferedReader.close();
+        } catch (Exception e) {
+            System.out.println("Error al analizar la respuesta: " + e.toString());
+        }
+
+        return user;
+
+    }
 }
+
 

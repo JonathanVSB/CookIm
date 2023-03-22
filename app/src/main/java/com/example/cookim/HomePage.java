@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.model.Data;
 import com.example.cookim.model.recipe.Recipe;
+import com.example.cookim.model.user.UserModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -22,12 +24,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class HomePage extends Activity {
 
     private ActivityHomeBinding binding;
     List<Recipe> recipes;
     final String URL_PATH = "http://192.168.127.80:7070/";
+
+    UserModel user = (UserModel) getIntent().getSerializableExtra("userModel");
+
+    Executor executor = Executors.newSingleThreadExecutor();
+
 
     TextView tvUsername;
 
@@ -40,9 +49,18 @@ public class HomePage extends Activity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.tvUsername.setText(user.getUsername());
+
+//        executor.execute(() -> {
+//            try {
+//                String profileUrl = user.getPath();
+//                runOnUiThread(() -> Glide.with(this).load(profileUrl).into(binding.profileImage));
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+
         //loadRecipes();
-
-
 
 
     }
@@ -68,7 +86,7 @@ public class HomePage extends Activity {
 
             String response = getReponseBody(conn);
             JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-            d = new Gson().fromJson(jsonObject.get("data"),Data.class);
+            d = new Gson().fromJson(jsonObject.get("data"), Data.class);
 
             //Devolvemos Recipes
             return d.results;
@@ -82,7 +100,7 @@ public class HomePage extends Activity {
         return d.results;
     }
 
-    private String getReponseBody(HttpURLConnection con) throws IOException{
+    private String getReponseBody(HttpURLConnection con) throws IOException {
         BufferedReader br;
 
         if (con.getResponseCode() >= 400) {
