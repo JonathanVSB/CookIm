@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Displays the home page of the app
+     * Displays the home page of the app and senda the user object to next activity
      */
     private void showHomePage(UserModel user) {
         Intent intent = new Intent(this, HomePage.class);
@@ -140,8 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                                 // Post Execute
 
                                 showHomePage(userModel);
-                                // Una Vegada finalitza el Background work (Thread.sleep(6000);) s'executa això
-                            }
+                                }
                         });
                     } else {
                         //Toast.makeText(this, "credential incorrect", Toast.LENGTH_LONG).show();
@@ -173,7 +172,7 @@ public class LoginActivity extends AppCompatActivity {
         UserModel user = null;
         int i = 0;
         try {
-            // Petició HTTP
+            //HTTP request
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -190,38 +189,14 @@ public class LoginActivity extends AppCompatActivity {
 
             connection.connect();
 
-            // If the response does not enclose an entity, there is no need
-//            // to worry about connection release
-//            if (connection != null) {
-//                // Read Stream
-//                InputStream inputStream = connection.getInputStream();
-//
-////                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-////                StringBuilder stringBuilder = new StringBuilder();
-////                String linea;
-////                while ((linea = bufferedReader.readLine()) != null) {
-////                    stringBuilder.append(linea).append("");
-////                }
-////                bufferedReader.close();
-////                String contenido = stringBuilder.toString();
-////
-////                System.out.println("Respuesta: " + contenido);
-////
-////                respuesta = Boolean.parseBoolean(contenido);
-//
-//                // Handle the response here (e.g., parse JSON, update UI, etc.)
-//
-//                // Close the input stream
-//                inputStream.close();
-
             if (connection != null) {
-                // Leer Stream
+                // read Stream
                 InputStream inputStream = connection.getInputStream();
 
-                // Parsear la respuesta y crear un objeto UserModel
+                // parse the response into UserModel object
                 user = parseUser(inputStream);
 
-                // Cerrar el input stream
+                //
                 inputStream.close();
 
             }
@@ -230,43 +205,63 @@ public class LoginActivity extends AppCompatActivity {
             System.out.println("Ex: " + i + e.toString());
         }
 
-        return user; // Retornar el objeto UserModel creado
+        return user;
     }
 
-
+    /**
+     * Parse the Json response into UserModel Object
+     * @param inputStream
+     * @return user
+     */
     private UserModel parseUser(InputStream inputStream) {
         UserModel user = null;
+
         try {
+            // Initializes a BufferedReader object to read the InputStream
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            // Initializes a StringBuilder object to hold the JSON-formatted string
             StringBuilder stringBuilder = new StringBuilder();
+
+            // Reads each line of the InputStream and appends it to the StringBuilder object
             String linea;
             while ((linea = bufferedReader.readLine()) != null) {
                 stringBuilder.append(linea);
             }
+
+            // Closes the BufferedReader
             bufferedReader.close();
 
+            // Converts the StringBuilder object to a string and modifies it
             String jsonString = stringBuilder.toString();
             jsonString = jsonString.replaceAll("\\\\u003d", ":");
             jsonString = jsonString.replaceAll("^\"|\"$", "");
             jsonString = jsonString.replaceAll("User\\{", "{");
 
-            // Agrega comillas dobles alrededor de los valores de la cadena
+
             jsonString = jsonString.replaceAll(":(\\s*[^,\\s]+)(,|\\})", ":\"$1\"$2");
 
-            System.out.println("Respuesta JSON modificada: " + jsonString); // Añadido para depurar
+            // Debugging statement
+            System.out.println("Respuesta JSON modificada: " + jsonString);
 
+            // Checks if the modified string starts and ends with "{" and "}"
             if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
+
                 Gson gson = new Gson();
                 user = gson.fromJson(jsonString, UserModel.class);
             } else {
+                // Debugging statement
                 System.out.println("La respuesta no es un objeto JSON válido");
             }
         } catch (IOException e) {
+            //Debugging statement
             System.out.println("Error al leer la respuesta: " + e.toString());
         } catch (JsonSyntaxException e) {
+            // Debugging statement
             System.out.println("Error al analizar la respuesta JSON: " + e.toString());
         }
 
+        // Returns the UserModel object
         return user;
     }
 

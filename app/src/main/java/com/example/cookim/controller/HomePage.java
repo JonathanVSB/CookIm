@@ -31,12 +31,8 @@ public class HomePage extends Activity {
     List<Recipe> recipes;
     final String URL_PATH = "http://192.168.127.80:7070/";
 
-    //UserModel user = (UserModel) getIntent().getSerializableExtra("userModel");
-
     Executor executor = Executors.newSingleThreadExecutor();
 
-
-    TextView tvUsername;
     UserModel user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +45,7 @@ public class HomePage extends Activity {
         user = (UserModel) getIntent().getSerializableExtra("userModel");
         binding.tvUsername.setText(user.getUsername());
 
+        //TODO
 //        executor.execute(() -> {
 //            try {
 //                String profileUrl = user.getPath();
@@ -98,15 +95,20 @@ public class HomePage extends Activity {
         return d.results;
     }
 
+    /**
+     * gets the body response of HTTP request and returnsit as String
+     * @param con
+     * @return
+     * @throws IOException
+     */
     private String getReponseBody(HttpURLConnection con) throws IOException {
         BufferedReader br;
 
         if (con.getResponseCode() >= 400) {
-            //Si el codi de resposta és superior a 400 s'ha produit un error i cal llegir
-            //el missatge d'ErrorStream().
+            //if code response superior to 400 displays error
             br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
         } else {
-            //Si el codi és inferior a 400 llavors obtenim una resposta correcte del servidor.
+            //if code response lower than 400 displays error gets response
             br = new BufferedReader(new InputStreamReader(con.getInputStream()));
         }
         StringBuilder sb = new StringBuilder();
