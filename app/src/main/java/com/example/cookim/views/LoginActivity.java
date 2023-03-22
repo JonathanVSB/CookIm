@@ -200,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 // Close the input stream
                 inputStream.close();
+
             }
 
         } catch (Exception e) {
