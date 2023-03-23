@@ -1,6 +1,7 @@
 package com.example.cookim.controller;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ public class HomePage extends Activity {
     Executor executor = Executors.newSingleThreadExecutor();
 
     UserModel user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +45,14 @@ public class HomePage extends Activity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         user = (UserModel) getIntent().getSerializableExtra("userModel");
-        binding.tvUsername.setText(user.getUsername());
+
+        if (user != null) {
+            binding.tvUsername.setText(user.getUsername());
+        } else{
+
+            binding.tvUsername.setText("Guest");
+            binding.profileImage.setImageResource(R.drawable.guest_profile);
+        }
 
         //TODO
 //        executor.execute(() -> {
@@ -97,6 +106,7 @@ public class HomePage extends Activity {
 
     /**
      * gets the body response of HTTP request and returnsit as String
+     *
      * @param con
      * @return
      * @throws IOException

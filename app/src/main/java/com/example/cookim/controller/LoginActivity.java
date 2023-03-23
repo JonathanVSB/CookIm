@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -89,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * gets the parameters introduced by the user to log in the app
+     * Gets the parameters introduced by the user to log in the app
      * to prepare a validation of them.
      *
      * @param v
@@ -121,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
-        String url = "http://192.168.1.55:7070/login";
+        String url = "http://91.107.198.64:7070/login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
         String parametros = "username=" + username + "&password=" + password;
@@ -202,7 +203,8 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         } catch (Exception e) {
-            System.out.println("Ex: " + i + e.toString());
+            Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+            System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
         }
 
         return user;
