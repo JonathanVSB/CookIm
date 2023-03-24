@@ -3,24 +3,34 @@ package com.example.cookim.controller;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.cookim.R;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.model.Data;
+import com.example.cookim.model.DataResult;
 import com.example.cookim.model.recipe.Recipe;
+import com.example.cookim.model.user.LoginModel;
 import com.example.cookim.model.user.UserModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -30,9 +40,11 @@ public class HomePage extends Activity {
 
     private ActivityHomeBinding binding;
     List<Recipe> recipes;
-    final String URL_PATH = "http://192.168.127.80:7070/";
+    private final String URL = "http://91.107.198.64:7070/";
+    private final String URL2 = "http://192.168.127.80:7070/";
 
     Executor executor = Executors.newSingleThreadExecutor();
+    Handler handler;
 
     UserModel user;
 
@@ -40,33 +52,146 @@ public class HomePage extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        handler = new Handler(Looper.getMainLooper());
+
 
         recipes = new ArrayList<>();
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        user = (UserModel) getIntent().getSerializableExtra("userModel");
+//        user = (UserModel) getIntent().getSerializableExtra("userModel");
+        String token = (String) getIntent().getSerializableExtra("token");
 
-        if (user != null) {
-            binding.tvUsername.setText(user.getUsername());
-        } else{
+        loadHomePage(token);
 
-            binding.tvUsername.setText("Guest");
-            binding.profileImage.setImageResource(R.drawable.guest_profile);
+
+    }
+
+    private void loadHomePage(String a) {
+        String url = URL2 + "perfil";
+        String token = "token=" + a;
+
+        try {
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    DataResult result = readResponse(url, token);
+                    if (result != null) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Post Execute
+                                binding.tvUsername.setText(result.getTxt());
+                                if (result.getPath() != null) {
+                                    executor.execute(() -> {
+                                        try {
+                                            String profileUrl = result.getPath();
+                                            runOnUiThread(() -> Glide.with(HomePage.this).load(profileUrl).into(binding.profileImage));
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                                } else {
+                                    binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (Exception e) {
+            System.out.println("ERROR" + e.toString());
         }
 
-        //TODO
-//        executor.execute(() -> {
-//            try {
-//                String profileUrl = user.getPath();
-//                runOnUiThread(() -> Glide.with(this).load(profileUrl).into(binding.profileImage));
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
+    }
 
-        //loadRecipes();
+    private DataResult readResponse(String urlString, String parameters) {
+        DataResult result = null;
+        try {
+            //HTTP request
+            System.out.println("ENTRA  " + urlString);
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
 
+            // Write parameters to the request
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(parameters.getBytes(StandardCharsets.UTF_8));
+            }
 
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into UserModel object
+
+                result = parseDataResult(inputStream);
+
+                //
+                inputStream.close();
+
+            }
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+        }
+
+//        return user;
+        return result;
+    }
+
+    private DataResult parseDataResult(InputStream inputStream) {
+        DataResult result = null;
+
+        try {
+            // Initializes a BufferedReader object to read the InputStream
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            // Initializes a StringBuilder object to hold the JSON-formatted string
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Reads each line of the InputStream and appends it to the StringBuilder object
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                stringBuilder.append(linea);
+            }
+
+            // Closes the BufferedReader
+            bufferedReader.close();
+            // Converts the StringBuilder object to a string and modifies it
+            String jsonString = stringBuilder.toString();
+
+//            jsonString = jsonString.replace("\"", "");
+
+            // Debugging statement
+            System.out.println("Respuesta JSON modificada: " + jsonString);
+
+            // Checks if the modified string starts and ends with "{" and "}"
+            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
+
+                Gson gson = new Gson();
+
+                result = gson.fromJson(jsonString, DataResult.class);
+            } else {
+                // Debugging statement
+                System.out.println("La respuesta no es un objeto JSON válido");
+            }
+        } catch (IOException e) {
+            //Debugging statement
+            System.out.println("Error al leer la respuesta: " + e.toString());
+        } catch (JsonSyntaxException e) {
+            // Debugging statement
+            System.out.println("Error al analizar la respuesta JSON: " + e.toString());
+        }
+
+        // Returns the UserModel object
+        return result;
     }
 
     /**
@@ -75,7 +200,7 @@ public class HomePage extends Activity {
     private Recipe[] loadRecipes() {
 
         Data d = null;
-        String petition = URL_PATH + "principal";
+        String petition = URL + "principal";
         try {
             //Generem l'objecte URL que fa servir HttpURLConnection
             URL url = new URL(petition);

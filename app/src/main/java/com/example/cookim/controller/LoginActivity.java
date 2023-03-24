@@ -36,7 +36,8 @@ public class LoginActivity extends AppCompatActivity {
     View.OnClickListener listener;
     Switch swLogOption;
 
-
+    private final String URL = "http://91.107.198.64:7070/";
+    private final String URL2 = "http://192.168.127.80:7070/";
     ExecutorService executor;
     Handler handler;
 
@@ -66,10 +67,10 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Displays the home page of the app and senda the user object to next activity
      */
-    private void showHomePage(UserModel user) {
+    private void showHomePage(String token) {
         Intent intent = new Intent(this, HomePage.class);
 
-        intent.putExtra("userModel", user);
+        intent.putExtra("token", token);
 
         startActivity(intent);
     }
@@ -142,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
-        String url = "http://192.168.127.80:7070/login";
+        String url = URL2 + "login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
         String parametros = "username=" + username + "&password=" + password;
@@ -153,14 +154,16 @@ public class LoginActivity extends AppCompatActivity {
                 public void run() {
                     //Background work here
                     //System.out.println("ENTRA");
-                    UserModel userModel = readResponse(url, parametros);
-                    if (userModel != null) {
+//                    UserModel userModel = readResponse(url, parametros);
+                    String token = readResponse(url, parametros);
+                    if (!token.equals("null")/*userModel != null*/) {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 // Post Execute
 
-                                showHomePage(userModel);
+                                showHomePage(token);
+
                             }
                         });
                     } else {
@@ -188,9 +191,8 @@ public class LoginActivity extends AppCompatActivity {
      * @param urlString  : Url to read File
      * @param parameters : Parameters for the HTTP POST request
      */
-    private UserModel readResponse(String urlString, String parameters) {
-        boolean respuesta = false;
-        UserModel user = null;
+    private String readResponse(String urlString, String parameters) {
+        String token = "null";
         int i = 0;
         try {
             //HTTP request
@@ -215,7 +217,8 @@ public class LoginActivity extends AppCompatActivity {
                 InputStream inputStream = connection.getInputStream();
 
                 // parse the response into UserModel object
-                user = parseUser(inputStream);
+
+                token = parseToken(inputStream);
 
                 //
                 inputStream.close();
@@ -227,7 +230,8 @@ public class LoginActivity extends AppCompatActivity {
             System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
         }
 
-        return user;
+//        return user;
+        return token;
     }
 
     /**
@@ -284,6 +288,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private String parseToken(InputStream inputStream) {
+
         String jsonString = null;
 
         try {
@@ -306,6 +311,16 @@ public class LoginActivity extends AppCompatActivity {
             jsonString = stringBuilder.toString();
 
             // Debugging statement
+            System.out.println("Respuesta JSON modificada: " + jsonString);
+
+            // Converts the StringBuilder object to a string and modifies it
+
+            // Closes the BufferedReader
+            bufferedReader.close();
+
+            jsonString = jsonString.replace("\"", "");
+
+            // Debugging statement
             System.out.println("Respuesta JSON: " + jsonString);
 
         } catch (IOException e) {
@@ -316,7 +331,6 @@ public class LoginActivity extends AppCompatActivity {
         // Returns the JSON string or null if there was an error
         return jsonString;
     }
-
 }
 
 
