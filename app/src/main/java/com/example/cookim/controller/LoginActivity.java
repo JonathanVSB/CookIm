@@ -10,8 +10,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cookim.controller.HomePage;
-import com.example.cookim.controller.Controller;
 import com.example.cookim.databinding.ActivityLoginBinding;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.user.LoginModel;
@@ -59,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         model = new Model();
 
         String username = binding.etUsername.getText().toString();
+        binding.tvSignin.setOnClickListener(listener);
         initElements();
 
 
@@ -83,11 +82,19 @@ public class LoginActivity extends AppCompatActivity {
         binding.btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginAction(v);
+                loginPageActions(v);
+            }
+        });
+
+        binding.tvSignin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginPageActions(v);
             }
         });
 
     }
+
 
     /**
      * Gets the parameters introduced by the user to log in the app
@@ -95,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
      *
      * @param v
      */
-    private void loginAction(View v) {
+    private void loginPageActions(View v) {
         if (v.getId() == binding.btLogin.getId()) {
             String name = binding.etUsername.getText().toString();
             String password = binding.etPass.getText().toString();
@@ -103,7 +110,20 @@ public class LoginActivity extends AppCompatActivity {
 
             validation(userData);
 
+        } else if (v.getId() == binding.tvSignin.getId()) {
+            displaySignInPage();
+
         }
+    }
+
+    /**
+     * Displays Sign In Page
+     */
+    private void displaySignInPage() {
+        Intent intent = new Intent(this, SignActivity.class);
+
+
+        startActivity(intent);
     }
 
     /**
@@ -122,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
-        String url = "http://91.107.198.64:7070/login";
+        String url = "http://192.168.127.80:7070/login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
         String parametros = "username=" + username + "&password=" + password;
@@ -141,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
                                 // Post Execute
 
                                 showHomePage(userModel);
-                                }
+                            }
                         });
                     } else {
                         //Toast.makeText(this, "credential incorrect", Toast.LENGTH_LONG).show();
@@ -212,6 +232,7 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Parse the Json response into UserModel Object
+     *
      * @param inputStream
      * @return user
      */
@@ -236,12 +257,6 @@ public class LoginActivity extends AppCompatActivity {
 
             // Converts the StringBuilder object to a string and modifies it
             String jsonString = stringBuilder.toString();
-            jsonString = jsonString.replaceAll("\\\\u003d", ":");
-            jsonString = jsonString.replaceAll("^\"|\"$", "");
-            jsonString = jsonString.replaceAll("User\\{", "{");
-
-
-            jsonString = jsonString.replaceAll(":(\\s*[^,\\s]+)(,|\\})", ":\"$1\"$2");
 
             // Debugging statement
             System.out.println("Respuesta JSON modificada: " + jsonString);
@@ -250,6 +265,7 @@ public class LoginActivity extends AppCompatActivity {
             if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
 
                 Gson gson = new Gson();
+
                 user = gson.fromJson(jsonString, UserModel.class);
             } else {
                 // Debugging statement
@@ -265,6 +281,40 @@ public class LoginActivity extends AppCompatActivity {
 
         // Returns the UserModel object
         return user;
+    }
+
+    private String parseToken(InputStream inputStream) {
+        String jsonString = null;
+
+        try {
+            // Initializes a BufferedReader object to read the InputStream
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            // Initializes a StringBuilder object to hold the JSON-formatted string
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Reads each line of the InputStream and appends it to the StringBuilder object
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                stringBuilder.append(linea);
+            }
+
+            // Closes the BufferedReader
+            bufferedReader.close();
+
+            // Converts the StringBuilder object to a string and modifies it
+            jsonString = stringBuilder.toString();
+
+            // Debugging statement
+            System.out.println("Respuesta JSON: " + jsonString);
+
+        } catch (IOException e) {
+            //Debugging statement
+            System.out.println("Error al leer la respuesta: " + e.toString());
+        }
+
+        // Returns the JSON string or null if there was an error
+        return jsonString;
     }
 
 }

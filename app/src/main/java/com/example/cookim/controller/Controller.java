@@ -27,8 +27,6 @@ public class Controller {
 
     public Controller() {
 
-        userList.add(new UserModel("user1", "user1"));
-        userList.add(new UserModel("alumne", "alumne"));
     }
 
     private void HomePage() {
@@ -41,7 +39,7 @@ public class Controller {
         //Search matches in list of users
         for (UserModel usr : userList) {
             //if find matches result is true
-            if (usr.getUsername().equals(loginModel.getUserName()) && usr.getPass().equals(loginModel.getPassword())) {
+            if (usr.getUsername().equals(loginModel.getUserName()) && usr.getPassword().equals(loginModel.getPassword())) {
                 result = true;
             }
 

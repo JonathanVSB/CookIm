@@ -10,31 +10,30 @@ public class UserModel implements Serializable {
 
     long id;
     String username;
-    String pass;
+    String password;
     String full_name;
     String email;
-    String tel;
-    String path;
+    String phone;
+    String path_img;
+    String description;
+    long id_rol;
+    String token;
     List<UserModel> followers;
     List<UserModel> followed;
     List<Recipe> favorites_recipes;
-    String description;
-    long rol;
-    String token;
 
     //CONSTRUCTORS
     public UserModel(long id, String username, String pass, String full_name, String email, String tel, List<UserModel> followers, List<UserModel> followed, List<Recipe> favorites_recipes, long rol, String token) {
         this.id = id;
         this.username = username;
-        this.pass = pass;
+        this.password = pass;
         this.full_name = full_name;
         this.email = email;
-        this.tel = tel;
+        this.phone = tel;
         this.followers = new ArrayList<>();
         this.followed = new ArrayList<>();
         this.favorites_recipes = new ArrayList<>();
-
-        this.rol = Rol.USER;
+        this.id_rol = id_rol;
         this.token = token;
     }
 
@@ -42,34 +41,35 @@ public class UserModel implements Serializable {
     public UserModel(long id, String username, String pass, String full_name, String description, String email, String tel, String path, List<UserModel> followers, List<UserModel> followed, List<Recipe> favorites_recipes, long rol, String token) {
         this.id = id;
         this.username = username;
-        this.pass = pass;
+        this.password = pass;
         this.full_name = full_name;
         this.description = description;
         this.email = email;
-        this.tel = tel;
-        this.path = path;
+        this.phone = tel;
+        this.path_img = path_img;
+        this.id_rol = id_rol;
+        this.token = token;
         this.followers = new ArrayList<>();
         this.followed = new ArrayList<>();
         this.favorites_recipes = new ArrayList<>();
-        this.rol = rol;
+    }
+
+    public UserModel(String username, String pass, String token) {
+        this.username = username;
+        this.password = pass;
         this.token = token;
     }
 
-    public UserModel(String username, String pass) {
-        this.username = username;
-        this.pass = pass;
-    }
-
-    public UserModel(long id, String username, String pass, String full_name, String email, String tel, String path, String description, long rol, String token) {
+    public UserModel(long id, String username, String pass, String full_name, String email, String tel, String path_img, String description, long id_rol, String token) {
         this.id = id;
         this.username = username;
-        this.pass = pass;
+        this.password = pass;
         this.full_name = full_name;
         this.email = email;
-        this.tel = tel;
-        this.path = path;
+        this.phone = tel;
+        this.path_img = path_img;
         this.description = description;
-        this.rol = rol;
+        this.id_rol = id_rol;
         this.token = token;
     }
 
@@ -112,16 +112,16 @@ public class UserModel implements Serializable {
         this.email = email;
     }
 
-    public String getTel() {
-        return tel;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setTel(String tel) {
-        this.tel = tel;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setPath_img(String path_img) {
+        this.path_img = path_img;
     }
 
     public List<UserModel> getFollowers() {
@@ -148,12 +148,12 @@ public class UserModel implements Serializable {
         this.favorites_recipes = favorites_recipes;
     }
 
-    public long getRol() {
-        return rol;
+    public long getId_rol() {
+        return id_rol;
     }
 
-    public void setRol(long rol) {
-        this.rol = rol;
+    public void setId_rol(long id_rol) {
+        this.id_rol = id_rol;
     }
 
     public String getToken() {
@@ -164,8 +164,8 @@ public class UserModel implements Serializable {
         this.token = token;
     }
 
-    public String getPath() {
-        return path;
+    public String getPath_img() {
+        return path_img;
     }
 
     public String getUsername() {
@@ -176,12 +176,12 @@ public class UserModel implements Serializable {
         this.username = username;
     }
 
-    public String getPass() {
-        return pass;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 
