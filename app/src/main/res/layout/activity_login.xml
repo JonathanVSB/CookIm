@@ -52,8 +52,7 @@
         android:textColor="@color/black"
         android:backgroundTint="@color/white"
         android:drawableLeft="@drawable/gmail2"
-
-        android:background="@drawable/bg_alternative"
+        android:background="@drawable/bg_white"
         android:drawablePadding="8dp"
         android:text="Continue with Google"
         android:textSize="12dp"

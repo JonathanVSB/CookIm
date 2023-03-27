@@ -1,35 +1,51 @@
 package com.example.cookim.model;
 
-public class DataResult {
+import java.io.Serializable;
 
-    String txt;
-    String path;
+public class DataResult implements Serializable {
+
+    String result;
+    String result2;
+    Object data;
 
 
     //Constructor
 
-    public DataResult(String txt, String path) {
-        this.txt = txt;
-        this.path = path;
+    public DataResult(String result, String result2) {
+        this.result = result;
+        this.result2 = result2;
     }
 
+    public DataResult(String result, String result2, Object data) {
+        this.result = result;
+        this.result2 = result2;
+        this.data = data;
+    }
 
     //GETTERS AND SETTERS
 
 
-    public String getPath() {
-        return path;
+    public String getResult() {
+        return result;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setResult(String result) {
+        this.result = result;
     }
 
-    public String getTxt() {
-        return txt;
+    public String getResult2() {
+        return result2;
     }
 
-    public void setTxt(String txt) {
-        this.txt = txt;
+    public void setResult2(String result2) {
+        this.result2 = result2;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }

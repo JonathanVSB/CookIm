@@ -13,6 +13,25 @@
         android:layout_height="60dp"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvPoster"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="username"
+            android:textColor="@color/black"
+            android:fontFamily="@font/ubuntumedium"
+            android:textSize="20dp"
+            />
+    </androidx.appcompat.widget.Toolbar>
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/img01"
         android:layout_width="wrap_content"
@@ -33,42 +52,60 @@
         android:layout_marginEnd="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img01">
+        app:layout_constraintTop_toBottomOf="@+id/img01"
+        >
+
+
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/profileImage"
-            android:layout_marginLeft="20dp"
-            android:layout_width="50dp"
+            android:id="@+id/btLike"
+            android:layout_marginLeft="10dp"
+            android:layout_width="30dp"
             android:layout_height="50dp"
-            android:src="@drawable/stars"
+            android:src="@drawable/nonselectedheart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/circleImageView" />
+            />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvUsername"
+            android:id="@+id/tvLikes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="100"
+            android:text="0"
             android:textColor="@color/black"
             android:textSize="20dp"
             android:textStyle="bold"
             android:fontFamily="@font/ubuntumedium"
-            app:layout_constraintBottom_toBottomOf="@id/profileImage"
-            app:layout_constraintStart_toEndOf="@id/profileImage"
+            app:layout_constraintBottom_toBottomOf="@id/btLike"
+            app:layout_constraintStart_toEndOf="@id/btLike"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/menu_btn"
+            android:id="@+id/btComment"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:elevation="5dp"
             android:src="@drawable/comment"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvLikes"
             app:layout_constraintBottom_toBottomOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="160dp"
+            tools:layout_editor_absoluteX="251dp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btSave"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/oven"
+            app:layout_constraintStart_toEndOf="@id/btComment"
+            android:elevation="5dp"
+            app:layout_constraintTop_toTopOf="@id/btComment"
+            android:layout_marginLeft="20dp"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -87,7 +124,14 @@
         app:layout_constraintEnd_toEndOf="@id/img01"
         app:layout_constraintTop_toTopOf="@id/img01"
         android:layout_marginTop="110dp"
+        app:shapeAppearanceOverlay="@style/RoundedImageView"
         />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/separator_line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -36,12 +36,14 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class HomePage extends Activity {
 
     private ActivityHomeBinding binding;
     List<Recipe> recipes;
     private final String URL = "http://91.107.198.64:7070/";
-    private final String URL2 = "http://192.168.127.80:7070/";
+    private final String URL2 = "http://192.168.127.101:7070/";
 
     Executor executor = Executors.newSingleThreadExecutor();
     Handler handler;
@@ -70,26 +72,23 @@ public class HomePage extends Activity {
         String url = URL2 + "perfil";
         String token = "token=" + a;
 
+
         try {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    DataResult result = readResponse(url, token);
+                    DataResult result = readResponse2(url, token);
                     if (result != null) {
+                        binding.tvUsername.setText(result.getResult());
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 // Post Execute
-                                binding.tvUsername.setText(result.getTxt());
-                                if (result.getPath() != null) {
-                                    executor.execute(() -> {
-                                        try {
-                                            String profileUrl = result.getPath();
-                                            runOnUiThread(() -> Glide.with(HomePage.this).load(profileUrl).into(binding.profileImage));
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
+                                if (result.getResult2() != null) {
+                                    String profileUrl = result.getResult2();
+                                    Glide.with(HomePage.this)
+                                            .load(profileUrl)
+                                            .into(binding.profileImage);
                                 } else {
                                     binding.profileImage.setImageResource(R.drawable.guest_profile);
                                 }
@@ -104,23 +103,63 @@ public class HomePage extends Activity {
 
     }
 
-    private DataResult readResponse(String urlString, String parameters) {
+//    private DataResult readResponse(String urlString, String token) {
+//        DataResult result = null;
+//        try {
+//            //HTTP request
+//            System.out.println("ENTRA  " + urlString);
+//            URL url = new URL(urlString);
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setRequestProperty("User-Agent", "");
+//            connection.setRequestProperty("Authorization", "Bearer " + token);
+//            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//
+//            connection.setRequestMethod("POST");
+//            connection.setDoInput(true);
+//            connection.setDoOutput(true);
+//
+//            // Write parameters to the request
+//            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+//                wr.write(token.getBytes(StandardCharsets.UTF_8));
+//            }
+//
+//            connection.connect();
+//
+//            if (connection != null) {
+//                // read Stream
+//                InputStream inputStream = connection.getInputStream();
+//
+//                // parse the response into UserModel object
+//
+//                result = parseDataResult(inputStream);
+//
+//                //
+//                inputStream.close();
+//
+//            }
+//
+//        } catch (Exception e) {
+//            Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+//            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+//        }
+//
+////        return user;
+//        return result;
+//    }
+
+    private DataResult readResponse2(String urlString, String token) {
         DataResult result = null;
         try {
-            //HTTP request
-            System.out.println("ENTRA  " + urlString);
+            //HTTPS request
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "");
+            connection.setRequestProperty("Authorization", "Bearer " + token);
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
-
-            // Write parameters to the request
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.write(parameters.getBytes(StandardCharsets.UTF_8));
-            }
 
             connection.connect();
 
@@ -128,23 +167,21 @@ public class HomePage extends Activity {
                 // read Stream
                 InputStream inputStream = connection.getInputStream();
 
-                // parse the response into UserModel object
-
+                // parse the response into DataResult object
                 result = parseDataResult(inputStream);
 
-                //
+                // Close input stream
                 inputStream.close();
-
             }
 
         } catch (Exception e) {
             Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+            System.out.println("Exception: " + e.toString());
         }
 
-//        return user;
         return result;
     }
+
 
     private DataResult parseDataResult(InputStream inputStream) {
         DataResult result = null;
@@ -165,9 +202,12 @@ public class HomePage extends Activity {
             // Closes the BufferedReader
             bufferedReader.close();
             // Converts the StringBuilder object to a string and modifies it
-            String jsonString = stringBuilder.toString();
+            //String jsonString = stringBuilder.toString();
 
 //            jsonString = jsonString.replace("\"", "");
+            // Removes the quotes around the braces
+            String jsonString = stringBuilder.toString().replaceAll("\"\\{", "{").replaceAll("\\}\"", "}");
+
 
             // Debugging statement
             System.out.println("Respuesta JSON modificada: " + jsonString);
