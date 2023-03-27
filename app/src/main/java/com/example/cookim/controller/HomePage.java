@@ -151,6 +151,7 @@ public class HomePage extends Activity {
         DataResult result = null;
         try {
             //HTTPS request
+
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "");
