@@ -292,6 +292,7 @@ public class HomePage extends Activity {
             sb.append(line + "\n");
         }
         br.close();
+
         return sb.toString();
 
     }
