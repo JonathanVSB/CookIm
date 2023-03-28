@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     Switch swLogOption;
 
     private final String URL = "http://91.107.198.64:7070/";
-    private final String URL2 = "http://192.168.127.101:7070/";
+    private final String URL2 = "http://192.168.127.102:7070/";
     ExecutorService executor;
     Handler handler;
 
@@ -143,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
-        String url = URL2 + "login";
+        String url = URL + "login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
         String parametros = "username=" + username + "&password=" + password;
@@ -287,6 +287,11 @@ public class LoginActivity extends AppCompatActivity {
         return user;
     }
 
+    /**
+     * Reads the token received from server and saves it String variable
+     * @param inputStream
+     * @return
+     */
     private String parseToken(InputStream inputStream) {
 
         String jsonString = null;

@@ -1,6 +1,8 @@
 package com.example.cookim.controller;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +26,8 @@ import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,7 +47,7 @@ public class HomePage extends Activity {
     private ActivityHomeBinding binding;
     List<Recipe> recipes;
     private final String URL = "http://91.107.198.64:7070/";
-    private final String URL2 = "http://192.168.127.101:7070/";
+    private final String URL2 = "http://192.168.127.102:7070/";
 
     Executor executor = Executors.newSingleThreadExecutor();
     Handler handler;
@@ -70,7 +74,7 @@ public class HomePage extends Activity {
     }
 
     private void loadHomePage(String a) {
-        String url = URL2 + "perfil";
+        String url = URL + "perfil";
         String token = "token=" + a;
 
 
@@ -78,7 +82,7 @@ public class HomePage extends Activity {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    DataResult result = readResponse2(url, token);
+                    DataResult result = readResponse(url, token);
                     if (result != null) {
                         binding.tvUsername.setText(result.getResult());
                         handler.post(new Runnable() {
@@ -86,10 +90,29 @@ public class HomePage extends Activity {
                             public void run() {
                                 // Post Execute
                                 if (result.getResult2() != null) {
-                                    String profileUrl = result.getResult2();
-                                    Glide.with(HomePage.this)
-                                            .load(profileUrl)
-                                            .into(binding.profileImage);
+                                    executor.execute(() -> {
+                                        try {
+                                            File proFile = new File(getFilesDir(), "user3.jpg");
+                                            if (!proFile.exists()) {
+                                                URL beeUrl = new URL("http://91.107.198.64:7070" + result.getResult2());
+                                                Bitmap beeBitmap = BitmapFactory.decodeStream(beeUrl.openStream());
+                                                FileOutputStream beeOut = new FileOutputStream(proFile);
+                                                beeBitmap.compress(Bitmap.CompressFormat.JPEG, 100, beeOut);
+                                                beeOut.flush();
+                                                beeOut.close();
+                                            }
+                                            runOnUiThread(() -> binding.profileImage.setImageBitmap(BitmapFactory.decodeFile(proFile.getAbsolutePath())));
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                        }
+                                    });
+
+//                                        String profileUrl = "http://91.107.198.64:7070" + result.getResult2();
+//                                        Glide.with(HomePage.this)
+//                                                .load(profileUrl)
+//                                                .into(binding.profileImage);
                                 } else {
                                     binding.profileImage.setImageResource(R.drawable.guest_profile);
                                 }
@@ -112,7 +135,6 @@ public class HomePage extends Activity {
 //            URL url = new URL(urlString);
 //            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 //            connection.setRequestProperty("User-Agent", "");
-//            connection.setRequestProperty("Authorization", "Bearer " + token);
 //            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 //
 //            connection.setRequestMethod("POST");
@@ -148,19 +170,29 @@ public class HomePage extends Activity {
 //        return result;
 //    }
 
-    private DataResult readResponse2(String urlString, String token) {
+    private DataResult readResponse(String urlString, String token) {
         DataResult result = null;
         try {
-            //HTTPS request
+            // HTTPS request
+            System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("User-Agent", "");
-            connection.setRequestProperty("Authorization", "Bearer " + token);
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
+
+            // Set authorization header with token
+            String authHeader = "Bearer " + token;
+            connection.setRequestProperty("Authorization", authHeader);
+
+            // Set content type to form url encoded
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            // Write parameters to the request body
+            String requestBody = "";
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            }
 
             connection.connect();
 
@@ -171,19 +203,23 @@ public class HomePage extends Activity {
                 // parse the response into DataResult object
                 result = parseDataResult(inputStream);
 
-                // Close input stream
                 inputStream.close();
             }
 
         } catch (Exception e) {
             Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-            System.out.println("Exception: " + e.toString());
+            System.out.println("PETA EN ESTA LINEA: " + e.toString());
         }
 
         return result;
     }
 
-
+    /**
+     * Reads the Json answer of the server and transforms it in DataResult object
+     *
+     * @param inputStream
+     * @return
+     */
     private DataResult parseDataResult(InputStream inputStream) {
         DataResult result = null;
 
