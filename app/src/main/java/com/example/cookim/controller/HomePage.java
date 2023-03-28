@@ -58,6 +58,7 @@ public class HomePage extends Activity {
 
 
         recipes = new ArrayList<>();
+
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 //        user = (UserModel) getIntent().getSerializableExtra("userModel");
