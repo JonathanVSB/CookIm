@@ -122,8 +122,6 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void displaySignInPage() {
         Intent intent = new Intent(this, SignActivity.class);
-
-
         startActivity(intent);
     }
 
@@ -132,8 +130,6 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void addElementsToListener() {
         binding.btLogin.setOnClickListener(listener);
-
-
     }
 
 
@@ -171,6 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
+                                binding.errormsg.setText("Username or password are wrong");
                                 binding.errormsg.setVisibility(View.VISIBLE);
                             }
                         });
@@ -180,7 +177,8 @@ public class LoginActivity extends AppCompatActivity {
             });
 
         } catch (Exception e) {
-            System.out.println("ERROR" + e.toString());
+            binding.errormsg.setText("Error Connecting with server");
+            binding.errormsg.setVisibility(View.VISIBLE);
         }
 
     }

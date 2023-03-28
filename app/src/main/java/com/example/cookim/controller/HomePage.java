@@ -90,29 +90,29 @@ public class HomePage extends Activity {
                             public void run() {
                                 // Post Execute
                                 if (result.getResult2() != null) {
-                                    executor.execute(() -> {
-                                        try {
-                                            File proFile = new File(getFilesDir(), "user3.jpg");
-                                            if (!proFile.exists()) {
-                                                URL beeUrl = new URL("http://91.107.198.64:7070" + result.getResult2());
-                                                Bitmap beeBitmap = BitmapFactory.decodeStream(beeUrl.openStream());
-                                                FileOutputStream beeOut = new FileOutputStream(proFile);
-                                                beeBitmap.compress(Bitmap.CompressFormat.JPEG, 100, beeOut);
-                                                beeOut.flush();
-                                                beeOut.close();
-                                            }
-                                            runOnUiThread(() -> binding.profileImage.setImageBitmap(BitmapFactory.decodeFile(proFile.getAbsolutePath())));
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                            System.out.println("PETA EN ESTA LINEA: " + e.toString());
-                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
-                                        }
-                                    });
+//                                    executor.execute(() -> {
+//                                        try {
+//                                            File proFile = new File(getFilesDir(), "user3.jpg");
+//                                            if (!proFile.exists()) {
+//                                                URL beeUrl = new URL("http://91.107.198.64:7070" + result.getResult2());
+//                                                Bitmap beeBitmap = BitmapFactory.decodeStream(beeUrl.openStream());
+//                                                FileOutputStream beeOut = new FileOutputStream(proFile);
+//                                                beeBitmap.compress(Bitmap.CompressFormat.JPEG, 100, beeOut);
+//                                                beeOut.flush();
+//                                                beeOut.close();
+//                                            }
+//                                            runOnUiThread(() -> binding.profileImage.setImageBitmap(BitmapFactory.decodeFile(proFile.getAbsolutePath())));
+//                                        } catch (Exception e) {
+//                                            e.printStackTrace();
+//                                            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+//                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
+//                                        }
+//                                    });
 
-//                                        String profileUrl = "http://91.107.198.64:7070" + result.getResult2();
-//                                        Glide.with(HomePage.this)
-//                                                .load(profileUrl)
-//                                                .into(binding.profileImage);
+                                        String profileUrl = "http://91.107.198.64:7070" + result.getResult2();
+                                        Glide.with(HomePage.this)
+                                                .load(profileUrl)
+                                                .into(binding.profileImage);
                                 } else {
                                     binding.profileImage.setImageResource(R.drawable.guest_profile);
                                 }
@@ -127,48 +127,12 @@ public class HomePage extends Activity {
 
     }
 
-//    private DataResult readResponse(String urlString, String token) {
-//        DataResult result = null;
-//        try {
-//            //HTTP request
-//            System.out.println("ENTRA  " + urlString);
-//            URL url = new URL(urlString);
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setRequestProperty("User-Agent", "");
-//            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//
-//            connection.setRequestMethod("POST");
-//            connection.setDoInput(true);
-//            connection.setDoOutput(true);
-//
-//            // Write parameters to the request
-//            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-//                wr.write(token.getBytes(StandardCharsets.UTF_8));
-//            }
-//
-//            connection.connect();
-//
-//            if (connection != null) {
-//                // read Stream
-//                InputStream inputStream = connection.getInputStream();
-//
-//                // parse the response into UserModel object
-//
-//                result = parseDataResult(inputStream);
-//
-//                //
-//                inputStream.close();
-//
-//            }
-//
-//        } catch (Exception e) {
-//            Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-//            System.out.println("PETA EN ESTA LINEA: " + e.toString());
-//        }
-//
-////        return user;
-//        return result;
-//    }
+    /**
+     * Do petition
+     * @param urlString
+     * @param token
+     * @return
+     */
 
     private DataResult readResponse(String urlString, String token) {
         DataResult result = null;
@@ -277,7 +241,7 @@ public class HomePage extends Activity {
     private Recipe[] loadRecipes() {
 
         Data d = null;
-        String petition = URL + "principal";
+        String petition = URL2 + "principal";
         try {
             //Generem l'objecte URL que fa servir HttpURLConnection
             URL url = new URL(petition);
@@ -333,6 +297,49 @@ public class HomePage extends Activity {
         return sb.toString();
 
     }
+
+    //    private DataResult readResponse(String urlString, String token) {
+//        DataResult result = null;
+//        try {
+//            //HTTP request
+//            System.out.println("ENTRA  " + urlString);
+//            URL url = new URL(urlString);
+//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//            connection.setRequestProperty("User-Agent", "");
+//            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//
+//            connection.setRequestMethod("POST");
+//            connection.setDoInput(true);
+//            connection.setDoOutput(true);
+//
+//            // Write parameters to the request
+//            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+//                wr.write(token.getBytes(StandardCharsets.UTF_8));
+//            }
+//
+//            connection.connect();
+//
+//            if (connection != null) {
+//                // read Stream
+//                InputStream inputStream = connection.getInputStream();
+//
+//                // parse the response into UserModel object
+//
+//                result = parseDataResult(inputStream);
+//
+//                //
+//                inputStream.close();
+//
+//            }
+//
+//        } catch (Exception e) {
+//            Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+//            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+//        }
+//
+////        return user;
+//        return result;
+//    }
 
 
 }
