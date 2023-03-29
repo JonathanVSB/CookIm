@@ -5,20 +5,20 @@ import java.io.Serializable;
 public class DataResult implements Serializable {
 
     String result;
-    String result2;
+
     Object data;
+
 
 
     //Constructor
 
-    public DataResult(String result, String result2) {
+    public DataResult(String result) {
         this.result = result;
-        this.result2 = result2;
+
     }
 
-    public DataResult(String result, String result2, Object data) {
+    public DataResult(String result, Object data) {
         this.result = result;
-        this.result2 = result2;
         this.data = data;
     }
 
@@ -33,13 +33,7 @@ public class DataResult implements Serializable {
         this.result = result;
     }
 
-    public String getResult2() {
-        return result2;
-    }
 
-    public void setResult2(String result2) {
-        this.result2 = result2;
-    }
 
     public Object getData() {
         return data;

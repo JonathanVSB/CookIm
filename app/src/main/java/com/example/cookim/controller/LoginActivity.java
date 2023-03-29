@@ -1,5 +1,6 @@
 package com.example.cookim.controller;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,14 +12,19 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.cookim.databinding.ActivityLoginBinding;
+import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.user.LoginModel;
 import com.example.cookim.model.user.UserModel;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,6 +66,8 @@ public class LoginActivity extends AppCompatActivity {
         String username = binding.etUsername.getText().toString();
         binding.tvSignin.setOnClickListener(listener);
         initElements();
+
+
 
 
     }
@@ -151,8 +159,11 @@ public class LoginActivity extends AppCompatActivity {
                     //Background work here
                     //System.out.println("ENTRA");
 //                    UserModel userModel = readResponse(url, parametros);
-                    String token = readResponse(url, parametros);
-                    if (!token.equals("null")/*userModel != null*/) {
+                    //String token = readResponse(url, parametros);
+                    DataResult result = readResponse(url, parametros);
+                    if (result.getResult().equals("1")) {
+                        String token = result.getData().toString();
+                        saveToken(result.getData().toString());
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -167,7 +178,8 @@ public class LoginActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                binding.errormsg.setText("Username or password are wrong");
+                                binding.errormsg.setText(result.getResult().toString());
+                                // binding.errormsg.setText("Username or password are wrong");
                                 binding.errormsg.setVisibility(View.VISIBLE);
                             }
                         });
@@ -189,8 +201,9 @@ public class LoginActivity extends AppCompatActivity {
      * @param urlString  : Url to read File
      * @param parameters : Parameters for the HTTP POST request
      */
-    private String readResponse(String urlString, String parameters) {
-        String token = "null";
+    private DataResult readResponse(String urlString, String parameters) {
+
+        DataResult result = null;
         int i = 0;
         try {
             //HTTP request
@@ -216,7 +229,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 // parse the response into UserModel object
 
-                token = parseToken(inputStream);
+                result = parseResponse(inputStream);
 
                 //
                 inputStream.close();
@@ -229,7 +242,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 //        return user;
-        return token;
+        return result;
     }
 
     /**
@@ -287,12 +300,14 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Reads the token received from server and saves it String variable
+     *
      * @param inputStream
      * @return
      */
-    private String parseToken(InputStream inputStream) {
+    private DataResult parseResponse(InputStream inputStream) {
 
         String jsonString = null;
+        DataResult result = null;
 
         try {
             // Initializes a BufferedReader object to read the InputStream
@@ -311,7 +326,11 @@ public class LoginActivity extends AppCompatActivity {
             bufferedReader.close();
 
             // Converts the StringBuilder object to a string and modifies it
-            jsonString = stringBuilder.toString();
+            //jsonString = stringBuilder.toString();
+
+            JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+            //boolean response = jsonObject.get("result").getAsBoolean();
+
 
             // Debugging statement
             System.out.println("Respuesta JSON modificada: " + jsonString);
@@ -319,9 +338,19 @@ public class LoginActivity extends AppCompatActivity {
             // Converts the StringBuilder object to a string and modifies it
 
             // Closes the BufferedReader
-            bufferedReader.close();
+//
+//            jsonString = jsonString.replace("\"", "");
 
-            jsonString = jsonString.replace("\"", "");
+            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
+
+                Gson gson = new Gson();
+
+                result = gson.fromJson(jsonString, DataResult.class);
+            } else {
+                // Debugging statement
+                System.out.println("La respuesta no es un objeto JSON válido");
+            }
+
 
             // Debugging statement
             System.out.println("Respuesta JSON: " + jsonString);
@@ -332,8 +361,71 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Returns the JSON string or null if there was an error
-        return jsonString;
+        return result;
     }
+
+    /**
+     * saves the token received by the server in a file only accessible from the application.
+     * @param token
+     */
+    private void saveToken(String token) {
+        // Gets an instance of the application context
+        Context context = getApplicationContext();
+
+        // Open the file in write mode and create the FileOutputStream object
+        FileOutputStream outputStream;
+        try {
+            outputStream = context.openFileOutput("token.txt", Context.MODE_PRIVATE);
+
+            // Write the token string to the file
+            outputStream.write(token.getBytes());
+
+            // Closes the FileOutputStream object to release the resources
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Open the file where token is contained and reads the data of it.
+     * If find any data return token string to validate it.
+     * else return null
+     * @return
+     */
+    private String readToken() {
+        // Gets an instance of the application context
+        Context context = getApplicationContext();
+
+        // Open the file in write mode and create the FileOutputStream object
+        FileInputStream inputStream;
+        try {
+            inputStream = context.openFileInput("token.txt");
+
+
+            //Reads the token data from file
+            StringBuilder stringBuilder = new StringBuilder();
+            int c;
+            while ((c = inputStream.read()) != -1) {
+                stringBuilder.append((char) c);
+            }
+            String token = stringBuilder.toString();
+
+
+            //Close the FileInputStream Object
+            inputStream.close();
+
+            // returns token
+            return token;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        // if file is empty, returns null
+        return null;
+    }
+
 }
 
 

@@ -89,7 +89,7 @@ public class HomePage extends Activity {
                             @Override
                             public void run() {
                                 // Post Execute
-                                if (result.getResult2() != null) {
+                                if (result.getData() != null) {
 //                                    executor.execute(() -> {
 //                                        try {
 //                                            File proFile = new File(getFilesDir(), "user3.jpg");
@@ -109,10 +109,10 @@ public class HomePage extends Activity {
 //                                        }
 //                                    });
 
-                                        String profileUrl = "http://91.107.198.64:7070" + result.getResult2();
-                                        Glide.with(HomePage.this)
-                                                .load(profileUrl)
-                                                .into(binding.profileImage);
+//                                        String profileUrl = "http://91.107.198.64:7070" + result.getResult2();
+//                                        Glide.with(HomePage.this)
+//                                                .load(profileUrl)
+//                                                .into(binding.profileImage);
                                 } else {
                                     binding.profileImage.setImageResource(R.drawable.guest_profile);
                                 }
