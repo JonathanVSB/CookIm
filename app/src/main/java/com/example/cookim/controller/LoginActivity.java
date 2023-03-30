@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     Switch swLogOption;
 
     private final String URL = "http://91.107.198.64:7070/";
-    private final String URL2 = "http://192.168.127.102:7070/";
+    private final String URL2 = "http://192.168.127.102:7070/Cookim/";
     ExecutorService executor;
     Handler handler;
 
@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
-        String url = URL + "login";
+        String url = URL2 + "login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
         String parametros = "username=" + username + "&password=" + password;
@@ -237,7 +237,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         } catch (Exception e) {
-            Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
             System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
         }
 
@@ -325,44 +325,29 @@ public class LoginActivity extends AppCompatActivity {
             // Closes the BufferedReader
             bufferedReader.close();
 
-            // Converts the StringBuilder object to a string and modifies it
-            //jsonString = stringBuilder.toString();
-
-            JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
-            //boolean response = jsonObject.get("result").getAsBoolean();
-
+            // Converts the StringBuilder object to a string
+            jsonString = stringBuilder.toString();
 
             // Debugging statement
-            System.out.println("Respuesta JSON modificada: " + jsonString);
-
-            // Converts the StringBuilder object to a string and modifies it
-
-            // Closes the BufferedReader
-//
-//            jsonString = jsonString.replace("\"", "");
+            System.out.println("Respuesta JSON: " + jsonString);
 
             if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
-
                 Gson gson = new Gson();
-
                 result = gson.fromJson(jsonString, DataResult.class);
             } else {
                 // Debugging statement
                 System.out.println("La respuesta no es un objeto JSON válido");
             }
 
-
-            // Debugging statement
-            System.out.println("Respuesta JSON: " + jsonString);
-
         } catch (IOException e) {
             //Debugging statement
             System.out.println("Error al leer la respuesta: " + e.toString());
         }
 
-        // Returns the JSON string or null if there was an error
+        // Returns the DataResult object or null if there was an error
         return result;
     }
+
 
     /**
      * saves the token received by the server in a file only accessible from the application.

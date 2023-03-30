@@ -74,7 +74,7 @@ public class HomePage extends Activity {
     }
 
     private void loadHomePage(String a) {
-        String url = URL + "perfil";
+        String url = URL2 + "perfil";
         String token = "token=" + a;
 
 
