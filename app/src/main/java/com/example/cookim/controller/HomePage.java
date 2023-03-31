@@ -1,6 +1,7 @@
 package com.example.cookim.controller;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -27,6 +28,7 @@ import com.google.gson.JsonSyntaxException;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,8 +48,8 @@ public class HomePage extends Activity {
 
     private ActivityHomeBinding binding;
     List<Recipe> recipes;
-    private final String URL = "http://91.107.198.64:7070/";
-    private final String URL2 = "http://192.168.127.102:7070/";
+    private final String URL = "http://91.107.198.64:7070/Cookim/";
+    private final String URL2 = "http://192.168.127.102:7070/Cookim/";
 
     Executor executor = Executors.newSingleThreadExecutor();
     Handler handler;
@@ -65,8 +67,8 @@ public class HomePage extends Activity {
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-//        user = (UserModel) getIntent().getSerializableExtra("userModel");
-        String token = (String) getIntent().getSerializableExtra("token");
+
+        String token = readToken();
 
         loadHomePage(token);
 
@@ -74,7 +76,9 @@ public class HomePage extends Activity {
     }
 
     private void loadHomePage(String a) {
-        String url = URL2 + "perfil";
+        String data1 = "my-profile";
+        String data2 = "home_page";
+        String url = URL2;
         String token = "token=" + a;
 
 
@@ -82,14 +86,15 @@ public class HomePage extends Activity {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    DataResult result = readResponse(url, token);
-                    if (result != null) {
-                        binding.tvUsername.setText(result.getResult());
+                    user = readUserResponse((url + data1), token);
+                    DataResult result = readResponse((url + data2), token);
+                    if (user != null) {
+                        binding.tvUsername.setText(user.getUsername());
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 // Post Execute
-                                if (result.getData() != null) {
+                                if (user != null) {
 //                                    executor.execute(() -> {
 //                                        try {
 //                                            File proFile = new File(getFilesDir(), "user3.jpg");
@@ -129,6 +134,7 @@ public class HomePage extends Activity {
 
     /**
      * Do petition
+     *
      * @param urlString
      * @param token
      * @return
@@ -140,7 +146,7 @@ public class HomePage extends Activity {
             // HTTPS request
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
@@ -171,19 +177,13 @@ public class HomePage extends Activity {
             }
 
         } catch (Exception e) {
-            Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+            // Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
             System.out.println("PETA EN ESTA LINEA: " + e.toString());
         }
 
         return result;
     }
 
-    /**
-     * Reads the Json answer of the server and transforms it in DataResult object
-     *
-     * @param inputStream
-     * @return
-     */
     private DataResult parseDataResult(InputStream inputStream) {
         DataResult result = null;
 
@@ -202,10 +202,7 @@ public class HomePage extends Activity {
 
             // Closes the BufferedReader
             bufferedReader.close();
-            // Converts the StringBuilder object to a string and modifies it
-            //String jsonString = stringBuilder.toString();
 
-//            jsonString = jsonString.replace("\"", "");
             // Removes the quotes around the braces
             String jsonString = stringBuilder.toString().replaceAll("\"\\{", "{").replaceAll("\\}\"", "}");
 
@@ -219,6 +216,122 @@ public class HomePage extends Activity {
                 Gson gson = new Gson();
 
                 result = gson.fromJson(jsonString, DataResult.class);
+            } else {
+                // Debugging statement
+                System.out.println("La respuesta no es un objeto JSON válido");
+            }
+        } catch (IOException e) {
+            //Debugging statement
+            System.out.println("Error al leer la respuesta: " + e.toString());
+        } catch (JsonSyntaxException e) {
+            // Debugging statement
+            System.out.println("Error al analizar la respuesta JSON: " + e.toString());
+        }
+
+        // Returns the UserModel object
+        return result;
+    }
+
+    private UserModel readUserResponse(String urlString, String token) {
+        UserModel result = null;
+        try {
+            // HTTPS request
+            System.out.println("ENTRA  " + urlString);
+            URL url = new URL(urlString);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Set authorization header with token
+            String authHeader = "Bearer " + token;
+            connection.setRequestProperty("Authorization", authHeader);
+
+            // Set content type to form url encoded
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            // Write parameters to the request body
+            String requestBody = "";
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            }
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into DataResult object
+                result = parseUserModel(inputStream);
+
+                inputStream.close();
+            }
+
+        } catch (Exception e) {
+            //  Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+        }
+
+        return result;
+    }
+
+    /**
+     * Reads the Json answer of the server and transforms it in DataResult object
+     *
+     * @param inputStream
+     * @return
+     */
+
+
+    private UserModel parseUserModel(InputStream inputStream) {
+        UserModel result = null;
+        DataResult data = null;
+
+        try {
+            // Initializes a BufferedReader object to read the InputStream
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            // Initializes a StringBuilder object to hold the JSON-formatted string
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Reads each line of the InputStream and appends it to the StringBuilder object
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                stringBuilder.append(linea);
+            }
+
+            // Closes the BufferedReader
+            bufferedReader.close();
+
+            // Removes the quotes around the braces
+            String jsonString = stringBuilder.toString().replaceAll("\"\\{", "{").replaceAll("\\}\"", "}");
+
+
+            // Debugging statement
+            System.out.println("Respuesta JSON modificada: " + jsonString);
+
+            // Checks if the modified string starts and ends with "{" and "}"
+            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
+
+                JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+
+                if (jsonObject.has("data")) {
+                    JsonObject dataObject = jsonObject.getAsJsonObject("data");
+                    result = new UserModel();
+                    result.setId(dataObject.get("id").getAsLong());
+                    result.setUsername(dataObject.get("username").getAsString());
+                    result.setFull_name(dataObject.get("full_name").getAsString());
+                    result.setEmail(dataObject.get("email").getAsString());
+                    result.setPhone(dataObject.get("phone").getAsString());
+                    result.setPath_img(dataObject.get("path_img").getAsString());
+                    result.setDescription(dataObject.get("description").getAsString());
+                    result.setId_rol(dataObject.get("id_rol").getAsLong());
+                } else {
+                    // Debugging statement
+                    System.out.println("La respuesta indica un error");
+                }
+
             } else {
                 // Debugging statement
                 System.out.println("La respuesta no es un objeto JSON válido");
@@ -298,48 +411,46 @@ public class HomePage extends Activity {
 
     }
 
-    //    private DataResult readResponse(String urlString, String token) {
-//        DataResult result = null;
-//        try {
-//            //HTTP request
-//            System.out.println("ENTRA  " + urlString);
-//            URL url = new URL(urlString);
-//            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//            connection.setRequestProperty("User-Agent", "");
-//            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//
-//            connection.setRequestMethod("POST");
-//            connection.setDoInput(true);
-//            connection.setDoOutput(true);
-//
-//            // Write parameters to the request
-//            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-//                wr.write(token.getBytes(StandardCharsets.UTF_8));
-//            }
-//
-//            connection.connect();
-//
-//            if (connection != null) {
-//                // read Stream
-//                InputStream inputStream = connection.getInputStream();
-//
-//                // parse the response into UserModel object
-//
-//                result = parseDataResult(inputStream);
-//
-//                //
-//                inputStream.close();
-//
-//            }
-//
-//        } catch (Exception e) {
-//            Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-//            System.out.println("PETA EN ESTA LINEA: " + e.toString());
-//        }
-//
-////        return user;
-//        return result;
-//    }
+
+    /**
+     * Read an internal file read the token stored there
+     *
+     * @return the token or null
+     */
+    private String readToken() {
+        // Gets an instance of the application context
+        Context context = getApplicationContext();
+
+        // Open the file in write mode and create the FileOutputStream object
+        FileInputStream inputStream;
+        try {
+            inputStream = context.openFileInput("token.txt");
+
+
+            //Reads the token data from file
+            StringBuilder stringBuilder = new StringBuilder();
+            int c;
+            while ((c = inputStream.read()) != -1) {
+                stringBuilder.append((char) c);
+            }
+            String token = stringBuilder.toString();
+
+
+            //Close the FileInputStream Object
+            inputStream.close();
+
+            // returns token
+            return token;
+        } catch (Exception e) {
+            //e.printStackTrace();
+            System.out.println("Error al leer la respuesta: " + e.toString());
+
+        }
+
+
+        // if file is empty, returns null
+        return null;
+    }
 
 
 }

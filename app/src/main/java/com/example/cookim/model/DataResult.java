@@ -1,5 +1,8 @@
 package com.example.cookim.model;
 
+import com.example.cookim.model.user.UserModel;
+
+import java.io.IOException;
 import java.io.Serializable;
 
 public class DataResult implements Serializable {
@@ -7,7 +10,6 @@ public class DataResult implements Serializable {
     String result;
 
     Object data;
-
 
 
     //Constructor
@@ -34,7 +36,6 @@ public class DataResult implements Serializable {
     }
 
 
-
     public Object getData() {
         return data;
     }
@@ -42,4 +43,10 @@ public class DataResult implements Serializable {
     public void setData(Object data) {
         this.data = data;
     }
+
+
+    //METHODS
+
+
 }
+

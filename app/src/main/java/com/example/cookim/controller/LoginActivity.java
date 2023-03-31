@@ -34,6 +34,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
@@ -42,14 +44,12 @@ public class LoginActivity extends AppCompatActivity {
     View.OnClickListener listener;
     Switch swLogOption;
 
-    private final String URL = "http://91.107.198.64:7070/";
+    private final String URL = "http://91.107.198.64:7070/Cookim/";
     private final String URL2 = "http://192.168.127.102:7070/Cookim/";
     ExecutorService executor;
     Handler handler;
 
     Model model;
-    boolean validate = false;
-    Controller controller = new Controller();
 
 
     @Override
@@ -75,10 +75,10 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Displays the home page of the app and senda the user object to next activity
      */
-    private void showHomePage(String token) {
+    private void showHomePage() {
         Intent intent = new Intent(this, HomePage.class);
 
-        intent.putExtra("token", token);
+
 
         startActivity(intent);
     }
@@ -169,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
                             public void run() {
                                 // Post Execute
 
-                                showHomePage(token);
+                                showHomePage();
 
                             }
                         });
@@ -209,7 +209,7 @@ public class LoginActivity extends AppCompatActivity {
             //HTTP request
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestMethod("POST");
@@ -251,52 +251,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param inputStream
      * @return user
      */
-    private UserModel parseUser(InputStream inputStream) {
-        UserModel user = null;
 
-        try {
-            // Initializes a BufferedReader object to read the InputStream
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-            // Initializes a StringBuilder object to hold the JSON-formatted string
-            StringBuilder stringBuilder = new StringBuilder();
-
-            // Reads each line of the InputStream and appends it to the StringBuilder object
-            String linea;
-            while ((linea = bufferedReader.readLine()) != null) {
-                stringBuilder.append(linea);
-            }
-
-            // Closes the BufferedReader
-            bufferedReader.close();
-
-            // Converts the StringBuilder object to a string and modifies it
-            String jsonString = stringBuilder.toString();
-
-            // Debugging statement
-            System.out.println("Respuesta JSON modificada: " + jsonString);
-
-            // Checks if the modified string starts and ends with "{" and "}"
-            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
-
-                Gson gson = new Gson();
-
-                user = gson.fromJson(jsonString, UserModel.class);
-            } else {
-                // Debugging statement
-                System.out.println("La respuesta no es un objeto JSON válido");
-            }
-        } catch (IOException e) {
-            //Debugging statement
-            System.out.println("Error al leer la respuesta: " + e.toString());
-        } catch (JsonSyntaxException e) {
-            // Debugging statement
-            System.out.println("Error al analizar la respuesta JSON: " + e.toString());
-        }
-
-        // Returns the UserModel object
-        return user;
-    }
 
     /**
      * Reads the token received from server and saves it String variable
@@ -370,45 +325,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Open the file where token is contained and reads the data of it.
-     * If find any data return token string to validate it.
-     * else return null
-     * @return
-     */
-    private String readToken() {
-        // Gets an instance of the application context
-        Context context = getApplicationContext();
-
-        // Open the file in write mode and create the FileOutputStream object
-        FileInputStream inputStream;
-        try {
-            inputStream = context.openFileInput("token.txt");
-
-
-            //Reads the token data from file
-            StringBuilder stringBuilder = new StringBuilder();
-            int c;
-            while ((c = inputStream.read()) != -1) {
-                stringBuilder.append((char) c);
-            }
-            String token = stringBuilder.toString();
-
-
-            //Close the FileInputStream Object
-            inputStream.close();
-
-            // returns token
-            return token;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        // if file is empty, returns null
-        return null;
     }
 
 }
