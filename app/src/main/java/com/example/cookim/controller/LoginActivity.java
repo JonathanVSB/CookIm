@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     Switch swLogOption;
 
     private final String URL = "http://91.107.198.64:7070/Cookim/";
-    private final String URL2 = "http://192.168.127.102:7070/Cookim/";
+    private final String URL2 = "http://192.168.1.55:7070/Cookim/";
     ExecutorService executor;
     Handler handler;
 
@@ -209,7 +209,7 @@ public class LoginActivity extends AppCompatActivity {
             //HTTP request
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestMethod("POST");
