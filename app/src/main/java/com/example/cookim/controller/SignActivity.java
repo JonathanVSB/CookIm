@@ -23,7 +23,7 @@ public class SignActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getSupportActionBar().hide();
         binding = ActivitySigninBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 

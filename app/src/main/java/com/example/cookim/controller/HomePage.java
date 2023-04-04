@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.bumptech.glide.Glide;
 import com.example.cookim.R;
 import com.example.cookim.databinding.ActivityHomeBinding;
@@ -21,6 +23,8 @@ import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.LoginModel;
 import com.example.cookim.model.user.UserModel;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -60,6 +64,7 @@ public class HomePage extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         handler = new Handler(Looper.getMainLooper());
 
 
@@ -79,15 +84,26 @@ public class HomePage extends Activity {
         String data1 = "my-profile";
         String data2 = "home_page";
         String url = URL2;
-        String token = "token=" + a;
-
+        String token = /*"token=" +*/ a;
 
         try {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
                     user = readUserResponse((url + data1), token);
-                    DataResult result = readResponse((url + data2), token);
+                    List<Recipe> recipes = loadRecipes();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Crear un nuevo adaptador para cada objeto Recipe en la lista
+                            for (Recipe recipe : recipes) {
+                                RecipeAdapter adapter = new RecipeAdapter(recipe);
+                                binding.recommendationsRv.setAdapter(adapter);
+                                binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomePage.this));
+                            }
+                        }
+                    });
+                    //DataResult result = readResponse((url + data2), token);
                     if (user != null) {
                         binding.tvUsername.setText(user.getUsername());
                         handler.post(new Runnable() {
@@ -131,6 +147,8 @@ public class HomePage extends Activity {
         }
 
     }
+
+
 
     /**
      * Do petition
@@ -238,7 +256,7 @@ public class HomePage extends Activity {
             // HTTPS request
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
@@ -351,10 +369,9 @@ public class HomePage extends Activity {
     /**
      * Creates HTTP petition, to get the data of all recipes
      */
-    private Recipe[] loadRecipes() {
-
-        Data d = null;
-        String petition = URL2 + "principal";
+    private List<Recipe> loadRecipes() {
+        List<Recipe> recipes = new ArrayList<>();
+        String petition = URL2 + "home_page";
         try {
             //Generem l'objecte URL que fa servir HttpURLConnection
             URL url = new URL(petition);
@@ -368,11 +385,15 @@ public class HomePage extends Activity {
             conn.connect();
 
             String response = getReponseBody(conn);
-            JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-            d = new Gson().fromJson(jsonObject.get("data"), Data.class);
+            JsonArray jsonArray = new JsonParser().parse(response).getAsJsonArray();
+            Gson gson = new Gson();
+            for (JsonElement element : jsonArray) {
+                Recipe recipe = gson.fromJson(element, Recipe.class);
+                recipes.add(recipe);
+            }
 
             //Devolvemos Recipes
-            return d.results;
+            return recipes;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -380,8 +401,9 @@ public class HomePage extends Activity {
             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show();
 
         }
-        return d.results;
+        return recipes;
     }
+
 
     /**
      * gets the body response of HTTP request and returnsit as String
@@ -451,6 +473,7 @@ public class HomePage extends Activity {
         // if file is empty, returns null
         return null;
     }
+
 
 
 }

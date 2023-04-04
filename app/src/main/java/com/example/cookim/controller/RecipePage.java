@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.cookim.R;
-import com.example.cookim.databinding.ActivityLoginBinding;
 import com.example.cookim.databinding.ItemRecipeContentBinding;
 import com.example.cookim.model.recipe.Recipe;
-import com.example.cookim.model.user.LoginModel;
 
 public class RecipePage extends Activity {
 
@@ -26,9 +24,11 @@ public class RecipePage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.item_recipe_content);
         binding = ItemRecipeContentBinding.inflate(getLayoutInflater());
+        binding.btLike.setOnClickListener(listener);
+        initElements();
 
         binding.nameRecipe.setText(recipe.getName());
-        binding.tvLikes.setText(recipe.getLike_number());
+        binding.tvLikes.setText(recipe.getLikes());
         press = false;
 
 
@@ -65,5 +65,6 @@ public class RecipePage extends Activity {
             press = false;
 
         }
+
     }
 }

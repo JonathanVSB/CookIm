@@ -9,9 +9,9 @@ public class Recipe {
     public int user_id;
     public String name;
     public String description;
-    public String path;
-    public float rating;
-    public int like_number;
+    public String path_img;
+    public double rating;
+    public int likes;
     public List<Step> recipe_steps;
     public List<Comment> comments;
     public List<Ingredient> ingredients;
@@ -28,15 +28,18 @@ public class Recipe {
         this.comments = new ArrayList<>();
     }*/
 
-    /*public Recipe(int user_id, String name, String description, String path, List<Step> recipe_steps, List<Comment> comments, List<Ingredient> ingredients) {
+    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes) {
+        this.id = id;
         this.user_id = user_id;
         this.name = name;
         this.description = description;
-        this.path = path;
+        this.path_img = path_img;
+        this.rating = rating;
+        this.likes = likes;
         this.recipe_steps = new ArrayList<>();
         this.comments = new ArrayList<>();
         this.ingredients = new ArrayList<>();
-    }*/
+    }
 
     //GETTERS AND SETTERS
 
@@ -73,28 +76,28 @@ public class Recipe {
         this.description = description;
     }
 
-    public String getPath() {
-        return path;
+    public String getPath_img() {
+        return path_img;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setPath_img(String path_img) {
+        this.path_img = path_img;
     }
 
-    public float getRating() {
+    public double getRating() {
         return rating;
     }
 
-    public void setRating(float rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 
-    public int getLike_number() {
-        return like_number;
+    public int getLikes() {
+        return likes;
     }
 
-    public void setLike_number(int like_number) {
-        this.like_number = like_number;
+    public void setLikes(int likes) {
+        this.likes = likes;
     }
 
     public List<Step> getRecipe_steps() {

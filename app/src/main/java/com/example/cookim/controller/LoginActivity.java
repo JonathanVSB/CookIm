@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.Window;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -55,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
 
         executor = Executors.newSingleThreadExecutor();
