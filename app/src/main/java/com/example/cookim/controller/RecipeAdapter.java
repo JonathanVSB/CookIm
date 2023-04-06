@@ -1,5 +1,6 @@
 package com.example.cookim.controller;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         binding.btLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pageActions();
+                pageActions(v);
+            }
+        });
+        binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pageActions(v);
             }
         });
     }
@@ -64,19 +71,39 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         }
     }
 
-    private void pageActions() {
-        if (!press) {
-            binding.btLike.setImageResource(R.drawable.selectedheart);
-            int likes = Integer.parseInt(binding.tvLikes.getText().toString());
-            likes++;
-            binding.tvLikes.setText(Integer.toString(likes));
-            press = true;
-        } else {
-            binding.btLike.setImageResource(R.drawable.nonselectedheart);
-            int likes = Integer.parseInt(binding.tvLikes.getText().toString());
-            likes--;
-            binding.tvLikes.setText(Integer.toString(likes));
-            press = false;
+
+    private void pageActions(View v) {
+
+        if (v.getId() == binding.btLike.getId()) {
+            if (!press) {
+                binding.btLike.setImageResource(R.drawable.selectedheart);
+                int likes = Integer.parseInt(binding.tvLikes.getText().toString());
+                likes++;
+                binding.tvLikes.setText(Integer.toString(likes));
+                press = true;
+            } else {
+                binding.btLike.setImageResource(R.drawable.nonselectedheart);
+                int likes = Integer.parseInt(binding.tvLikes.getText().toString());
+                likes--;
+                binding.tvLikes.setText(Integer.toString(likes));
+                press = false;
+            }
+
+        } else if (v.getId() == binding.viewRecipe.getId()) {
+            //displayRecipeStepsLayout(getAdapterPosition(), itemView.getContext());
+
         }
     }
+
+    /**
+     * Displays the view of the recipe and the steps necessaries to cook it
+     */
+    private void displayRecipeStepsLayout(int id/*Context context*/) {
+       /* Intent intent = new Intent(itemView.getContext(), RecipeStepsActivity.class);
+        intent.putExtra("recipe_id", id);
+        itemView.getContext().startActivity(intent);*/
+    }
+
+
+
 }

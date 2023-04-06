@@ -32,17 +32,46 @@
             />
     </androidx.appcompat.widget.Toolbar>
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/img01"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/view_recipe"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/space1"
-        app:layout_constraintStart_toStartOf="@id/space1"
-        android:src="@drawable/tostadas_de_pollo_con_lechuga"
-        android:foreground="@drawable/bg_alternative"
-        android:scaleType="fitXY"
+        app:layout_constraintTop_toBottomOf="@id/space1">
 
-        />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/img01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/view_recipe"
+            app:layout_constraintStart_toStartOf="@id/view_recipe"
+            android:src="@drawable/tostadas_de_pollo_con_lechuga"
+            android:foreground="@drawable/bg_alternative"
+            android:scaleType="fitXY"
+
+            />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/name_recipe"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Tostada de pollo con lechuga"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="40dp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="171dp"
+            app:layout_constraintStart_toStartOf="@id/img01"
+            app:layout_constraintEnd_toEndOf="@id/img01"
+            app:layout_constraintTop_toTopOf="@id/img01"
+            android:layout_marginTop="110dp"
+            app:shapeAppearanceOverlay="@style/RoundedImageView"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/user_content"
@@ -52,7 +81,7 @@
         android:layout_marginEnd="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img01"
+        app:layout_constraintTop_toBottomOf="@+id/view_recipe"
         >
 
 
@@ -109,23 +138,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/name_recipe"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Tostada de pollo con lechuga"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="40dp"
-        android:textStyle="bold"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="171dp"
-        app:layout_constraintStart_toStartOf="@id/img01"
-        app:layout_constraintEnd_toEndOf="@id/img01"
-        app:layout_constraintTop_toTopOf="@id/img01"
-        android:layout_marginTop="110dp"
-        app:shapeAppearanceOverlay="@style/RoundedImageView"
-        />
 
     <View
         android:layout_width="match_parent"
