@@ -14,14 +14,16 @@ import com.example.cookim.R;
 import com.example.cookim.databinding.ItemRecipeContentBinding;
 import com.example.cookim.model.recipe.Recipe;
 
+import java.util.List;
+
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
-    private Recipe recipe;
+    private List<Recipe> recipeList;
     private ItemRecipeContentBinding binding;
     private View.OnClickListener listener;
     private boolean press;
 
-    public RecipeAdapter(Recipe recipe) {
-        this.recipe = recipe;
+    public RecipeAdapter(List<Recipe> recipeList) {
+        this.recipeList = recipeList;
     }
 
     @NonNull
@@ -34,6 +36,57 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
+        for (Recipe recipe : recipeList) {
+            holder.tvNameRecipe.setText(recipe.getName());
+            //holder.ivRecipeImage.setImageResource(recipe.getPath());
+            holder.tvLikes.setText(String.valueOf(recipe.getLikes()));
+        }
+        binding.btLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pageActions(v);
+            }
+        });
+        binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pageActions(v);
+            }
+        });
+    }
+
+    public void onBindViwHolder(@NonNull RecipeViewHolder holder, int position) {
+        Recipe recipe = recipeList.get(position);
+        holder.tvNameRecipe.setText(recipe.getName());
+        holder.tvLikes.setText(String.valueOf(recipe.getLikes()));
+        binding.btLike.setImageResource(press ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+        binding.btLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(press){
+                    press= false;
+                    recipe.setLikes(press ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
+                    holder.tvLikes.setText(String.valueOf(recipe.getLikes()));
+                    binding.btLike.setImageResource(press ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+                }else{
+                    press= true;
+                    recipe.setLikes(press ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
+                    holder.tvLikes.setText(String.valueOf(recipe.getLikes()));
+                    binding.btLike.setImageResource(press ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+                }
+
+            }
+        });
+        binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pageActions(v);
+            }
+        });
+    }
+
+    public void onBinViewHolder(@NonNull RecipeViewHolder holder, int position) {
+        Recipe recipe = recipeList.get(position);
         holder.tvNameRecipe.setText(recipe.getName());
         //holder.ivRecipeImage.setImageResource(recipe.getPath());
         holder.tvLikes.setText(String.valueOf(recipe.getLikes()));
@@ -44,6 +97,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 pageActions(v);
             }
         });
+
         binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -92,15 +92,15 @@ public class HomePage extends Activity {
                 public void run() {
                     user = readUserResponse((url + data1), token);
                     List<Recipe> recipes = loadRecipes();
+                    List<RecipeAdapter> adapters = new ArrayList<>();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             // Crear un nuevo adaptador para cada objeto Recipe en la lista
-                            for (Recipe recipe : recipes) {
-                                RecipeAdapter adapter = new RecipeAdapter(recipe);
-                                binding.recommendationsRv.setAdapter(adapter);
-                                binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomePage.this));
-                            }
+                            RecipeAdapter adapter = new RecipeAdapter(recipes);
+                            binding.recommendationsRv.setAdapter(adapter);
+                            binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomePage.this));
+
                         }
                     });
                     //DataResult result = readResponse((url + data2), token);
