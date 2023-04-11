@@ -7,13 +7,7 @@
     android:layout_marginRight="15dp"
     android:layout_marginLeft="15dp">
 
-    <Space
-        android:id="@+id/space1"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.appcompat.widget.Toolbar
+   <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -36,7 +30,7 @@
         android:id="@+id/view_recipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/space1">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/img01"
@@ -72,40 +66,36 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/user_content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="363dp"
+        android:layout_height="63dp"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view_recipe"
-        >
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view_recipe">
 
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/btLike"
-            android:layout_marginLeft="10dp"
             android:layout_width="30dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:src="@drawable/nonselectedheart"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvLikes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:fontFamily="@font/ubuntumedium"
             android:text="0"
             android:textColor="@color/black"
             android:textSize="20dp"
             android:textStyle="bold"
-            android:fontFamily="@font/ubuntumedium"
             app:layout_constraintBottom_toBottomOf="@id/btLike"
             app:layout_constraintStart_toEndOf="@id/btLike"
             app:layout_constraintTop_toTopOf="parent" />
@@ -114,26 +104,24 @@
             android:id="@+id/btComment"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginLeft="160dp"
             android:elevation="5dp"
             android:src="@drawable/comment"
-            app:layout_constraintStart_toEndOf="@id/tvLikes"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvLikes"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginLeft="160dp"
             tools:layout_editor_absoluteX="251dp" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/btSave"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:src="@drawable/oven"
-            app:layout_constraintStart_toEndOf="@id/btComment"
-            android:elevation="5dp"
-            app:layout_constraintTop_toTopOf="@id/btComment"
             android:layout_marginLeft="20dp"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-
+            android:elevation="5dp"
+            android:src="@drawable/oven"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btComment"
+            app:layout_constraintTop_toTopOf="@id/btComment" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

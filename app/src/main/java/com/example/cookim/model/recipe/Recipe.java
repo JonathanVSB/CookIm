@@ -16,6 +16,11 @@ public class Recipe {
     public List<Comment> comments;
     public List<Ingredient> ingredients;
 
+    private boolean liked;
+
+
+
+
 
 
 
@@ -122,5 +127,14 @@ public class Recipe {
 
     public void setIngredients(List<Ingredient> ingredients) {
         this.ingredients = ingredients;
+    }
+
+    //NEW USAGE
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
     }
 }
