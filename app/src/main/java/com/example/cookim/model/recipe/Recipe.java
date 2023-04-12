@@ -7,11 +7,14 @@ public class Recipe {
 
     public int id;
     public int user_id;
+
     public String name;
     public String description;
     public String path_img;
     public double rating;
     public int likes;
+
+    public String user_name;
     public List<Step> recipe_steps;
     public List<Comment> comments;
     public List<Ingredient> ingredients;
@@ -32,6 +35,20 @@ public class Recipe {
         this.recipe_steps = new ArrayList<>();
         this.comments = new ArrayList<>();
     }*/
+
+    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, String user_name) {
+        this.id = id;
+        this.user_id = user_id;
+        this.name = name;
+        this.description = description;
+        this.path_img = path_img;
+        this.rating = rating;
+        this.likes = likes;
+        this.user_name = user_name;
+        this.recipe_steps = new ArrayList<>();
+        this.comments = new ArrayList<>();
+        this.ingredients = new ArrayList<>();
+    }
 
     public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes) {
         this.id = id;
@@ -129,10 +146,20 @@ public class Recipe {
         this.ingredients = ingredients;
     }
 
+    public String getUsername() {
+        return user_name;
+    }
+
+    public void setUsername(String username) {
+        this.user_name = username;
+    }
+
     //NEW USAGE
     public boolean isLiked() {
         return liked;
     }
+
+
 
     public void setLiked(boolean liked) {
         this.liked = liked;

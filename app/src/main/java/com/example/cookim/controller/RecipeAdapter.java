@@ -44,6 +44,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         Recipe recipe = recipeList.get(position);
         holder.binding.nameRecipe.setText(recipe.getName());
         holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
+        holder.binding.tvPoster.setText(recipe.getUsername());
         holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
 
         holder.binding.btLike.setOnClickListener(new View.OnClickListener() {

@@ -23,6 +23,19 @@ public class UserModel implements Serializable {
     List<Recipe> favorites_recipes;
 
     //CONSTRUCTORS
+
+
+    public UserModel(String username, String password, String full_name, String email, String phone, long id_rol) {
+        this.username = username;
+        this.password = password;
+        this.full_name = full_name;
+        this.email = email;
+        this.phone = phone;
+        this.id_rol = id_rol;
+    }
+
+
+
     public UserModel(long id, String username, String pass, String full_name, String email, String tel, List<UserModel> followers, List<UserModel> followed, List<Recipe> favorites_recipes, long rol, String token) {
         this.id = id;
         this.username = username;

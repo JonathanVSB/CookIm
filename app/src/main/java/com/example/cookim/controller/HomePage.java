@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -53,6 +54,10 @@ public class HomePage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
+
         handler = new Handler(Looper.getMainLooper());
 
 
@@ -87,17 +92,7 @@ public class HomePage extends Activity {
                             displayRecipes(recipes);
                         }
                     });
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            // Crear un nuevo adaptador para cada objeto Recipe en la lista
-//                            RecipeAdapter adapter = new RecipeAdapter(recipes);
-//                            binding.recommendationsRv.setAdapter(adapter);
-//                            binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomePage.this));
-//
-//                        }
-//                    });
-                    //DataResult result = readResponse((url + data2), token);
+
                     if (user != null) {
                         binding.tvUsername.setText(user.getUsername());
                         handler.post(new Runnable() {
@@ -142,12 +137,15 @@ public class HomePage extends Activity {
 
     }
 
+    /**
+     * Gives the list of recipes to the RecipeAdapter
+     * @param recipes
+     */
     private void displayRecipes(List<Recipe> recipes) {
         RecipeAdapter adapter = new RecipeAdapter(recipes);
         binding.recommendationsRv.setAdapter(adapter);
         binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomePage.this));
     }
-
 
 
     /**
@@ -449,7 +447,6 @@ public class HomePage extends Activity {
         try {
             inputStream = context.openFileInput("token.txt");
 
-
             //Reads the token data from file
             StringBuilder stringBuilder = new StringBuilder();
             int c;
@@ -457,7 +454,6 @@ public class HomePage extends Activity {
                 stringBuilder.append((char) c);
             }
             String token = stringBuilder.toString();
-
 
             //Close the FileInputStream Object
             inputStream.close();
@@ -467,13 +463,9 @@ public class HomePage extends Activity {
         } catch (Exception e) {
             //e.printStackTrace();
             System.out.println("Error al leer la respuesta: " + e.toString());
-
         }
-
 
         // if file is empty, returns null
         return null;
     }
-
-
 }

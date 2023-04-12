@@ -180,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                binding.errormsg.setText(result.getResult().toString());
+                                binding.errormsg.setText(result.getData().toString());
                                 // binding.errormsg.setText("Username or password are wrong");
                                 binding.errormsg.setVisibility(View.VISIBLE);
                             }
@@ -243,16 +243,10 @@ public class LoginActivity extends AppCompatActivity {
             System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
         }
 
-//        return user;
+//        return DataResult;
         return result;
     }
 
-    /**
-     * Parse the Json response into UserModel Object
-     *
-     * @param inputStream
-     * @return user
-     */
 
 
     /**

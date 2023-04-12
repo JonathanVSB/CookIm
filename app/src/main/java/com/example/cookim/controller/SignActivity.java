@@ -6,20 +6,41 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import android.Manifest;
 import android.widget.Toast;
 
-import com.example.cookim.R;
 import com.example.cookim.databinding.ActivitySigninBinding;
+import com.example.cookim.model.DataResult;
+import com.example.cookim.model.user.UserModel;
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.concurrent.ExecutorService;
 
 public class SignActivity extends AppCompatActivity {
     private ActivitySigninBinding binding;
@@ -27,6 +48,12 @@ public class SignActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private Intent data;
 
+    private File file;
+
+    private final String URL = "http://91.107.198.64:7070/Cookim/";
+    private final String URL2 = "http://192.168.127.102:7070/Cookim/";
+    ExecutorService executor;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +92,25 @@ public class SignActivity extends AppCompatActivity {
             } else if (!isPhoneNumberValid()) {
                 binding.errormsg.setText("*El número de teléfono debe ser válido*");
                 binding.errormsg.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 binding.errormsg.setVisibility(View.INVISIBLE);
-                if (createUser()){
-                    //Display the next page of settings
+                UserModel user = new UserModel(binding.etUsername.getText().toString(),
+                        binding.etPassword.getText().toString(),
+                        binding.etFullname.getText().toString(),
+                        binding.etEmail.getText().toString(),
+                        binding.etTel.getText().toString(), 2);
+
+                if (user != null) {
+
+                    sendNewUser(user);
+
+                } else {
+
                 }
+
+
             }
+
         } else if (v.getId() == binding.profileImage.getId()) {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, RESULT_LOAD_IMAGE);
@@ -79,15 +119,121 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * Send petition to server to create a new user using the text of the fields.
-     * returns, true if the user is correctly inserted, false otherwise
-     * @return
+     * Gets the data of the view an sends new user to server
+     * If the user chose
      */
-    private boolean createUser() {
+    private void sendNewUser(UserModel user) {
+
+        if (file != null) {
+            try {
+                uploadPicture();
+                DataResult res = validationNewUser(user);
+            } catch (IOException e) {
+                binding.errormsg.setText("Error triying to send profile image");
+            }
+        } else {
+            DataResult res = validationNewUser(user);
+            if (res!=null)
+            {
+                if (res.getResult().equals("1")){
+                    binding.errormsg.setText(res.getData().toString());
+                    String token = res.getData().toString();
+                    //TODO
+                    //Display next page of signin
+                }else
+                {
+                    binding.errormsg.setText(res.getData().toString());
+                }
+            }
+        }
 
 
-        return true;
     }
+
+
+
+    private DataResult validationNewUser(UserModel user) {
+        String urlString = URL2 + "sign-in";
+        DataResult result = null;
+
+        try{
+            System.out.println("ENTRA  " + urlString);
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Set authorization header with token
+            String authHeader = "Bearer " + user;
+            connection.setRequestProperty("Authorization", authHeader);
+
+            // Set content type to form url encoded
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            // Write parameters to the request body
+            String requestBody = "";
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            }
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into DataResult object
+                result = parseResponse(inputStream);
+
+                inputStream.close();
+            }
+
+        }catch (Exception e)
+        {
+            return null;
+        }
+
+        return result;
+    }
+
+    private void uploadPicture() throws IOException {
+        String url = "http://example.com/upload";
+        String charset = "UTF-8";
+        String param = "value";
+        File binaryFile = file;
+        String boundary = Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
+        String CRLF = "\r\n"; // Line separator required by multipart/form-data.
+
+        URLConnection connection = new URL(url).openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+        try (OutputStream output = connection.getOutputStream();
+             PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true);) {   // Send binary file.
+            writer.append("--" + boundary).append(CRLF);
+            writer.append("Content-Disposition: form-data; name=\"binaryFile\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
+            writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(binaryFile.getName())).append(CRLF);
+            writer.append("Content-Transfer-Encoding: binary").append(CRLF);
+            writer.append(CRLF).flush();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.copy(binaryFile.toPath(), output);
+            }
+            output.flush(); // Important before continuing with writer!
+            writer.append(CRLF).flush(); // CRLF is important! It indicates end of boundary.
+
+            // End of multipart/form-data.
+            writer.append("--" + boundary + "--").append(CRLF).flush();
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // Request is lazily fired whenever you need to obtain information about response.
+        int responseCode = ((HttpURLConnection) connection).getResponseCode();
+        System.out.println(responseCode); // Should be 200
+    }
+
 
     /**
      * Check the fields of the view to check if any of them is empty
@@ -105,6 +251,7 @@ public class SignActivity extends AppCompatActivity {
 
     /**
      * Checks if the email has the correct structure
+     *
      * @return
      */
     private boolean isEmailValid() {
@@ -134,6 +281,7 @@ public class SignActivity extends AppCompatActivity {
 
     /**
      * checks the number to prevents wrong number formats like string or chars
+     *
      * @return
      */
     private boolean isPhoneNumberValid() {
@@ -141,20 +289,29 @@ public class SignActivity extends AppCompatActivity {
         if (phoneNumber.isEmpty()) {
             return false;
         }
-        return TextUtils.isDigitsOnly(phoneNumber);
+        return isNumeric(phoneNumber);
+    }
+
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
 
     /**
-     *  Search for an image in storage and sets the imageview with
+     * Search for an image in storage and sets the imageview with
+     *
      * @param requestCode The integer request code originally supplied to
      *                    startActivityForResult(), allowing you to identify who this
      *                    result came from.
-     * @param resultCode The integer result code returned by the child activity
-     *                   through its setResult().
-     * @param data An Intent, which can return result data to the caller
-     *               (various data can be attached to Intent "extras").
-     *
+     * @param resultCode  The integer result code returned by the child activity
+     *                    through its setResult().
+     * @param data        An Intent, which can return result data to the caller
+     *                    (various data can be attached to Intent "extras").
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -166,20 +323,17 @@ public class SignActivity extends AppCompatActivity {
                     != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             } else {
-                loadImage(data);
+                file = loadImage(data);
             }
         }
     }
 
     /**
-     *
-     * @param requestCode The request code passed in {@link #requestPermissions(
-     * android.app.Activity, String[], int)}
-     * @param permissions The requested permissions. Never null.
+     * @param requestCode  The request code passed in
+     * @param permissions  The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
-     *     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
-     *
+     *                     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
+     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -196,9 +350,10 @@ public class SignActivity extends AppCompatActivity {
 
     /**
      * Load the Image in the imageView
+     *
      * @param data
      */
-    private void loadImage(Intent data) {
+    private File loadImage(Intent data) {
         Uri selectedImage = data.getData();
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -209,7 +364,57 @@ public class SignActivity extends AppCompatActivity {
 
         Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
         binding.profileImage.setImageBitmap(bitmap);
+
+        return new File(picturePath);
     }
 
+    /**
+     * Parses the responses of the server to inform the user if the process success or not
+     * @param inputStream
+     * @return
+     */
+    private DataResult parseResponse(InputStream inputStream) {
+
+        String jsonString = null;
+        DataResult result = null;
+
+        try {
+            // Initializes a BufferedReader object to read the InputStream
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            // Initializes a StringBuilder object to hold the JSON-formatted string
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Reads each line of the InputStream and appends it to the StringBuilder object
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                stringBuilder.append(linea);
+            }
+
+            // Closes the BufferedReader
+            bufferedReader.close();
+
+            // Converts the StringBuilder object to a string
+            jsonString = stringBuilder.toString();
+
+            // Debugging statement
+            System.out.println("Respuesta JSON: " + jsonString);
+
+            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
+                Gson gson = new Gson();
+                result = gson.fromJson(jsonString, DataResult.class);
+            } else {
+                // Debugging statement
+                System.out.println("La respuesta no es un objeto JSON válido");
+            }
+
+        } catch (IOException e) {
+            //Debugging statement
+            System.out.println("Error al leer la respuesta: " + e.toString());
+        }
+
+        // Returns the DataResult object or null if there was an error
+        return result;
+    }
 
 }
