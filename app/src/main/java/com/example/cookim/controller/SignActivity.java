@@ -1,5 +1,6 @@
 package com.example.cookim.controller;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -28,6 +29,7 @@ import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,6 +43,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SignActivity extends AppCompatActivity {
     private ActivitySigninBinding binding;
@@ -59,6 +62,7 @@ public class SignActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
+        executor = Executors.newSingleThreadExecutor();
         binding = ActivitySigninBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -81,6 +85,13 @@ public class SignActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Control the actions of the view
+     * if the user clicks sign in without the correct params, displays the error message
+     * else sends the new data
+     * if the user clicks the empty picture, the app allows him to chose one from his gallery
+     * @param v
+     */
     private void signinActions(View v) {
         if (v.getId() == binding.btSignin.getId()) {
             if (areFieldsEmpty()) {
@@ -92,6 +103,9 @@ public class SignActivity extends AppCompatActivity {
             } else if (!isPhoneNumberValid()) {
                 binding.errormsg.setText("*El número de teléfono debe ser válido*");
                 binding.errormsg.setVisibility(View.VISIBLE);
+            }else if (!toWeakPass()) {
+                    binding.errormsg.setText("*La contraseña es demasiado debil*");
+                    binding.errormsg.setVisibility(View.VISIBLE);
             } else {
                 binding.errormsg.setVisibility(View.INVISIBLE);
                 UserModel user = new UserModel(binding.etUsername.getText().toString(),
@@ -101,8 +115,17 @@ public class SignActivity extends AppCompatActivity {
                         binding.etTel.getText().toString(), 2);
 
                 if (user != null) {
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Background work here
+                            //System.out.println("ENTRA");
+                            sendNewUser(user);
+//
+                        }
+                    });
 
-                    sendNewUser(user);
+
 
                 } else {
 
@@ -118,6 +141,8 @@ public class SignActivity extends AppCompatActivity {
         }
     }
 
+
+
     /**
      * Gets the data of the view an sends new user to server
      * If the user chose
@@ -126,22 +151,37 @@ public class SignActivity extends AppCompatActivity {
 
         if (file != null) {
             try {
-                uploadPicture();
-                DataResult res = validationNewUser(user);
+                DataResult res = validationNewUser(user.getUsername(),
+                        user.getPassword(),
+                        user.getFull_name(),
+                        user.getEmail(),
+                        user.getPhone(),
+                        user.getId_rol());
+                if (res.getResult().equals("1")) {
+                    uploadPicture();
+                }
+
+
             } catch (IOException e) {
-                binding.errormsg.setText("Error triying to send profile image");
+//                binding.errormsg.setText("Error triying to send profile image");
+                System.out.println(e.toString());
             }
         } else {
-            DataResult res = validationNewUser(user);
-            if (res!=null)
-            {
-                if (res.getResult().equals("1")){
-                    binding.errormsg.setText(res.getData().toString());
+            DataResult res = validationNewUser(user.getUsername(),
+                    user.getPassword(),
+                    user.getFull_name(),
+                    user.getEmail(),
+                    user.getPhone(),
+                    user.getId_rol());
+            if (res != null) {
+                if (res.getResult().equals("1")) {
+                    //
                     String token = res.getData().toString();
+                    saveToken(token);
+                    showHomePage();
                     //TODO
                     //Display next page of signin
-                }else
-                {
+                } else {
                     binding.errormsg.setText(res.getData().toString());
                 }
             }
@@ -151,30 +191,24 @@ public class SignActivity extends AppCompatActivity {
     }
 
 
-
-    private DataResult validationNewUser(UserModel user) {
+    private DataResult validationNewUser(String username, String password, String full_name, String email, String phone, long id_rol) {
         String urlString = URL2 + "sign-in";
         DataResult result = null;
+        String parametros = "username=" + username + "&password=" + password + "&full_name=" + full_name + "&email=" + email + "&phone=" +phone +"&id_rol=" + id_rol ;
 
-        try{
+        try {
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            // Set authorization header with token
-            String authHeader = "Bearer " + user;
-            connection.setRequestProperty("Authorization", authHeader);
-
-            // Set content type to form url encoded
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Write parameters to the request body
-            String requestBody = "";
+            // Write parameters to the request
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
+                wr.write(parametros.getBytes(StandardCharsets.UTF_8));
             }
 
             connection.connect();
@@ -189,8 +223,8 @@ public class SignActivity extends AppCompatActivity {
                 inputStream.close();
             }
 
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
+            System.out.println(e.toString());
             return null;
         }
 
@@ -198,7 +232,7 @@ public class SignActivity extends AppCompatActivity {
     }
 
     private void uploadPicture() throws IOException {
-        String url = "http://example.com/upload";
+        String url = URL2 + "upload/profile_picture";
         String charset = "UTF-8";
         String param = "value";
         File binaryFile = file;
@@ -230,8 +264,9 @@ public class SignActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
         // Request is lazily fired whenever you need to obtain information about response.
-        int responseCode = ((HttpURLConnection) connection).getResponseCode();
-        System.out.println(responseCode); // Should be 200
+
+        //int responseCode =
+        //System.out.println(responseCode); // Should be 200
     }
 
 
@@ -245,12 +280,26 @@ public class SignActivity extends AppCompatActivity {
                 binding.etPassword.getText().toString().equals("") ||
                 binding.etFullname.getText().toString().equals("") ||
                 binding.etEmail.getText().toString().equals("") ||
-                binding.etTel.getText().toString().equals("") ||
-                !isPhoneNumberValid();
+                binding.etTel.getText().toString().equals("");
+
+    }
+
+    /**
+     * prevents the user to introduce very short password
+     * @return
+     */
+    private boolean toWeakPass() {
+        String pass = binding.etPassword.getText().toString();
+        if (pass.length()<6){
+            return false;
+        }
+        return true;
     }
 
     /**
      * Checks if the email has the correct structure
+     * Email shall contain this characters: "@", "."
+     * Also email can't be empty
      *
      * @return
      */
@@ -280,7 +329,7 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * checks the number to prevents wrong number formats like string or chars
+     * checks the number to prevents empty fields and wrong format
      *
      * @return
      */
@@ -292,6 +341,12 @@ public class SignActivity extends AppCompatActivity {
         return isNumeric(phoneNumber);
     }
 
+    /**
+     * Checks if the phone number have any alphabetic character
+     * if the number contains any, returns false
+     * @param str
+     * @return
+     */
     private boolean isNumeric(String str) {
         try {
             Double.parseDouble(str);
@@ -370,6 +425,7 @@ public class SignActivity extends AppCompatActivity {
 
     /**
      * Parses the responses of the server to inform the user if the process success or not
+     *
      * @param inputStream
      * @return
      */
@@ -416,5 +472,36 @@ public class SignActivity extends AppCompatActivity {
         // Returns the DataResult object or null if there was an error
         return result;
     }
+    private void showHomePage() {
+        Intent intent = new Intent(this, HomePage.class);
+
+
+
+        startActivity(intent);
+    }
+
+    /**
+     * saves the token received by the server in a file only accessible from the application.
+     * @param token
+     */
+    private void saveToken(String token) {
+        // Gets an instance of the application context
+        Context context = getApplicationContext();
+
+        // Open the file in write mode and create the FileOutputStream object
+        FileOutputStream outputStream;
+        try {
+            outputStream = context.openFileOutput("token.txt", Context.MODE_PRIVATE);
+
+            // Write the token string to the file
+            outputStream.write(token.getBytes());
+
+            // Closes the FileOutputStream object to release the resources
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

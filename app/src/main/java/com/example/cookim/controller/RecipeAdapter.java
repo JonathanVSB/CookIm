@@ -58,12 +58,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             }
         });
 
-        holder.binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pageActions(v);
-            }
-        });
+//        holder.binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                pageActions(v);
+//            }
+//        });
     }
 
 
@@ -84,28 +84,28 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     }
 
 
-    private void pageActions(View v) {
-
-        if (v.getId() == binding.btLike.getId()) {
-            if (!press) {
-                binding.btLike.setImageResource(R.drawable.selectedheart);
-                int likes = Integer.parseInt(binding.tvLikes.getText().toString());
-                likes++;
-                binding.tvLikes.setText(Integer.toString(likes));
-                press = true;
-            } else {
-                binding.btLike.setImageResource(R.drawable.nonselectedheart);
-                int likes = Integer.parseInt(binding.tvLikes.getText().toString());
-                likes--;
-                binding.tvLikes.setText(Integer.toString(likes));
-                press = false;
-            }
-
-        } else if (v.getId() == binding.viewRecipe.getId()) {
-            //displayRecipeStepsLayout(getAdapterPosition(), itemView.getContext());
-
-        }
-    }
+//    private void pageActions(View v) {
+//
+//        if (v.getId() == binding.btLike.getId()) {
+//            if (!press) {
+//                binding.btLike.setImageResource(R.drawable.selectedheart);
+//                int likes = Integer.parseInt(binding.tvLikes.getText().toString());
+//                likes++;
+//                binding.tvLikes.setText(Integer.toString(likes));
+//                press = true;
+//            } else {
+//                binding.btLike.setImageResource(R.drawable.nonselectedheart);
+//                int likes = Integer.parseInt(binding.tvLikes.getText().toString());
+//                likes--;
+//                binding.tvLikes.setText(Integer.toString(likes));
+//                press = false;
+//            }
+//
+//        } else if (v.getId() == binding.viewRecipe.getId()) {
+//            //displayRecipeStepsLayout(getAdapterPosition(), itemView.getContext());
+//
+//        }
+//    }
 
     /**
      * Displays the view of the recipe and the steps necessaries to cook it

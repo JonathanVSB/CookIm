@@ -34,12 +34,24 @@ public class UserModel implements Serializable {
         this.id_rol = id_rol;
     }
 
-
-
-    public UserModel(long id, String username, String pass, String full_name, String email, String tel, List<UserModel> followers, List<UserModel> followed, List<Recipe> favorites_recipes, long rol, String token) {
+    public UserModel(long id, String username, String password, String full_name, String email, String phone, String path_img, long id_rol, String token) {
         this.id = id;
         this.username = username;
-        this.password = pass;
+        this.password = password;
+        this.full_name = full_name;
+        this.email = email;
+        this.phone = phone;
+        this.path_img = path_img;
+        this.followers = new ArrayList<>();
+        this.followed = new ArrayList<>();
+        this.favorites_recipes = new ArrayList<>();
+        this.id_rol = id_rol;
+        this.token = token;
+    }
+
+    public UserModel(long id, String username, String full_name, String email, String tel, List<UserModel> followers, List<UserModel> followed, List<Recipe> favorites_recipes, long rol, String token) {
+        this.id = id;
+        this.username = username;
         this.full_name = full_name;
         this.email = email;
         this.phone = tel;

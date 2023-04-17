@@ -340,8 +340,13 @@ public class HomePage extends Activity {
                     result.setFull_name(dataObject.get("full_name").getAsString());
                     result.setEmail(dataObject.get("email").getAsString());
                     result.setPhone(dataObject.get("phone").getAsString());
-                    result.setPath_img(dataObject.get("path_img").getAsString());
-                    result.setDescription(dataObject.get("description").getAsString());
+                    if (dataObject.has("path_img")) {
+                        result.setPath_img(dataObject.get("path_img").getAsString());
+                    }
+
+                    if (dataObject.has("description")) {
+                        result.setDescription(dataObject.get("description").getAsString());
+                    }
                     result.setId_rol(dataObject.get("id_rol").getAsLong());
                 } else {
                     // Debugging statement
