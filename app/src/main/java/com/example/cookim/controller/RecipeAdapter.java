@@ -80,13 +80,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
                 if (!press) {
 
-                    DataResult result = sendLike(1, String.valueOf(recipe.getLikes()));
+                    DataResult result = sendLike(0, String.valueOf(recipe.id));
                     if (result.getResult().equals("1")) {
                         recipe.setLikes(Integer.parseInt(result.getData().toString()));
                     }
 
                 } else {
-                    DataResult result = sendLike(0, String.valueOf(recipe.getLikes()));
+                    DataResult result = sendLike(1, String.valueOf(recipe.getId()));
                     if (result.getResult().equals("1")) {
                         recipe.setLikes(Integer.parseInt(result.getData().toString()));
                     }
