@@ -47,6 +47,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private final String URL = "http://91.107.198.64:7070/Cookim/";
     private final String URL2 = "http://192.168.127.102:7070/Cookim/";
+
+    private final String URL3 = "http://192.168.127.94:7070/Cookim/";
     ExecutorService executor;
     Handler handler;
 
@@ -149,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
-        String url = URL2 + "login";
+        String url = URL3 + "login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
         String parametros = "username=" + username + "&password=" + password;

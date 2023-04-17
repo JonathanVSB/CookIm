@@ -55,6 +55,7 @@ public class SignActivity extends AppCompatActivity {
 
     private final String URL = "http://91.107.198.64:7070/Cookim/";
     private final String URL2 = "http://192.168.127.102:7070/Cookim/";
+    private final String URL3 = "http://192.168.127.94:7070/Cookim/";
     ExecutorService executor;
     Handler handler;
 
@@ -192,7 +193,7 @@ public class SignActivity extends AppCompatActivity {
 
 
     private DataResult validationNewUser(String username, String password, String full_name, String email, String phone, long id_rol) {
-        String urlString = URL2 + "sign-in";
+        String urlString = URL3 + "sign-in";
         DataResult result = null;
         String parametros = "username=" + username + "&password=" + password + "&full_name=" + full_name + "&email=" + email + "&phone=" +phone +"&id_rol=" + id_rol ;
 
@@ -232,7 +233,7 @@ public class SignActivity extends AppCompatActivity {
     }
 
     private void uploadPicture() throws IOException {
-        String url = URL2 + "upload/profile_picture";
+        String url = URL3 + "upload/profile_picture";
         String charset = "UTF-8";
         String param = "value";
         File binaryFile = file;
