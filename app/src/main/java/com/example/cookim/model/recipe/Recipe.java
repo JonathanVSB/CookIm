@@ -13,7 +13,6 @@ public class Recipe {
     public String path_img;
     public double rating;
     public int likes;
-
     public String user_name;
     public List<Step> recipe_steps;
     public List<Comment> comments;

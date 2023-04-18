@@ -77,7 +77,7 @@ public class HomePage extends Activity {
         String data1 = "my-profile";
         String data2 = "home-page";
         String url = URL3;
-        String token = "token=" + a;
+        String token = a;
 
         try {
             executor.execute(new Runnable() {

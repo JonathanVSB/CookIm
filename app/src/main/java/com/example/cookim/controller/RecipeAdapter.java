@@ -76,32 +76,21 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 recipe.setLiked(press);
                 recipe.setLikes(press ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
                 holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
-                holder.binding.btLike.setImageResource(press ? R.drawable.selectedheart : R.drawable.nonselectedheart);
 
-                if (!press) {
+                //send 1 if user likes the recipe, 0 if unlikes
+                int likeValue = press ? 1 : 0;
+                DataResult result = sendLike(likeValue, String.valueOf(recipe.getId()));
 
-                    DataResult result = sendLike(0, String.valueOf(recipe.id));
-                    if (result.getResult().equals("1")) {
-                        recipe.setLikes(Integer.parseInt(result.getData().toString()));
+                if (result.getResult().equals("1")) {
+                    try {
+                        holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
+                        holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+                    } catch (Exception e) {
+                        System.out.println(e.toString());
                     }
-
-                } else {
-                    DataResult result = sendLike(1, String.valueOf(recipe.getId()));
-                    if (result.getResult().equals("1")) {
-                        recipe.setLikes(Integer.parseInt(result.getData().toString()));
-                    }
-
-
                 }
             }
         });
-
-//        holder.binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                pageActions(v);
-//            }
-//        });
     }
 
 
