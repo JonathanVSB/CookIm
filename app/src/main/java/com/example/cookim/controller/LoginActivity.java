@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.Switch;
@@ -72,8 +73,6 @@ public class LoginActivity extends AppCompatActivity {
         initElements();
 
 
-
-
     }
 
     /**
@@ -81,7 +80,6 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void showHomePage() {
         Intent intent = new Intent(this, HomePage.class);
-
 
 
         startActivity(intent);
@@ -117,11 +115,18 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void loginPageActions(View v) {
         if (v.getId() == binding.btLogin.getId()) {
-            String name = binding.etUsername.getText().toString();
-            String password = binding.etPass.getText().toString();
-            LoginModel userData = new LoginModel(name, password);
+            if (!TextUtils.isEmpty(binding.etUsername.getText()) && !TextUtils.isEmpty(binding.etPass.getText())) {
+                String name = binding.etUsername.getText().toString();
+                String password = binding.etPass.getText().toString();
+                LoginModel userData = new LoginModel(name, password);
+                binding.errormsg.setVisibility(View.INVISIBLE);
+                validation(userData);
+            } else {
 
-            validation(userData);
+                binding.errormsg.setText("Debes rellenar todos los campos");
+                binding.errormsg.setVisibility(View.VISIBLE);
+            }
+
 
         } else if (v.getId() == binding.tvSignin.getId()) {
             displaySignInPage();
@@ -164,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
                     //System.out.println("ENTRA");
 //                    UserModel userModel = readResponse(url, parametros);
                     //String token = readResponse(url, parametros);
-                    DataResult result = readResponse(url, parametros);
+                    DataResult result = model.login(parametros);/*readResponse(url, parametros);*/
                     if (result.getResult().equals("1")) {
                         String token = result.getData().toString();
                         saveToken(result.getData().toString());
@@ -200,110 +205,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Reads Http File and writes in internal Storage
-     *
-     * @param urlString  : Url to read File
-     * @param parameters : Parameters for the HTTP POST request
-     */
-    private DataResult readResponse(String urlString, String parameters) {
-
-        DataResult result = null;
-        int i = 0;
-        try {
-            //HTTP request
-            System.out.println("ENTRA  " + urlString);
-            URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("User-Agent", "");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestMethod("POST");
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            // Write parameters to the request
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.write(parameters.getBytes(StandardCharsets.UTF_8));
-            }
-
-            connection.connect();
-
-            if (connection != null) {
-                // read Stream
-                InputStream inputStream = connection.getInputStream();
-
-                // parse the response into UserModel object
-
-                result = parseResponse(inputStream);
-
-                //
-                inputStream.close();
-
-            }
-
-        } catch (Exception e) {
-            //Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-            System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
-        }
-
-//        return DataResult;
-        return result;
-    }
-
-
-
-    /**
-     * Reads the token received from server and saves it String variable
-     *
-     * @param inputStream
-     * @return
-     */
-    private DataResult parseResponse(InputStream inputStream) {
-
-        String jsonString = null;
-        DataResult result = null;
-
-        try {
-            // Initializes a BufferedReader object to read the InputStream
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-            // Initializes a StringBuilder object to hold the JSON-formatted string
-            StringBuilder stringBuilder = new StringBuilder();
-
-            // Reads each line of the InputStream and appends it to the StringBuilder object
-            String linea;
-            while ((linea = bufferedReader.readLine()) != null) {
-                stringBuilder.append(linea);
-            }
-
-            // Closes the BufferedReader
-            bufferedReader.close();
-
-            // Converts the StringBuilder object to a string
-            jsonString = stringBuilder.toString();
-
-            // Debugging statement
-            System.out.println("Respuesta JSON: " + jsonString);
-
-            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
-                Gson gson = new Gson();
-                result = gson.fromJson(jsonString, DataResult.class);
-            } else {
-                // Debugging statement
-                System.out.println("La respuesta no es un objeto JSON válido");
-            }
-
-        } catch (IOException e) {
-            //Debugging statement
-            System.out.println("Error al leer la respuesta: " + e.toString());
-        }
-
-        // Returns the DataResult object or null if there was an error
-        return result;
-    }
-
-
-    /**
      * saves the token received by the server in a file only accessible from the application.
+     *
      * @param token
      */
     private void saveToken(String token) {
