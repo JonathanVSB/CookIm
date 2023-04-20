@@ -80,7 +80,7 @@ public class HomePage extends Activity {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        UserModel result = model.logout(token);
+                        DataResult result = model.logout(token);
                         if (result!=null) {
                             displayLogInPage();
                         }

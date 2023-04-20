@@ -159,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
         String url = URL3 + "login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
-        String parametros = "username=" + username + "&password=" + password;
+        String parametros = username + ":" + password;
 
         try {
             executor.execute(new Runnable() {

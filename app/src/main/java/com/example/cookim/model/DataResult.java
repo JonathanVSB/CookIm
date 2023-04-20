@@ -12,6 +12,7 @@ public class DataResult implements Serializable {
     Object data;
 
 
+
     //Constructor
 
     public DataResult(String result) {

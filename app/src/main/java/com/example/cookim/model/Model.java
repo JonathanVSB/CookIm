@@ -44,11 +44,12 @@ public class Model {
         DataResult result = recipeDao.readResponse(path.LIKE, parametros);
         return result;
 
+
     }
 
 
-    public UserModel logout(String token){
-        UserModel result = userDao.readUserResponse(path.LOGOUT, token);
+    public DataResult logout(String token){
+        DataResult result = userDao.readResponse(path.LOGOUT, token);
         return result;
 
     }

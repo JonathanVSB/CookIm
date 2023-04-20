@@ -16,6 +16,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class UserDao {
 
     public UserDao() {
@@ -42,6 +44,10 @@ public class UserDao {
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
+
+            String authHeader = "Bearer " + parameters;
+            connection.setRequestProperty("Authorization", authHeader);
+
 
             // Write parameters to the request
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
