@@ -159,6 +159,7 @@ public class SignActivity extends AppCompatActivity {
                         user.getEmail(),
                         user.getPhone(),
                         user.getId_rol());
+                //T9odo send file
                 if (res.getResult().equals("1")) {
                     //upload the login profile picture
                     uploadPicture();
