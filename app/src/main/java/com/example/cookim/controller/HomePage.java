@@ -161,7 +161,7 @@ public class HomePage extends Activity {
      * @param recipes
      */
     private void displayRecipes(List<Recipe> recipes) {
-        RecipeAdapter adapter = new RecipeAdapter(recipes);
+        RecipeAdapter adapter = new RecipeAdapter(this, recipes);
         binding.recommendationsRv.setAdapter(adapter);
         binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomePage.this));
     }

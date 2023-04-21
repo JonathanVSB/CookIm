@@ -152,6 +152,7 @@ public class SignActivity extends AppCompatActivity {
 
         if (file != null) {
             try {
+                //Send the new user to data base
                 DataResult res = validationNewUser(user.getUsername(),
                         user.getPassword(),
                         user.getFull_name(),
@@ -159,6 +160,7 @@ public class SignActivity extends AppCompatActivity {
                         user.getPhone(),
                         user.getId_rol());
                 if (res.getResult().equals("1")) {
+                    //upload the login profile picture
                     uploadPicture();
                 }
 

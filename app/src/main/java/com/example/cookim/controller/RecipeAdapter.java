@@ -1,5 +1,9 @@
 package com.example.cookim.controller;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -40,6 +44,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     ExecutorService executor;
     Handler handler;
     Model model;
+    Context context1;
 
     private final String URL = "http://91.107.198.64:7070/Cookim/";
     private final String URL2 = "http://192.168.127.102:7070/Cookim/";
@@ -47,7 +52,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     private final String URL3 = "http://192.168.127.94:7070/Cookim/";
 
 
-    public RecipeAdapter(List<Recipe> recipeList) {
+    public RecipeAdapter(Context context, List<Recipe> recipeList) {
+        context1 = context;
         this.recipeList = recipeList;
         model = new Model();
         executor = Executors.newSingleThreadExecutor();
@@ -97,6 +103,21 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 }
             }
         });
+
+        holder.binding.nameRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                displayRecipeStepsLayout();
+            }
+        });
+
+        holder.binding.img01.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                displayRecipeStepsLayout();
+            }
+        });
+
     }
 
 
@@ -119,10 +140,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     /**
      * Displays the view of the recipe and the steps necessaries to cook it
      */
-    private void displayRecipeStepsLayout(int id/*Context context*/) {
-       /* Intent intent = new Intent(itemView.getContext(), RecipeStepsActivity.class);
-        intent.putExtra("recipe_id", id);
-        itemView.getContext().startActivity(intent);*/
+    private void displayRecipeStepsLayout(/*int id/*Context context*/) {
+        Intent intent = new Intent(context1, RecipeStepsActivity.class);
+        context1.startActivity(intent);
+
     }
 
     private DataResult sendLike(int num, String id) {
