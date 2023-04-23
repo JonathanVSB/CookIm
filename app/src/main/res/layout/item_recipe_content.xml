@@ -3,67 +3,67 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginRight="15dp"
-    android:layout_marginLeft="15dp">
+    android:layout_height="wrap_content">
 
-   <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvPoster"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/ubuntumedium"
+        android:padding="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvPoster"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:text="username"
-            android:textColor="@color/black"
-            android:fontFamily="@font/ubuntumedium"
-            android:textSize="20dp"
-            />
-    </androidx.appcompat.widget.Toolbar>
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="username"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/view_recipe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toBottomOf="@id/tvPoster"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/user_content">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/img01"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/image_content_cv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/view_recipe"
-            app:layout_constraintStart_toStartOf="@id/view_recipe"
-            android:src="@drawable/tostadas_de_pollo_con_lechuga"
-            android:foreground="@drawable/bg_alternative"
-            android:scaleType="fitXY"
+            app:cardCornerRadius="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/img01"
+                android:layout_width="wrap_content"
+                android:layout_height="216dp"
+                android:foreground="@drawable/bg_alternative"
+                android:scaleType="fitXY"
+                android:src="@drawable/tostadas_de_pollo_con_lechuga"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/name_recipe"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Tostada de pollo con lechuga"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="40dp"
-            android:textStyle="bold"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="171dp"
-            app:layout_constraintStart_toStartOf="@id/img01"
-            app:layout_constraintEnd_toEndOf="@id/img01"
-            app:layout_constraintTop_toTopOf="@id/img01"
-            android:layout_marginTop="110dp"
-            app:shapeAppearanceOverlay="@style/RoundedImageView"
-            />
-
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/name_recipe"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Tostada de pollo con lechuga"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -129,8 +129,11 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:background="@drawable/separator_line"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

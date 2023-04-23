@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.widget.Toast;
 
+import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivitySigninBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.user.UserModel;
@@ -478,7 +479,7 @@ public class SignActivity extends AppCompatActivity {
         return result;
     }
     private void showHomePage() {
-        Intent intent = new Intent(this, HomePage.class);
+        Intent intent = new Intent(this, HomeActivity.class);
 
 
 

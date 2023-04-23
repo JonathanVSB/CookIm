@@ -1,6 +1,4 @@
-package com.example.cookim.controller;
-
-import static androidx.core.content.ContextCompat.startActivity;
+package com.example.cookim.controller.Home;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,29 +7,17 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.cookim.R;
+import com.example.cookim.controller.RecipeStepsActivity;
 import com.example.cookim.databinding.ItemRecipeContentBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
-import com.example.cookim.model.user.LoginModel;
-import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,20 +30,20 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     ExecutorService executor;
     Handler handler;
     Model model;
-    Context context1;
-
-    private final String URL = "http://91.107.198.64:7070/Cookim/";
-    private final String URL2 = "http://192.168.127.102:7070/Cookim/";
-
-    private final String URL3 = "http://192.168.127.94:7070/Cookim/";
 
 
-    public RecipeAdapter(Context context, List<Recipe> recipeList) {
-        context1 = context;
+    HomeListener homeListener;
+
+    public RecipeAdapter(List<Recipe> recipeList) {
+
         this.recipeList = recipeList;
+
         model = new Model();
         executor = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
+
+
+
 //        this.press = false;
     }
 
@@ -97,24 +83,17 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                     } catch (Exception e) {
                         System.out.println(e.toString());
                     }
-                }else {
+                } else {
 
                     press = false;
                 }
             }
         });
 
-        holder.binding.nameRecipe.setOnClickListener(new View.OnClickListener() {
+        holder.binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                displayRecipeStepsLayout();
-            }
-        });
-
-        holder.binding.img01.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                displayRecipeStepsLayout();
+                homeListener.onItemClicked(recipe.getId());
             }
         });
 
@@ -136,16 +115,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         }
     }
 
-
-    /**
-     * Displays the view of the recipe and the steps necessaries to cook it
-     */
-    private void displayRecipeStepsLayout(/*int id/*Context context*/) {
-        Intent intent = new Intent(context1, RecipeStepsActivity.class);
-        context1.startActivity(intent);
-
-    }
-
     private DataResult sendLike(int num, String id) {
         String numero = String.valueOf(num);
         String parametros = "num=" + numero + "&recipe_id=" + id;
@@ -163,6 +132,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     }
 
 
-
+    public void setHomeListener(HomeListener listener) {
+        this.homeListener = listener;
     }
+
+
+}
 

@@ -1,4 +1,4 @@
-package com.example.cookim.controller;
+package com.example.cookim.controller.Home;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,42 +7,28 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.cookim.R;
+import com.example.cookim.controller.LoginActivity;
+import com.example.cookim.controller.RecipeStepsActivity;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class HomePage extends Activity {
+public class HomeActivity extends Activity implements HomeListener {
 
     private ActivityHomeBinding binding;
-    List<Recipe> recipes;
+
     private final String URL = "http://91.107.198.64:7070/Cookim/";
     private final String URL2 = "http://192.168.127.102:7070/Cookim/";
     private final String URL3 = "http://192.168.127.94:7070/Cookim/";
@@ -65,7 +51,6 @@ public class HomePage extends Activity {
         handler = new Handler(Looper.getMainLooper());
         model = new Model();
 
-        recipes = new ArrayList<>();
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -81,7 +66,7 @@ public class HomePage extends Activity {
                     @Override
                     public void run() {
                         DataResult result = model.logout(token);
-                        if (result!=null) {
+                        if (result != null) {
                             displayLogInPage();
                         }
                     }
@@ -138,7 +123,7 @@ public class HomePage extends Activity {
 //                                    });
 
 //                                        String profileUrl = "http://91.107.198.64:7070" + result.getResult2();
-//                                        Glide.with(HomePage.this)
+//                                        Glide.with(HomeActivity.this)
 //                                                .load(profileUrl)
 //                                                .into(binding.profileImage);
                                 } else {
@@ -161,9 +146,10 @@ public class HomePage extends Activity {
      * @param recipes
      */
     private void displayRecipes(List<Recipe> recipes) {
-        RecipeAdapter adapter = new RecipeAdapter(this, recipes);
+        RecipeAdapter adapter = new RecipeAdapter(recipes);
+        adapter.setHomeListener(this);
         binding.recommendationsRv.setAdapter(adapter);
-        binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomePage.this));
+        binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
     }
 
     /**
@@ -210,4 +196,9 @@ public class HomePage extends Activity {
         startActivity(intent);
     }
 
+    @Override
+    public void onItemClicked(int id) {
+        Intent intent = new Intent(this, RecipeStepsActivity.class);
+        startActivity(intent);
+    }
 }

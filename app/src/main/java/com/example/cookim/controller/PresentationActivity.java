@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import com.example.cookim.R;
-import com.example.cookim.databinding.ActivityMainBinding;
+import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityPresentationBinding;
 import com.example.cookim.model.DataResult;
 import com.google.gson.Gson;
@@ -218,7 +218,7 @@ public class PresentationActivity extends Activity {
      * @param token
      */
     private void showHomePage(String token) {
-        Intent intent = new Intent(this, HomePage.class);
+        Intent intent = new Intent(this, HomeActivity.class);
 
         intent.putExtra("token", token);
 

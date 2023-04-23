@@ -15,9 +15,6 @@ public class MainActivity extends Activity {
 
     private ActivityMainBinding binding;
 
-    private final String URL = "http://91.107.198.64:7070/";
-    private final String URL2 = "http://192.168.127.102:7070/";
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,9 +32,9 @@ public class MainActivity extends Activity {
      * Display the login Page
      */
     private void displayLogInPage() {
+        finish();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
-
 
 }
