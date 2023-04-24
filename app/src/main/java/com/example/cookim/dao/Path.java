@@ -2,7 +2,7 @@ package com.example.cookim.dao;
 
 public class Path {
 
-    final static String PATH ="http://192.168.1.48:7070/Cookim/";
+    final static String PATH ="http://91.107.198.64:7070/Cookim/";
     //Mia 192.168.81.1:7070
     //Samuel 192.168.127.102
     //443
@@ -12,6 +12,7 @@ public class Path {
     public final String MYPROFILE = PATH + "my-profile";
     public final String HOMEPAGE = PATH + "home-page";
     public final String LIKE = PATH + "like";
+    public final String SIGN = PATH + "sign-in";
 
 
 

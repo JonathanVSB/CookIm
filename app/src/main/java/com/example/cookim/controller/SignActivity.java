@@ -24,12 +24,14 @@ import android.widget.Toast;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivitySigninBinding;
 import com.example.cookim.model.DataResult;
+import com.example.cookim.model.Model;
 import com.example.cookim.model.user.UserModel;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +53,7 @@ public class SignActivity extends AppCompatActivity {
     private static final int RESULT_LOAD_IMAGE = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private Intent data;
+    Model model;
 
     private File file;
 
@@ -63,7 +66,7 @@ public class SignActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
+        model  = new Model();
         executor = Executors.newSingleThreadExecutor();
         binding = ActivitySigninBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -92,6 +95,7 @@ public class SignActivity extends AppCompatActivity {
      * if the user clicks sign in without the correct params, displays the error message
      * else sends the new data
      * if the user clicks the empty picture, the app allows him to chose one from his gallery
+     *
      * @param v
      */
     private void signinActions(View v) {
@@ -105,9 +109,9 @@ public class SignActivity extends AppCompatActivity {
             } else if (!isPhoneNumberValid()) {
                 binding.errormsg.setText("*El número de teléfono debe ser válido*");
                 binding.errormsg.setVisibility(View.VISIBLE);
-            }else if (!toWeakPass()) {
-                    binding.errormsg.setText("*La contraseña es demasiado debil*");
-                    binding.errormsg.setVisibility(View.VISIBLE);
+            } else if (!toWeakPass()) {
+                binding.errormsg.setText("*La contraseña es demasiado debil*");
+                binding.errormsg.setVisibility(View.VISIBLE);
             } else {
                 binding.errormsg.setVisibility(View.INVISIBLE);
                 UserModel user = new UserModel(binding.etUsername.getText().toString(),
@@ -128,7 +132,6 @@ public class SignActivity extends AppCompatActivity {
                     });
 
 
-
                 } else {
 
                 }
@@ -144,7 +147,6 @@ public class SignActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Gets the data of the view an sends new user to server
      * If the user chose
@@ -152,33 +154,14 @@ public class SignActivity extends AppCompatActivity {
     private void sendNewUser(UserModel user) {
 
         if (file != null) {
-            try {
-                //Send the new user to data base
-                DataResult res = validationNewUser(user.getUsername(),
-                        user.getPassword(),
-                        user.getFull_name(),
-                        user.getEmail(),
-                        user.getPhone(),
-                        user.getId_rol());
-                //T9odo send file
 
-                if (res.getResult().equals("1")) {
-                    //upload the login profile picture
-                    uploadPicture();
-                }
-
-
-            } catch (IOException e) {
-//                binding.errormsg.setText("Error triying to send profile image");
-                System.out.println(e.toString());
-            }
-        } else {
-            DataResult res = validationNewUser(user.getUsername(),
+            //Send the new user to data base
+            DataResult res = model.signIn(user.getUsername(),
                     user.getPassword(),
                     user.getFull_name(),
                     user.getEmail(),
                     user.getPhone(),
-                    user.getId_rol());
+                    user.getId_rol(), file);
             if (res != null) {
                 if (res.getResult().equals("1")) {
                     //
@@ -189,54 +172,35 @@ public class SignActivity extends AppCompatActivity {
                     //Display next page of signin
                 } else {
                     binding.errormsg.setText(res.getData().toString());
+                    binding.errormsg.setVisibility(View.VISIBLE);
+                }
+            }
+            //T9odo send file
+
+        } else {
+
+            DataResult res = model.signIn(user.getUsername(),
+                    user.getPassword(),
+                    user.getFull_name(),
+                    user.getEmail(),
+                    user.getPhone(),
+                    user.getId_rol(), null);
+            if (res != null) {
+                if (res.getResult().equals("1")) {
+                    //
+                    String token = res.getData().toString();
+                    saveToken(token);
+                    showHomePage();
+                    //TODO
+                    //Display next page of signin
+                } else {
+                    binding.errormsg.setText(res.getData().toString());
+                    binding.errormsg.setVisibility(View.VISIBLE);
                 }
             }
         }
 
-
     }
-
-
-    private DataResult validationNewUser(String username, String password, String full_name, String email, String phone, long id_rol) {
-        String urlString = URL3 + "sign-in";
-        DataResult result = null;
-        String parametros = "username=" + username + "&password=" + password + "&full_name=" + full_name + "&email=" + email + "&phone=" +phone +"&id_rol=" + id_rol ;
-
-        try {
-            System.out.println("ENTRA  " + urlString);
-            URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("User-Agent", "");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestMethod("POST");
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            // Write parameters to the request
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.write(parametros.getBytes(StandardCharsets.UTF_8));
-            }
-
-            connection.connect();
-
-            if (connection != null) {
-                // read Stream
-                InputStream inputStream = connection.getInputStream();
-
-                // parse the response into DataResult object
-                result = parseResponse(inputStream);
-
-                inputStream.close();
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            return null;
-        }
-
-        return result;
-    }
-
     private void uploadPicture() throws IOException {
         String url = URL3 + "upload/profile_picture";
         String charset = "UTF-8";
@@ -292,11 +256,12 @@ public class SignActivity extends AppCompatActivity {
 
     /**
      * prevents the user to introduce very short password
+     *
      * @return
      */
     private boolean toWeakPass() {
         String pass = binding.etPassword.getText().toString();
-        if (pass.length()<6){
+        if (pass.length() < 6) {
             return false;
         }
         return true;
@@ -350,6 +315,7 @@ public class SignActivity extends AppCompatActivity {
     /**
      * Checks if the phone number have any alphabetic character
      * if the number contains any, returns false
+     *
      * @param str
      * @return
      */
@@ -429,58 +395,8 @@ public class SignActivity extends AppCompatActivity {
         return new File(picturePath);
     }
 
-    /**
-     * Parses the responses of the server to inform the user if the process success or not
-     *
-     * @param inputStream
-     * @return
-     */
-    private DataResult parseResponse(InputStream inputStream) {
-
-        String jsonString = null;
-        DataResult result = null;
-
-        try {
-            // Initializes a BufferedReader object to read the InputStream
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-            // Initializes a StringBuilder object to hold the JSON-formatted string
-            StringBuilder stringBuilder = new StringBuilder();
-
-            // Reads each line of the InputStream and appends it to the StringBuilder object
-            String linea;
-            while ((linea = bufferedReader.readLine()) != null) {
-                stringBuilder.append(linea);
-            }
-
-            // Closes the BufferedReader
-            bufferedReader.close();
-
-            // Converts the StringBuilder object to a string
-            jsonString = stringBuilder.toString();
-
-            // Debugging statement
-            System.out.println("Respuesta JSON: " + jsonString);
-
-            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
-                Gson gson = new Gson();
-                result = gson.fromJson(jsonString, DataResult.class);
-            } else {
-                // Debugging statement
-                System.out.println("La respuesta no es un objeto JSON válido");
-            }
-
-        } catch (IOException e) {
-            //Debugging statement
-            System.out.println("Error al leer la respuesta: " + e.toString());
-        }
-
-        // Returns the DataResult object or null if there was an error
-        return result;
-    }
     private void showHomePage() {
         Intent intent = new Intent(this, HomeActivity.class);
-
 
 
         startActivity(intent);
@@ -488,6 +404,7 @@ public class SignActivity extends AppCompatActivity {
 
     /**
      * saves the token received by the server in a file only accessible from the application.
+     *
      * @param token
      */
     private void saveToken(String token) {

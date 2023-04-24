@@ -9,11 +9,15 @@ import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -248,6 +252,88 @@ public class UserDao {
         }
 
         // Returns the UserModel object
+        return result;
+    }
+
+    /**
+     * Gets the data introduced by user in all camps and send petition to create this new user
+     * if the user adds profile image it sends the image to
+     * @param username
+     * @param password
+     * @param full_name
+     * @param email
+     * @param phone
+     * @param id_rol
+     * @param file
+     * @return
+     */
+    public DataResult validationNewUser(String username, String password, String full_name, String email, String phone, long id_rol, File file, String path) {
+//        String urlString = URL3 + "sign-in";
+        DataResult result = null;
+
+        try {
+            System.out.println("ENTRA  " + path);
+            URL url = new URL(path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "");
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Create the multipart/form-data request body
+            String boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
+            OutputStream os = connection.getOutputStream();
+            DataOutputStream wr = new DataOutputStream(os);
+            wr.writeBytes("--" + boundary + "\r\n");
+            wr.writeBytes("Content-Disposition: form-data; name=\"username\"\r\n\r\n" + username + "\r\n");
+            wr.writeBytes("--" + boundary + "\r\n");
+            wr.writeBytes("Content-Disposition: form-data; name=\"password\"\r\n\r\n" + password + "\r\n");
+            wr.writeBytes("--" + boundary + "\r\n");
+            wr.writeBytes("Content-Disposition: form-data; name=\"full_name\"\r\n\r\n" + full_name + "\r\n");
+            wr.writeBytes("--" + boundary + "\r\n");
+            wr.writeBytes("Content-Disposition: form-data; name=\"email\"\r\n\r\n" + email + "\r\n");
+            wr.writeBytes("--" + boundary + "\r\n");
+            wr.writeBytes("Content-Disposition: form-data; name=\"phone\"\r\n\r\n" + phone + "\r\n");
+            wr.writeBytes("--" + boundary + "\r\n");
+            wr.writeBytes("Content-Disposition: form-data; name=\"id_rol\"\r\n\r\n" + id_rol + "\r\n");
+
+            // Add the image file if it is not null
+            if (file != null) {
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"img\"; filename=\"" + file.getName() + "\"\r\n");
+                wr.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + "\r\n\r\n");
+                FileInputStream inputStream = new FileInputStream(file);
+                byte[] buffer = new byte[4096];
+                int bytesRead = -1;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    wr.write(buffer, 0, bytesRead);
+                }
+                wr.writeBytes("\r\n");
+                inputStream.close();
+            }
+
+            wr.writeBytes("--" + boundary + "--\r\n");
+            wr.flush();
+            wr.close();
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into DataResult object
+                result = parseResponse(inputStream);
+
+                inputStream.close();
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
+
         return result;
     }
 }

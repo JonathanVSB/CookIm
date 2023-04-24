@@ -3,6 +3,8 @@ package com.example.cookim.controller.Home;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,6 +12,7 @@ import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
 import com.example.cookim.R;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
@@ -19,7 +22,10 @@ import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -102,33 +108,41 @@ public class HomeActivity extends Activity implements HomeListener {
                             @Override
                             public void run() {
                                 // Post Execute
-                                if (user != null) {
-//                                    executor.execute(() -> {
-//                                        try {
-//                                            File proFile = new File(getFilesDir(), "user3.jpg");
-//                                            if (!proFile.exists()) {
-//                                                URL beeUrl = new URL("http://91.107.198.64:7070" + result.getResult2());
-//                                                Bitmap beeBitmap = BitmapFactory.decodeStream(beeUrl.openStream());
-//                                                FileOutputStream beeOut = new FileOutputStream(proFile);
-//                                                beeBitmap.compress(Bitmap.CompressFormat.JPEG, 100, beeOut);
-//                                                beeOut.flush();
-//                                                beeOut.close();
-//                                            }
-//                                            runOnUiThread(() -> binding.profileImage.setImageBitmap(BitmapFactory.decodeFile(proFile.getAbsolutePath())));
-//                                        } catch (Exception e) {
-//                                            e.printStackTrace();
-//                                            System.out.println("PETA EN ESTA LINEA: " + e.toString());
-//                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
-//                                        }
-//                                    });
+                                if (user != null) { // si hay un usuario
+                                    executor.execute(() -> { // ejecuta esto en un hilo de fondo para evitar bloquear el subproceso principal de la interfaz de usuario
+                                        try {
+                                            // Crea un objeto File que apunta al archivo especificado por la ruta de usuario
+                                            File proFile = new File("user.jpg");
 
-//                                        String profileUrl = "http://91.107.198.64:7070" + result.getResult2();
-//                                        Glide.with(HomeActivity.this)
-//                                                .load(profileUrl)
-//                                                .into(binding.profileImage);
+                                            // Verifica si el archivo ya existe en el directorio de archivos. Si no existe, continúa descargando la imagen.
+                                            if (!proFile.exists()) {
+                                                // no se descarga la imagen ya que el archivo ya existe
+                                            }
+
+                                            // Actualiza la imagen en el ImageView "profileImage" en el subproceso de interfaz de usuario con la imagen cargada desde el archivo
+                                            runOnUiThread(() -> binding.profileImage.setImageBitmap(BitmapFactory.decodeFile(proFile.getAbsolutePath())));
+
+                                        } catch (Exception e) { // Si ocurre algún error durante la carga o la escritura del archivo, se captura y se maneja en este bloque de excepción
+                                            e.printStackTrace(); // Muestra una traza de la pila de excepciones en la consola
+                                            System.out.println("PETA EN ESTA LINEA: " + e.toString()); // Muestra un mensaje de error en la consola
+
+                                            // Establece la imagen predeterminada en el ImageView "profileImage" si ocurre algún error durante la carga de la imagen del archivo
+                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                        }
+                                    });
+
+                                    // Crea una cadena que contiene la ubicación de la imagen en el servidor
+                                    String profileUrl = "http://91.107.198.64" + user.getPath_img();
+
+                                    // Descarga y muestra la imagen usando Glide
+                                    Glide.with(HomeActivity.this)
+                                            .load(profileUrl)
+                                            .into(binding.profileImage);
                                 } else {
+                                    // Si no hay un usuario, establece la imagen predeterminada en el ImageView "profileImage"
                                     binding.profileImage.setImageResource(R.drawable.guest_profile);
                                 }
+
                             }
                         });
                     }

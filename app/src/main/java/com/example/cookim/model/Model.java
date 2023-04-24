@@ -8,6 +8,7 @@ import com.example.cookim.dao.UserDao;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,19 @@ public class Model {
 
     public DataResult logout(String token){
         DataResult result = userDao.readResponse(path.LOGOUT, token);
+        return result;
+
+    }
+
+    public DataResult signIn(String username, String password, String full_name, String email, String phone, long id_rol, File file){
+        DataResult result = userDao.validationNewUser(username,
+                password,
+                full_name,
+                email,
+                phone,
+                id_rol,
+                file, path.SIGN);
+
         return result;
 
     }

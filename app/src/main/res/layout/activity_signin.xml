@@ -31,7 +31,8 @@
        android:layout_height="40dp"
        app:layout_constraintTop_toBottomOf="@id/Space1"
        android:backgroundTint="@color/black"
-       android:hint="Username"/>
+       android:hint="Username"
+       android:text="Jojos"/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etPassword"
@@ -43,7 +44,8 @@
         android:backgroundTint="@color/black"
         android:hint="Password"
         android:layout_marginTop="15dp"
-        android:inputType="textPassword"/>
+        android:inputType="textPassword"
+        android:text="Jonathan"/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etFullname"
@@ -54,7 +56,8 @@
         app:layout_constraintTop_toBottomOf="@id/etPassword"
         android:backgroundTint="@color/black"
         android:hint="Full name"
-        android:layout_marginTop="18dp"/>
+        android:layout_marginTop="18dp"
+        android:text="Jonathan Segura"/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etEmail"
@@ -65,7 +68,8 @@
         app:layout_constraintTop_toBottomOf="@id/etFullname"
         android:backgroundTint="@color/black"
         android:hint="Email"
-        android:layout_marginTop="15dp"/>
+        android:layout_marginTop="15dp"
+        android:text="Jojos@gmail.com"/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etTel"
@@ -76,7 +80,8 @@
         app:layout_constraintTop_toBottomOf="@id/etEmail"
         android:backgroundTint="@color/black"
         android:hint="Telefono"
-        android:layout_marginTop="15dp"/>
+        android:layout_marginTop="15dp"
+        android:text="777747744"/>
 
     <Space
         android:id="@+id/Space2"
