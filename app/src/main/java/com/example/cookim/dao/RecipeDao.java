@@ -3,12 +3,15 @@ package com.example.cookim.dao;
 import android.widget.Toast;
 
 import com.example.cookim.model.DataResult;
+import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
+import com.example.cookim.model.recipe.Step;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -41,7 +44,7 @@ public class RecipeDao {
             URL url = new URL(petition);
 
             //L'objecte HttpUrlConnection ens permet manipular una connexió HTTP.
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 
             conn.setRequestMethod("GET");
 
@@ -97,7 +100,6 @@ public class RecipeDao {
     }
 
 
-
     /**
      * Reads Http File and writes in internal Storage
      *
@@ -112,7 +114,7 @@ public class RecipeDao {
             //HTTP request
             System.out.println("ENTRA  " + urlString);
             java.net.URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestMethod("POST");
@@ -195,6 +197,145 @@ public class RecipeDao {
         }
 
         // Returns the DataResult object or null if there was an error
+        return result;
+    }
+
+    /**
+     * request to get all the steps of the recipe identified by the recipe id
+     *
+     * @param path
+     * @param id
+     * @return
+     */
+    public Recipe loadRecipeSteps(String path, int id) {
+
+        Recipe result = null;
+        String param = String.valueOf(id);
+        int i = 0;
+        try {
+            //HTTP request
+            System.out.println("ENTRA  " + path);
+            URL url = new URL(path);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+
+            // Write parameters to the request
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(param.getBytes(StandardCharsets.UTF_8));
+            }
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into UserModel object
+
+                result = parseRecipe(inputStream);
+
+                //
+                inputStream.close();
+
+            }
+
+        } catch (Exception e) {
+            //Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+            System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
+        }
+
+//        return DataResult;
+        return result;
+
+    }
+
+    public Recipe parseRecipe(InputStream inputStream) {
+        Recipe result = null;
+
+        try {
+            // Initializes a BufferedReader object to read the InputStream
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            // Initializes a StringBuilder object to hold the JSON-formatted string
+            StringBuilder stringBuilder = new StringBuilder();
+
+            // Reads each line of the InputStream and appends it to the StringBuilder object
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                stringBuilder.append(linea);
+            }
+
+            // Closes the BufferedReader
+            bufferedReader.close();
+
+            // Removes the quotes around the braces
+            String jsonString = stringBuilder.toString().replaceAll("\"\\{", "{").replaceAll("\\}\"", "}");
+
+            // Debugging statement
+            System.out.println("Respuesta JSON modificada: " + jsonString);
+
+            // Checks if the modified string starts and ends with "{" and "}"
+            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
+
+                JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
+
+                if (jsonObject.has("data")) {
+                    JsonObject dataObject = jsonObject.getAsJsonObject("data");
+                    int id = dataObject.get("id").getAsInt();
+                    int user_id = dataObject.get("user_id").getAsInt();
+                    String name = dataObject.get("name").getAsString();
+                    String description = dataObject.get("description").getAsString();
+                    String path_img = dataObject.get("path_img").getAsString();
+                    double rating = dataObject.get("rating").getAsDouble();
+                    int likes = dataObject.get("likes").getAsInt();
+
+                    List<Step> recipe_steps = new ArrayList<>();
+                    JsonArray stepsArray = dataObject.getAsJsonArray("recipe_steps");
+                    for (JsonElement stepElement : stepsArray) {
+                        JsonObject stepObject = stepElement.getAsJsonObject();
+                        int stepId = stepObject.get("id").getAsInt();
+                        int recipe_id = stepObject.get("recipe_id").getAsInt();
+                        int step_number = stepObject.get("step_number").getAsInt();
+                        String stepDescription = stepObject.get("description").getAsString();
+                        String stepPath = stepObject.get("path").getAsString();
+                        recipe_steps.add(new Step(stepId, recipe_id, step_number, stepDescription, stepPath));
+                    }
+
+                    List<Ingredient> ingredients = new ArrayList<>();
+                    JsonArray ingredientsArray = dataObject.getAsJsonArray("ingredients");
+                    for (JsonElement ingredientElement : ingredientsArray) {
+                        JsonObject ingredientObject = ingredientElement.getAsJsonObject();
+                        int ingredientId = ingredientObject.get("id").getAsInt();
+                        int id_ingredient = ingredientObject.get("id_ingredient").getAsInt();
+                        int id_recipe = ingredientObject.get("id_recipe").getAsInt();
+                        String ingredientName = ingredientObject.get("name").getAsString();
+                        ingredients.add(new Ingredient(ingredientId, id_ingredient, id_recipe, ingredientName));
+                    }
+
+                    result = new Recipe(id, user_id, name, description, path_img, rating, likes, recipe_steps, ingredients);
+                } else {
+                    // Debugging statement
+                    System.out.println("La respuesta indica un error");
+                }
+
+            } else {
+                // Debugging statement
+                System.out.println("La respuesta no es un objeto JSON válido");
+            }
+        } catch (IOException e) {
+            // Debugging statement
+            System.out.println("Error al leer la respuesta: " + e.toString());
+        } catch (JsonSyntaxException e) {
+            // Debugging statement
+            System.out.println("Error al analizar la respuesta JSON: " + e.toString());
+        }
+
+        // Returns the UserModel object
         return result;
     }
 

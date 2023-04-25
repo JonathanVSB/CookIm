@@ -24,8 +24,10 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class UserDao {
 
+    NukeSSLCerts n;
     public UserDao() {
-
+        n = new NukeSSLCerts();
+        n.nuke();
     }
 
     /**
@@ -42,7 +44,7 @@ public class UserDao {
             //HTTP request
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestMethod("POST");
@@ -139,7 +141,7 @@ public class UserDao {
             // HTTPS request
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
@@ -274,7 +276,7 @@ public class UserDao {
         try {
             System.out.println("ENTRA  " + path);
             URL url = new URL(path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "");
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
             connection.setRequestMethod("POST");

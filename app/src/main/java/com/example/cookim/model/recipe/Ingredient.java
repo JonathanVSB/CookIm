@@ -12,4 +12,11 @@ public class Ingredient {
         this.id_recipe = id_recipe;
         this.name = name;
     }
+
+    public Ingredient(int id, int id_ingredient, int id_recipe, String name) {
+        this.id = id;
+        this.id_ingredient = id_ingredient;
+        this.id_recipe = id_recipe;
+        this.name = name;
+    }
 }

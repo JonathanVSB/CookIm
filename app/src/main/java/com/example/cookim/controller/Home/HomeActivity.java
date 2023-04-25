@@ -5,14 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
@@ -109,37 +115,59 @@ public class HomeActivity extends Activity implements HomeListener {
                             public void run() {
                                 // Post Execute
                                 if (user != null) { // si hay un usuario
-                                    executor.execute(() -> { // ejecuta esto en un hilo de fondo para evitar bloquear el subproceso principal de la interfaz de usuario
-                                        try {
-                                            // Crea un objeto File que apunta al archivo especificado por la ruta de usuario
-                                            File proFile = new File("user.jpg");
 
-                                            // Verifica si el archivo ya existe en el directorio de archivos. Si no existe, continúa descargando la imagen.
-                                            if (!proFile.exists()) {
-                                                // no se descarga la imagen ya que el archivo ya existe
-                                            }
-
-                                            // Actualiza la imagen en el ImageView "profileImage" en el subproceso de interfaz de usuario con la imagen cargada desde el archivo
-                                            runOnUiThread(() -> binding.profileImage.setImageBitmap(BitmapFactory.decodeFile(proFile.getAbsolutePath())));
-
-                                        } catch (Exception e) { // Si ocurre algún error durante la carga o la escritura del archivo, se captura y se maneja en este bloque de excepción
-                                            e.printStackTrace(); // Muestra una traza de la pila de excepciones en la consola
-                                            System.out.println("PETA EN ESTA LINEA: " + e.toString()); // Muestra un mensaje de error en la consola
-
-                                            // Establece la imagen predeterminada en el ImageView "profileImage" si ocurre algún error durante la carga de la imagen del archivo
-                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
-                                        }
-                                    });
-
-                                    // Crea una cadena que contiene la ubicación de la imagen en el servidor
-                                    String profileUrl = "http://91.107.198.64" + user.getPath_img();
-
-                                    // Descarga y muestra la imagen usando Glide
+                                    String img = model.downloadImg(user.getPath_img());
                                     Glide.with(HomeActivity.this)
-                                            .load(profileUrl)
+                                            .load(img)
+                                            .listener(new RequestListener<Drawable>() {
+                                                @Override
+                                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                                    // Manejar el fallo de carga de la imagen aquí
+                                                    binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                                    return false;
+                                                }
+
+                                                @Override
+                                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                                    // La imagen se ha cargado correctamente
+                                                    return false;
+                                                }
+                                            })
                                             .into(binding.profileImage);
+
+
+
+//                                    executor.execute(() -> { // ejecuta esto en un hilo de fondo para evitar bloquear el subproceso principal de la interfaz de usuario
+//                                        try {
+//                                            // Crea un objeto File que apunta al archivo especificado por la ruta de usuario
+//                                            File proFile = new File("user.jpg");
+//
+//                                            // Verifica si el archivo ya existe en el directorio de archivos. Si no existe, continúa descargando la imagen.
+//                                            if (!proFile.exists()) {
+//                                                // no se descarga la imagen ya que el archivo ya existe
+//                                            }
+//
+//                                            // Actualiza la imagen en el ImageView "profileImage" en el subproceso de interfaz de usuario con la imagen cargada desde el archivo
+//                                            runOnUiThread(() -> binding.profileImage.setImageBitmap(BitmapFactory.decodeFile(proFile.getAbsolutePath())));
+//
+//                                        } catch (Exception e) { // Si ocurre algún error durante la carga o la escritura del archivo, se captura y se maneja en este bloque de excepción
+//                                            e.printStackTrace(); // Muestra una traza de la pila de excepciones en la consola
+//                                            System.out.println("PETA EN ESTA LINEA: " + e.toString()); // Muestra un mensaje de error en la consola
+//
+//                                            // Establece la imagen predeterminada en el ImageView "profileImage" si ocurre algún error durante la carga de la imagen del archivo
+//                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
+//                                        }
+//                                    });
+//
+//                                    // Crea una cadena que contiene la ubicación de la imagen en el servidor
+//                                    String profileUrl = "http://91.107.198.64" + user.getPath_img();
+//
+//                                    // Descarga y muestra la imagen usando Glide
+//                                    Glide.with(HomeActivity.this)
+//                                            .load(profileUrl)
+//                                            .into(binding.profileImage);
                                 } else {
-                                    // Si no hay un usuario, establece la imagen predeterminada en el ImageView "profileImage"
+//                                    // Si no hay un usuario, establece la imagen predeterminada en el ImageView "profileImage"
                                     binding.profileImage.setImageResource(R.drawable.guest_profile);
                                 }
 
@@ -213,6 +241,8 @@ public class HomeActivity extends Activity implements HomeListener {
     @Override
     public void onItemClicked(int id) {
         Intent intent = new Intent(this, RecipeStepsActivity.class);
+        intent.putExtra("recipe_id", id);
         startActivity(intent);
     }
+
 }

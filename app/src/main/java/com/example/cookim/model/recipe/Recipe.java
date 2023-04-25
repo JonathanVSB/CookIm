@@ -35,6 +35,18 @@ public class Recipe {
         this.comments = new ArrayList<>();
     }*/
 
+    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, List<Step> recipe_steps, List<Ingredient> ingredients) {
+        this.id = id;
+        this.user_id = user_id;
+        this.name = name;
+        this.description = description;
+        this.path_img = path_img;
+        this.rating = rating;
+        this.likes = likes;
+        this.recipe_steps = recipe_steps;
+        this.ingredients = ingredients;
+    }
+
     public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, String user_name) {
         this.id = id;
         this.user_id = user_id;

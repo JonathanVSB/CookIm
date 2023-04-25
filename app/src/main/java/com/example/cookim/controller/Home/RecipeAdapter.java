@@ -2,6 +2,7 @@ package com.example.cookim.controller.Home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -9,8 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.bitmap.FitCenter;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
 import com.example.cookim.controller.RecipeStepsActivity;
 import com.example.cookim.databinding.ItemRecipeContentBinding;
@@ -43,7 +53,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         handler = new Handler(Looper.getMainLooper());
 
 
-
 //        this.press = false;
     }
 
@@ -52,6 +61,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public RecipeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemRecipeContentBinding binding = ItemRecipeContentBinding.inflate(inflater, parent, false);
+
         return new RecipeViewHolder(binding.getRoot());
     }
 
@@ -63,6 +73,33 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
         holder.binding.tvPoster.setText(recipe.getUsername());
         holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+
+        if (recipe.getPath_img() != null && !recipe.getPath_img().isEmpty()) {
+            //Load img with Glide
+            String img = model.downloadImg(recipe.getPath_img());
+            int width = 500; // Ancho deseado en píxeles
+            int height = 216;
+
+            RequestOptions requestOptions = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(width, height) // Establece las dimensiones deseadas
+                    .transform(new FitCenter());
+
+            Glide.with(holder.itemView.getContext())
+                    .load(img)
+                    .apply(requestOptions)
+                    .into(holder.binding.img01);
+        } else {
+            holder.binding.img01.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
+        }
+
+
+
+//
+//            Glide.with(holder.itemView.getContext())
+//                    .load(img)
+//
+
 
         holder.binding.btLike.setOnClickListener(new View.OnClickListener() {
             @Override
