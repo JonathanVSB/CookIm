@@ -29,4 +29,11 @@ public class Step {
         this.description = description;
         this.path = path;
     }
+
+    public Step(int id, int recipe_id, int step_number, String description) {
+        this.id = id;
+        this.recipe_id = recipe_id;
+        this.step_number = step_number;
+        this.description = description;
+    }
 }

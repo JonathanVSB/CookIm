@@ -40,11 +40,6 @@ import java.util.concurrent.Executors;
 public class HomeActivity extends Activity implements HomeListener {
 
     private ActivityHomeBinding binding;
-
-    private final String URL = "http://91.107.198.64:7070/Cookim/";
-    private final String URL2 = "http://192.168.127.102:7070/Cookim/";
-    private final String URL3 = "http://192.168.127.94:7070/Cookim/";
-
     Executor executor = Executors.newSingleThreadExecutor();
     Handler handler;
 
@@ -90,7 +85,7 @@ public class HomeActivity extends Activity implements HomeListener {
     private void loadHomePage(String a) {
         String data1 = "my-profile";
         String data2 = "home-page";
-        String url = URL3;
+
         String token = a;
 
         try {

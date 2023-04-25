@@ -32,7 +32,9 @@ public class RecipeStepsActivity extends Activity {
         executor.execute(new Runnable() {
             @Override
             public void run() {
+
                 Recipe recipe = model.loadRecipeSteps(id);
+                System.out.println("Funciona");
             }
         });
 

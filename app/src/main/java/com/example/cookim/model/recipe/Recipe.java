@@ -14,7 +14,7 @@ public class Recipe {
     public double rating;
     public int likes;
     public String user_name;
-    public List<Step> recipe_steps;
+    public List<Step> steps;
     public List<Comment> comments;
     public List<Ingredient> ingredients;
 
@@ -35,7 +35,8 @@ public class Recipe {
         this.comments = new ArrayList<>();
     }*/
 
-    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, List<Step> recipe_steps, List<Ingredient> ingredients) {
+    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, List<Ingredient> ingredients, List<Step>
+            steps) {
         this.id = id;
         this.user_id = user_id;
         this.name = name;
@@ -43,8 +44,9 @@ public class Recipe {
         this.path_img = path_img;
         this.rating = rating;
         this.likes = likes;
-        this.recipe_steps = recipe_steps;
         this.ingredients = ingredients;
+        this.steps = steps;
+
     }
 
     public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, String user_name) {
@@ -56,9 +58,10 @@ public class Recipe {
         this.rating = rating;
         this.likes = likes;
         this.user_name = user_name;
-        this.recipe_steps = new ArrayList<>();
-        this.comments = new ArrayList<>();
         this.ingredients = new ArrayList<>();
+        this.steps = new ArrayList<>();
+        this.comments = new ArrayList<>();
+
     }
 
     public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes) {
@@ -69,7 +72,7 @@ public class Recipe {
         this.path_img = path_img;
         this.rating = rating;
         this.likes = likes;
-        this.recipe_steps = new ArrayList<>();
+        this.steps = new ArrayList<>();
         this.comments = new ArrayList<>();
         this.ingredients = new ArrayList<>();
     }
@@ -133,12 +136,12 @@ public class Recipe {
         this.likes = likes;
     }
 
-    public List<Step> getRecipe_steps() {
-        return recipe_steps;
+    public List<Step> getSteps() {
+        return steps;
     }
 
-    public void setRecipe_steps(List<Step> recipe_steps) {
-        this.recipe_steps = recipe_steps;
+    public void setSteps(List<Step> steps) {
+        this.steps = steps;
     }
 
     public List<Comment> getComments() {

@@ -223,6 +223,8 @@ public class RecipeDao {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
+            String authHeader = "Bearer " + param;
+            connection.setRequestProperty("Authorization", authHeader);
 
             // Write parameters to the request
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
@@ -256,6 +258,8 @@ public class RecipeDao {
 
     public Recipe parseRecipe(InputStream inputStream) {
         Recipe result = null;
+        List<Ingredient> ingredients = new ArrayList<>();
+        List<Step> steps = new ArrayList<>();
 
         try {
             // Initializes a BufferedReader object to read the InputStream
@@ -287,26 +291,15 @@ public class RecipeDao {
                 if (jsonObject.has("data")) {
                     JsonObject dataObject = jsonObject.getAsJsonObject("data");
                     int id = dataObject.get("id").getAsInt();
-                    int user_id = dataObject.get("user_id").getAsInt();
+                    int user_id = dataObject.get("id_user").getAsInt();
                     String name = dataObject.get("name").getAsString();
                     String description = dataObject.get("description").getAsString();
                     String path_img = dataObject.get("path_img").getAsString();
                     double rating = dataObject.get("rating").getAsDouble();
                     int likes = dataObject.get("likes").getAsInt();
 
-                    List<Step> recipe_steps = new ArrayList<>();
-                    JsonArray stepsArray = dataObject.getAsJsonArray("recipe_steps");
-                    for (JsonElement stepElement : stepsArray) {
-                        JsonObject stepObject = stepElement.getAsJsonObject();
-                        int stepId = stepObject.get("id").getAsInt();
-                        int recipe_id = stepObject.get("recipe_id").getAsInt();
-                        int step_number = stepObject.get("step_number").getAsInt();
-                        String stepDescription = stepObject.get("description").getAsString();
-                        String stepPath = stepObject.get("path").getAsString();
-                        recipe_steps.add(new Step(stepId, recipe_id, step_number, stepDescription, stepPath));
-                    }
 
-                    List<Ingredient> ingredients = new ArrayList<>();
+
                     JsonArray ingredientsArray = dataObject.getAsJsonArray("ingredients");
                     for (JsonElement ingredientElement : ingredientsArray) {
                         JsonObject ingredientObject = ingredientElement.getAsJsonObject();
@@ -315,9 +308,23 @@ public class RecipeDao {
                         int id_recipe = ingredientObject.get("id_recipe").getAsInt();
                         String ingredientName = ingredientObject.get("name").getAsString();
                         ingredients.add(new Ingredient(ingredientId, id_ingredient, id_recipe, ingredientName));
+
+
                     }
 
-                    result = new Recipe(id, user_id, name, description, path_img, rating, likes, recipe_steps, ingredients);
+
+                    JsonArray stepsArray = dataObject.getAsJsonArray("steps");
+                    for (JsonElement stepElement : stepsArray) {
+                        JsonObject stepObject = stepElement.getAsJsonObject();
+                        int stepId = stepObject.get("id").getAsInt();
+                        int recipe_id = stepObject.get("recipe_id").getAsInt();
+                        int step_number = stepObject.get("step_number").getAsInt();
+                        String stepDescription = stepObject.get("description").getAsString();
+                        //String stepPath = stepObject.get("path").getAsString();
+                        steps.add(new Step(stepId, recipe_id, step_number, stepDescription/*, stepPath*/));
+                    }
+
+                    result = new Recipe(id, user_id, name, description, path_img, rating, likes, ingredients, steps);
                 } else {
                     // Debugging statement
                     System.out.println("La respuesta indica un error");
