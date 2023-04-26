@@ -207,13 +207,62 @@ public class RecipeDao {
      * @param id
      * @return
      */
+//    public Recipe loadRecipeSteps(String path, int id) {
+//
+//        Recipe result = null;
+//        String param = String.valueOf(id);
+//        int i = 0;
+//        try {
+//            //HTTP request
+//            System.out.println("ENTRA  " + path);
+//            URL url = new URL(path);
+//            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+//            connection.setRequestProperty("User-Agent", "");
+//            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//            connection.setRequestMethod("POST");
+//            connection.setDoInput(true);
+//            connection.setDoOutput(true);
+//
+//            String authHeader = "Bearer " + param;
+//            connection.setRequestProperty("Authorization", authHeader);
+//
+//            // Write parameters to the request
+//            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+//                wr.write(param.getBytes(StandardCharsets.UTF_8));
+//            }
+//
+//            connection.connect();
+//
+//            if (connection != null) {
+//                // read Stream
+//                InputStream inputStream = connection.getInputStream();
+//
+//                // parse the response into UserModel object
+//
+//                result = parseRecipe(inputStream);
+//
+//                //
+//                inputStream.close();
+//
+//            }
+//
+//        } catch (Exception e) {
+//            //Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+//            System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
+//        }
+//
+////        return DataResult;
+//        return result;
+//
+//    }
+
     public Recipe loadRecipeSteps(String path, int id) {
 
         Recipe result = null;
         String param = String.valueOf(id);
         int i = 0;
         try {
-            //HTTP request
+            // HTTP request
             System.out.println("ENTRA  " + path);
             URL url = new URL(path);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -223,12 +272,10 @@ public class RecipeDao {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            String authHeader = "Bearer " + param;
-            connection.setRequestProperty("Authorization", authHeader);
-
             // Write parameters to the request
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.write(param.getBytes(StandardCharsets.UTF_8));
+                String requestBody = "id=" + param;
+                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
             }
 
             connection.connect();
@@ -241,20 +288,19 @@ public class RecipeDao {
 
                 result = parseRecipe(inputStream);
 
-                //
                 inputStream.close();
 
             }
 
         } catch (Exception e) {
-            //Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
             System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
         }
 
-//        return DataResult;
         return result;
 
     }
+
+
 
     public Recipe parseRecipe(InputStream inputStream) {
         Recipe result = null;
@@ -297,6 +343,9 @@ public class RecipeDao {
                     String path_img = dataObject.get("path_img").getAsString();
                     double rating = dataObject.get("rating").getAsDouble();
                     int likes = dataObject.get("likes").getAsInt();
+                    String user = dataObject.get("user_name").getAsString();
+                    String path = dataObject.get("path").getAsString();
+
 
 
 
@@ -304,10 +353,8 @@ public class RecipeDao {
                     for (JsonElement ingredientElement : ingredientsArray) {
                         JsonObject ingredientObject = ingredientElement.getAsJsonObject();
                         int ingredientId = ingredientObject.get("id").getAsInt();
-                        int id_ingredient = ingredientObject.get("id_ingredient").getAsInt();
-                        int id_recipe = ingredientObject.get("id_recipe").getAsInt();
                         String ingredientName = ingredientObject.get("name").getAsString();
-                        ingredients.add(new Ingredient(ingredientId, id_ingredient, id_recipe, ingredientName));
+                        ingredients.add(new Ingredient(ingredientId, ingredientName));
 
 
                     }
@@ -320,11 +367,11 @@ public class RecipeDao {
                         int recipe_id = stepObject.get("recipe_id").getAsInt();
                         int step_number = stepObject.get("step_number").getAsInt();
                         String stepDescription = stepObject.get("description").getAsString();
-                        //String stepPath = stepObject.get("path").getAsString();
+//                        String user_name = stepObject.get("path").getAsString();
                         steps.add(new Step(stepId, recipe_id, step_number, stepDescription/*, stepPath*/));
                     }
 
-                    result = new Recipe(id, user_id, name, description, path_img, rating, likes, ingredients, steps);
+                    result = new Recipe(id, user_id, name, description, path_img, rating, likes, user, path, steps, ingredients);
                 } else {
                     // Debugging statement
                     System.out.println("La respuesta indica un error");

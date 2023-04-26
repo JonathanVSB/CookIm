@@ -2,21 +2,24 @@ package com.example.cookim.model.recipe;
 
 public class Ingredient {
     int id;
-    int id_ingredient;
-    int id_recipe;
     String name;
 
     //CONSTRUCTOR
-    public Ingredient(int id_ingredient, int id_recipe, String name) {
-        this.id_ingredient = id_ingredient;
-        this.id_recipe = id_recipe;
+
+    public Ingredient(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 
-    public Ingredient(int id, int id_ingredient, int id_recipe, String name) {
-        this.id = id;
-        this.id_ingredient = id_ingredient;
-        this.id_recipe = id_recipe;
+
+    //GETTERS AND SETTERS
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 }

@@ -25,9 +25,12 @@ import javax.net.ssl.HttpsURLConnection;
 public class UserDao {
 
     NukeSSLCerts n;
+
     public UserDao() {
         n = new NukeSSLCerts();
         n.nuke();
+
+
     }
 
     /**

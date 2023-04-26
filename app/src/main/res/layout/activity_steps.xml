@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/ic_degraded_gray">
 
 
     <androidx.core.widget.NestedScrollView
@@ -29,8 +30,10 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="15dp"
-                android:layout_marginTop="0dp"
+                android:layout_marginTop="10dp"
                 android:src="@drawable/img_burger"
+                app:shapeAppearanceOverlay="@style/circleImageView"
+                android:scaleType="centerCrop"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,16 +46,16 @@
 
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/name_recipe"
-                    android:layout_width="215dp"
-                    android:layout_height="62dp"
+                    android:id="@+id/tvnameRecipe"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
                     android:text="Tostada de pollo con lechuga"
+                    android:fontFamily="@font/ubunturegular"
                     android:textAlignment="textStart"
-                    android:textColor="@color/black"
-                    android:textSize="25dp"
-                    android:textStyle="bold"
+                    android:textColor="@color/text"
+                    android:textSize="30dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/cooker"
 
@@ -77,9 +80,11 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TableLayout
+                        android:id="@+id/tbIngredients"
                         android:layout_width="300dp"
                         android:layout_height="wrap_content"
                         android:divider="@android:color/black"
+
                         android:elevation="4dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -93,6 +98,7 @@
                             android:showDividers="middle">
 
                             <TextView
+                                android:id="@+id/tvLikes"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
@@ -102,6 +108,7 @@
                                 android:textSize="30dp" />
 
                             <TextView
+                                android:id="@+id/tvnumSteps"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
@@ -181,10 +188,10 @@
                     android:layout_width="183dp"
                     android:layout_height="43dp"
                     android:layout_marginStart="10dp"
-                    android:fontFamily="@font/ubuntumedium"
                     android:text="Description"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text"
                     android:textSize="30dp"
+                    android:fontFamily="@font/ubunturegular"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/Description"
                     app:layout_goneMarginStart="30dp" />
@@ -192,7 +199,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvDescription"
                     android:layout_width="354dp"
-                    android:layout_height="56dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:fontFamily="@font/ubunturegular"
                     android:text="The description of the recipe has to be contained in this pace"
@@ -217,10 +224,10 @@
                     android:layout_width="183dp"
                     android:layout_height="43dp"
                     android:layout_marginStart="10dp"
-                    android:fontFamily="@font/ubuntumedium"
                     android:text="Ingredients"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text"
                     android:textSize="30dp"
+                    android:fontFamily="@font/ubunturegular"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/Ingredients"
                     app:layout_goneMarginStart="30dp" />
@@ -232,42 +239,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/ingredientTitle">
 
-                    <TableRow
-                        android:id="@+id/row1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/white"
-                        android:divider="@android:color/black">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Ingrediente"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp" />
-
-
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/row2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:background="@color/white"
-                        >
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Ingrediente"
-                            android:textColor="@android:color/black"
-                            android:textSize="18sp" />
-
-                    </TableRow>
 
                 </TableLayout>
 
@@ -291,67 +262,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="15dp"
                     app:layout_constraintTop_toTopOf="@id/Steps">
 
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@color/white">
-
-                        <include layout="@layout/item_step_content"/>
-
-
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/white">
-
-                        <include layout="@layout/item_step_content"/>
-
-
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/white">
-
-                        <include layout="@layout/item_step_content"/>
-
-
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/white">
-
-                        <include layout="@layout/item_step_content"/>
-
-
-                    </TableRow>
-
-                    <TableRow
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@color/white">
-
-                        <include layout="@layout/item_step_content"/>
-
-
-                    </TableRow>
 
 
                 </TableLayout>

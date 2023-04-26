@@ -14,9 +14,11 @@ public class Recipe {
     public double rating;
     public int likes;
     public String user_name;
+    public String path;
     public List<Step> steps;
     public List<Comment> comments;
     public List<Ingredient> ingredients;
+
 
     private boolean liked;
 
@@ -35,6 +37,9 @@ public class Recipe {
         this.comments = new ArrayList<>();
     }*/
 
+    public Recipe() {
+    }
+
     public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, List<Ingredient> ingredients, List<Step>
             steps) {
         this.id = id;
@@ -47,6 +52,20 @@ public class Recipe {
         this.ingredients = ingredients;
         this.steps = steps;
 
+    }
+
+    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, String user_name, String path, List<Step> steps, List<Ingredient> ingredients) {
+        this.id = id;
+        this.user_id = user_id;
+        this.name = name;
+        this.description = description;
+        this.path_img = path_img;
+        this.rating = rating;
+        this.likes = likes;
+        this.user_name = user_name;
+        this.path = path;
+        this.steps = steps;
+        this.ingredients = ingredients;
     }
 
     public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, String user_name) {
@@ -76,6 +95,10 @@ public class Recipe {
         this.comments = new ArrayList<>();
         this.ingredients = new ArrayList<>();
     }
+
+
+
+
 
     //GETTERS AND SETTERS
 
@@ -177,5 +200,13 @@ public class Recipe {
 
     public void setLiked(boolean liked) {
         this.liked = liked;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }
