@@ -200,66 +200,10 @@ public class RecipeDao {
         return result;
     }
 
-    /**
-     * request to get all the steps of the recipe identified by the recipe id
-     *
-     * @param path
-     * @param id
-     * @return
-     */
-//    public Recipe loadRecipeSteps(String path, int id) {
-//
-//        Recipe result = null;
-//        String param = String.valueOf(id);
-//        int i = 0;
-//        try {
-//            //HTTP request
-//            System.out.println("ENTRA  " + path);
-//            URL url = new URL(path);
-//            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-//            connection.setRequestProperty("User-Agent", "");
-//            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//            connection.setRequestMethod("POST");
-//            connection.setDoInput(true);
-//            connection.setDoOutput(true);
-//
-//            String authHeader = "Bearer " + param;
-//            connection.setRequestProperty("Authorization", authHeader);
-//
-//            // Write parameters to the request
-//            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-//                wr.write(param.getBytes(StandardCharsets.UTF_8));
-//            }
-//
-//            connection.connect();
-//
-//            if (connection != null) {
-//                // read Stream
-//                InputStream inputStream = connection.getInputStream();
-//
-//                // parse the response into UserModel object
-//
-//                result = parseRecipe(inputStream);
-//
-//                //
-//                inputStream.close();
-//
-//            }
-//
-//        } catch (Exception e) {
-//            //Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-//            System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
-//        }
-//
-////        return DataResult;
-//        return result;
-//
-//    }
-
-    public Recipe loadRecipeSteps(String path, int id) {
+    public Recipe loadRecipeSteps(String path, int id, String token) {
 
         Recipe result = null;
-        String param = String.valueOf(id);
+        String param = token + ":" + String.valueOf(id);
         int i = 0;
         try {
             // HTTP request
@@ -272,10 +216,12 @@ public class RecipeDao {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
+            String authHeader = "Bearer " + param;
+            connection.setRequestProperty("Authorization", authHeader);
+
             // Write parameters to the request
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                String requestBody = "id=" + param;
-                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
+                wr.write(param.getBytes(StandardCharsets.UTF_8));
             }
 
             connection.connect();
@@ -301,11 +247,8 @@ public class RecipeDao {
     }
 
 
-
     public Recipe parseRecipe(InputStream inputStream) {
         Recipe result = null;
-        List<Ingredient> ingredients = new ArrayList<>();
-        List<Step> steps = new ArrayList<>();
 
         try {
             // Initializes a BufferedReader object to read the InputStream
@@ -334,47 +277,49 @@ public class RecipeDao {
 
                 JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 
-                if (jsonObject.has("data")) {
+                if (jsonObject.has("result") && jsonObject.has("data")) {
+                    int resultCode = jsonObject.get("result").getAsInt();
                     JsonObject dataObject = jsonObject.getAsJsonObject("data");
-                    int id = dataObject.get("id").getAsInt();
-                    int user_id = dataObject.get("id_user").getAsInt();
-                    String name = dataObject.get("name").getAsString();
-                    String description = dataObject.get("description").getAsString();
-                    String path_img = dataObject.get("path_img").getAsString();
-                    double rating = dataObject.get("rating").getAsDouble();
-                    int likes = dataObject.get("likes").getAsInt();
-                    String user = dataObject.get("user_name").getAsString();
-                    String path = dataObject.get("path").getAsString();
 
+                    if (resultCode == 1) {
+                        int id = dataObject.get("id").getAsInt();
+                        int user_id = dataObject.get("id_user").getAsInt();
+                        String name = dataObject.get("name").getAsString();
+                        String description = dataObject.get("description").getAsString();
+                        String path_img = dataObject.get("path_img").getAsString();
+                        double rating = dataObject.get("rating").getAsDouble();
+                        int likes = dataObject.get("likes").getAsInt();
+                        String user = dataObject.get("user_name").getAsString();
+                        String path = dataObject.get("path").getAsString();
 
+                        List<Ingredient> ingredients = new ArrayList<>();
+                        JsonArray ingredientsArray = dataObject.getAsJsonArray("ingredients");
+                        for (JsonElement ingredientElement : ingredientsArray) {
+                            JsonObject ingredientObject = ingredientElement.getAsJsonObject();
+                            int ingredientId = ingredientObject.get("id").getAsInt();
+                            String ingredientName = ingredientObject.get("name").getAsString();
+                            ingredients.add(new Ingredient(ingredientId, ingredientName));
+                        }
 
+                        List<Step> steps = new ArrayList<>();
+                        JsonArray stepsArray = dataObject.getAsJsonArray("steps");
+                        for (JsonElement stepElement : stepsArray) {
+                            JsonObject stepObject = stepElement.getAsJsonObject();
+                            int stepId = stepObject.get("id").getAsInt();
+                            int recipe_id = stepObject.get("recipe_id").getAsInt();
+                            int step_number = stepObject.get("step_number").getAsInt();
+                            String stepDescription = stepObject.get("description").getAsString();
+                            steps.add(new Step(stepId, recipe_id, step_number, stepDescription));
+                        }
 
-                    JsonArray ingredientsArray = dataObject.getAsJsonArray("ingredients");
-                    for (JsonElement ingredientElement : ingredientsArray) {
-                        JsonObject ingredientObject = ingredientElement.getAsJsonObject();
-                        int ingredientId = ingredientObject.get("id").getAsInt();
-                        String ingredientName = ingredientObject.get("name").getAsString();
-                        ingredients.add(new Ingredient(ingredientId, ingredientName));
-
-
+                        result = new Recipe(id, user_id, name, description, path_img, rating, likes, user, path, steps, ingredients);
+                    } else {
+                        // Debugging statement
+                        result = null;
                     }
-
-
-                    JsonArray stepsArray = dataObject.getAsJsonArray("steps");
-                    for (JsonElement stepElement : stepsArray) {
-                        JsonObject stepObject = stepElement.getAsJsonObject();
-                        int stepId = stepObject.get("id").getAsInt();
-                        int recipe_id = stepObject.get("recipe_id").getAsInt();
-                        int step_number = stepObject.get("step_number").getAsInt();
-                        String stepDescription = stepObject.get("description").getAsString();
-//                        String user_name = stepObject.get("path").getAsString();
-                        steps.add(new Step(stepId, recipe_id, step_number, stepDescription/*, stepPath*/));
-                    }
-
-                    result = new Recipe(id, user_id, name, description, path_img, rating, likes, user, path, steps, ingredients);
                 } else {
                     // Debugging statement
-                    System.out.println("La respuesta indica un error");
+                    System.out.println("La respuesta no tiene el formato esperado");
                 }
 
             } else {
@@ -393,5 +338,98 @@ public class RecipeDao {
         return result;
     }
 
+    public List<Recipe> loadMyRecipes(String path, String token){
+            List<Recipe> recipes = new ArrayList<>();
+            Recipe result = null;
+            String param = token;
+            int i = 0;
+            try {
+                // HTTP request
+                System.out.println("ENTRA  " + path);
+                URL url = new URL(path);
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setRequestProperty("User-Agent", "");
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setRequestMethod("POST");
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+
+                String authHeader = "Bearer " + param;
+                connection.setRequestProperty("Authorization", authHeader);
+
+                // Write parameters to the request
+                try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                    wr.write(param.getBytes(StandardCharsets.UTF_8));
+                }
+
+                connection.connect();
+
+                if (connection != null) {
+                    // read Stream
+                    InputStream inputStream = connection.getInputStream();
+
+                    // parse the response into UserModel object
+
+                    recipes = parseRecipeList(inputStream);
+
+                    inputStream.close();
+
+                }
+
+            } catch (Exception e) {
+                System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
+            }
+
+            return recipes;
+
+        }
+
+    public List<Recipe> parseRecipeList(InputStream inputStream) {
+        List<Recipe> result = new ArrayList<>();
+
+        try {
+            // Initializes a BufferedReader object to read the InputStream
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            // Reads each line of the InputStream and creates a Recipe object without ingredients and steps
+            String linea;
+            while ((linea = bufferedReader.readLine()) != null) {
+                // Parses the JSON object for the current line
+                JsonObject jsonObject = JsonParser.parseString(linea).getAsJsonObject();
+
+                // Extracts the recipe data from the JSON object
+                int id = jsonObject.get("id").getAsInt();
+                int user_id = jsonObject.get("id_user").getAsInt();
+                String name = jsonObject.get("name").getAsString();
+                String description = jsonObject.get("description").getAsString();
+                String path_img = jsonObject.get("path_img").getAsString();
+                double rating = jsonObject.get("rating").getAsDouble();
+                int likes = jsonObject.get("likes").getAsInt();
+                String user_name = jsonObject.get("user_name").getAsString();
+                String path = jsonObject.get("path").getAsString();
+
+                // Creates a new Recipe object with the extracted data and empty ingredient and step lists
+                Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes, user_name, path, new ArrayList<>(), new ArrayList<>());
+
+                // Adds the new Recipe object to the list of recipes
+                result.add(recipe);
+            }
+
+            // Closes the BufferedReader
+            bufferedReader.close();
+
+        } catch (IOException e) {
+            // Debugging statement
+            System.out.println("Error al leer la respuesta: " + e.toString());
+        } catch (JsonSyntaxException e) {
+            // Debugging statement
+            System.out.println("Error al analizar la respuesta JSON: " + e.toString());
+        }
+
+        return result;
+    }
 
 }
+
+
+

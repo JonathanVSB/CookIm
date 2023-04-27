@@ -1,6 +1,7 @@
 package com.example.cookim.controller;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -30,6 +31,7 @@ import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.recipe.Step;
 
+import java.io.FileInputStream;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -49,10 +51,10 @@ public class RecipeStepsActivity extends Activity {
         handler = new Handler(Looper.getMainLooper());
         model = new Model();
         binding = ActivityStepsBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+//        setContentView(binding.getRoot());
 
         bind = ItemStepContentBinding.inflate(getLayoutInflater());
-
+        String token = readToken();
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("recipe_id", -1);
@@ -61,7 +63,7 @@ public class RecipeStepsActivity extends Activity {
             @Override
             public void run() {
 
-                Recipe recipe = model.loadRecipeSteps(id);
+                Recipe recipe = model.loadRecipeSteps(id, token);
                 System.out.println("Funciona");
 
                 if (recipe != null) {
@@ -70,9 +72,13 @@ public class RecipeStepsActivity extends Activity {
                         @Override
                         public void run() {
                             loadPage(recipe);
+                            setContentView(binding.getRoot());
                         }
                     });
 
+
+                } else {
+                    displayLogInPage();
 
                 }
             }
@@ -124,9 +130,7 @@ public class RecipeStepsActivity extends Activity {
             //If the cooker of the recipe has profile picture
 
 
-
-            if (recipe.getPath() !=null)
-            {
+            if (recipe.getPath() != null) {
                 String img2 = model.downloadImg(recipe.getPath());
                 Glide.with(RecipeStepsActivity.this)
                         .load(img2)
@@ -147,8 +151,7 @@ public class RecipeStepsActivity extends Activity {
                         .into(binding.userimg);
                 System.out.println("imagen de usuario cargada");
 
-            }else
-            {
+            } else {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -156,7 +159,6 @@ public class RecipeStepsActivity extends Activity {
                     }
                 });
             }
-
 
 
         }
@@ -176,7 +178,6 @@ public class RecipeStepsActivity extends Activity {
             tvIngrediente.setTextColor(Color.BLACK);
 
 
-
             row.addView(tvIngrediente);
 
 
@@ -186,52 +187,94 @@ public class RecipeStepsActivity extends Activity {
         }
         System.out.println("cargada con los datos");
 
-    //carga de items de los pasos
+        //carga de items de los pasos
         for (int i = 0; i < recipe.getSteps().size(); i++) {
             Step step = recipe.getSteps().get(i);
 
             // Inflar el layout item_step_content
             ItemStepContentBinding stepBinding = ItemStepContentBinding.inflate(getLayoutInflater());
 
-            // Configurar el contenido de los elementos de la vista inflada
             stepBinding.stepnum.setText(String.valueOf(step.getStep_number()));
             stepBinding.tvDescription.setText(step.getDescription());
-//                if (!step.getPath().isEmpty()) {
-////                            String img = model.downloadImg(step.getPath());
-////                            Glide.with(RecipeStepsActivity.this)
-////                                    .load(img)
-////                                    .listener(new RequestListener<Drawable>() {
-////                                        @Override
-////                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-////                                            // Manejar el fallo de carga de la imagen aquí
-////                                            bind.stepPic.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
-////                                            return false;
-////                                        }
-////
-////                                        @Override
-////                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-////                                            // La imagen se ha cargado correctamente
-////                                            return false;
-////                                        }
-////                                    })
-////                                    .into(bind.stepPic);
+            if (step.getPath() != null) {
+                String img = model.downloadImg(step.getPath());
+                Glide.with(this)
+                        .load(img)
+                        .listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                // Handle image loading failure here
+                                stepBinding.stepPic.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
+                                return false;
+                            }
 
-            // Crear una nueva fila para la tabla
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                // The image has been loaded successfully
+                                return false;
+                            }
+                        })
+                        .into(stepBinding.stepPic);
+            }
+
+            // Create a new row for the table
             TableRow row = new TableRow(RecipeStepsActivity.this);
 
-
             TableRow.LayoutParams params = new TableRow.LayoutParams();
-            params.setMargins(100, 0, 0, 0); // Reemplazar -50 con la cantidad de píxeles que deseas mover hacia la izquierda
+            params.setMargins(100, 0, 0, 0); // Replace -50 with the number of pixels you want to move to the left
             row.setLayoutParams(params);
 
             row.addView(stepBinding.getRoot());
 
-            // Agregar la fila a la tabla en el hilo principal
-
+            // Add the row to the table in the main thread
             binding.tlsteps.addView(row);
-
         }
     }
+
+    /**
+     * Read an internal file read the token stored there
+     *
+     * @return the token or null
+     */
+    private String readToken() {
+        // Gets an instance of the application context
+        Context context = getApplicationContext();
+
+        // Open the file in write mode and create the FileOutputStream object
+        FileInputStream inputStream;
+        try {
+            inputStream = context.openFileInput("token.txt");
+
+            //Reads the token data from file
+            StringBuilder stringBuilder = new StringBuilder();
+            int c;
+            while ((c = inputStream.read()) != -1) {
+                stringBuilder.append((char) c);
+            }
+            String token = stringBuilder.toString();
+
+            //Close the FileInputStream Object
+            inputStream.close();
+
+            // returns token
+            return token;
+        } catch (Exception e) {
+            //e.printStackTrace();
+            System.out.println("Error al leer la respuesta: " + e.toString());
+        }
+
+        // if file is empty, returns null
+        return null;
+    }
+
+    /**
+     * Display the login Page
+     */
+    private void displayLogInPage() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
 }
 
 

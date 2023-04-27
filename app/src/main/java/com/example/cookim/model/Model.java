@@ -14,6 +14,7 @@ import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -80,9 +81,10 @@ public class Model {
 
     }
 
-    public Recipe loadRecipeSteps(int id)
+    public Recipe loadRecipeSteps(int id, String token)
     {
-        Recipe recipe = recipeDao.loadRecipeSteps(path.STEPS,id);
+        Recipe recipe = recipeDao.loadRecipeSteps(path.STEPS,id, token);
+
         return recipe;
 
     }
@@ -132,7 +134,11 @@ public class Model {
         return profileUrl;
     }
 
+    public List<Recipe> findUserRecipes(String token){
 
+        return recipeDao.loadMyRecipes(path.MYRECIPES, token);
+
+    }
 
 
 }
