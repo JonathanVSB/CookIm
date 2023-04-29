@@ -63,9 +63,8 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void showHomePage() {
         Intent intent = new Intent(this, HomeActivity.class);
-
-
         startActivity(intent);
+        finish();
     }
 
 

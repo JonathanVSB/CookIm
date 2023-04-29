@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">CookIm</string>
-
     <string name="login_button">Login</string>
+    <string name="search">Search</string>
+    <string name="home">Home</string>
+    <string name="add">Add</string>
+
+    <string name="profile">Profile</string>
+    <string name="favorites">Favorites</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
 </resources>

@@ -9,9 +9,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
@@ -45,6 +47,7 @@ public class HomeActivity extends Activity implements HomeListener {
 
     UserModel user;
     Model model;
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,31 +65,65 @@ public class HomeActivity extends Activity implements HomeListener {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        String token = readToken();
+        token = readToken();
 
         loadHomePage(token);
 
-        binding.menuBtn.setOnClickListener(new View.OnClickListener() {
+        initlistener();
+
+
+    }
+
+    private void initlistener() {
+        binding.profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        DataResult result = model.logout(token);
-                        if (result != null) {
-                            displayLogInPage();
-                        }
-                    }
-                });
+                navigatioViewClick();
+
+            }
+        });
+
+    }
+
+    private void navigatioViewClick() {
+        binding.homeActivityContent.openDrawer(GravityCompat.START);
+        binding.profileNavMenu.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()){
+                case R.id.profile:
+                    closeNavMenu();
+                    break;
+                case R.id.favorites:
+                    closeNavMenu();
+                    break;
+                case R.id.settings:
+                    closeNavMenu();
+                    break;
+                case R.id.logout:
+                    closeNavMenu();
+                    logout();
+                    break;
+            }
+            return true;
+        });
+    }
+
+    private void logout() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                DataResult result = model.logout(token);
+                if (result != null) {
+                    displayLogInPage();
+                }
             }
         });
     }
 
-    private void loadHomePage(String a) {
-        String data1 = "my-profile";
-        String data2 = "home-page";
+    private void closeNavMenu() {
+        binding.homeActivityContent.closeDrawer(GravityCompat.START);
+    }
 
-        String token = a;
+    private void loadHomePage(String a) {
 
         try {
             executor.execute(new Runnable() {
@@ -104,7 +141,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     });
 
                     if (user != null) {
-                        binding.tvUsername.setText(user.getUsername());
+                        //binding.tvUsername.setText(user.getUsername());
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -131,36 +168,6 @@ public class HomeActivity extends Activity implements HomeListener {
                                             .into(binding.profileImage);
 
 
-
-//                                    executor.execute(() -> { // ejecuta esto en un hilo de fondo para evitar bloquear el subproceso principal de la interfaz de usuario
-//                                        try {
-//                                            // Crea un objeto File que apunta al archivo especificado por la ruta de usuario
-//                                            File proFile = new File("user.jpg");
-//
-//                                            // Verifica si el archivo ya existe en el directorio de archivos. Si no existe, continúa descargando la imagen.
-//                                            if (!proFile.exists()) {
-//                                                // no se descarga la imagen ya que el archivo ya existe
-//                                            }
-//
-//                                            // Actualiza la imagen en el ImageView "profileImage" en el subproceso de interfaz de usuario con la imagen cargada desde el archivo
-//                                            runOnUiThread(() -> binding.profileImage.setImageBitmap(BitmapFactory.decodeFile(proFile.getAbsolutePath())));
-//
-//                                        } catch (Exception e) { // Si ocurre algún error durante la carga o la escritura del archivo, se captura y se maneja en este bloque de excepción
-//                                            e.printStackTrace(); // Muestra una traza de la pila de excepciones en la consola
-//                                            System.out.println("PETA EN ESTA LINEA: " + e.toString()); // Muestra un mensaje de error en la consola
-//
-//                                            // Establece la imagen predeterminada en el ImageView "profileImage" si ocurre algún error durante la carga de la imagen del archivo
-//                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
-//                                        }
-//                                    });
-//
-//                                    // Crea una cadena que contiene la ubicación de la imagen en el servidor
-//                                    String profileUrl = "http://91.107.198.64" + user.getPath_img();
-//
-//                                    // Descarga y muestra la imagen usando Glide
-//                                    Glide.with(HomeActivity.this)
-//                                            .load(profileUrl)
-//                                            .into(binding.profileImage);
                                 } else {
 //                                    // Si no hay un usuario, establece la imagen predeterminada en el ImageView "profileImage"
                                     binding.profileImage.setImageResource(R.drawable.guest_profile);

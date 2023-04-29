@@ -309,7 +309,8 @@ public class RecipeDao {
                             int recipe_id = stepObject.get("recipe_id").getAsInt();
                             int step_number = stepObject.get("step_number").getAsInt();
                             String stepDescription = stepObject.get("description").getAsString();
-                            steps.add(new Step(stepId, recipe_id, step_number, stepDescription));
+                            String stepImg = stepObject.get("path").getAsString();
+                            steps.add(new Step(stepId, recipe_id, step_number, stepDescription,stepImg));
                         }
 
                         result = new Recipe(id, user_id, name, description, path_img, rating, likes, user, path, steps, ingredients);
