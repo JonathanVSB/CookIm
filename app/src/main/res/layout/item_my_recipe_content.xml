@@ -28,7 +28,6 @@
                 android:id="@+id/img01"
                 android:layout_width="405dp"
                 android:layout_height="216dp"
-                android:foreground="@drawable/bg_alternative"
                 android:scaleType="centerCrop"
                 android:src="@drawable/tostadas_de_pollo_con_lechuga"
                 app:layout_constraintEnd_toEndOf="parent"

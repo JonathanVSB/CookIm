@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.TableRow;
 
 import androidx.annotation.Nullable;
@@ -35,6 +37,7 @@ public class MyProfileActivity extends Activity {
 
     Executor executor;
     private ActivityMyProfileBinding binding;
+    Handler handler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class MyProfileActivity extends Activity {
         setContentView(R.layout.activity_my_profile);
         binding = ActivityMyProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        handler = new Handler(Looper.getMainLooper());
         model = new Model();
         token = readToken();
         executor = Executors.newSingleThreadExecutor();
@@ -61,7 +65,14 @@ public class MyProfileActivity extends Activity {
                         //search all recipes of the user
                         List<Recipe> recipes = model.findUserRecipes(token);
 
-                        loadMyPage(user, recipes);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadMyPage(user, recipes);
+                            }
+                        });
+
+
                     } else {
                         //if the server can't validate the token
                         System.out.println("usuario nulo");
@@ -83,10 +94,16 @@ public class MyProfileActivity extends Activity {
 
     }
 
+    /**
+     * load the data of the user in the view
+     * @param user
+     * @param recipes
+     */
     private void loadMyPage(UserModel user, List<Recipe> recipes) {
         binding.tvUsername.setText(user.getUsername());
         binding.tvName.setText(user.getFull_name());
         binding.tvDescription.setText(user.getDescription());
+        binding.tvposts.setText(String.valueOf(recipes.size()));
         String img = model.downloadImg(user.getPath_img());
         Glide.with(MyProfileActivity.this)
                 .load(img)
@@ -116,7 +133,7 @@ public class MyProfileActivity extends Activity {
                 if (recipe.getPath_img()!=null){
                     String portrait = model.downloadImg(recipe.getPath_img());
                     Glide.with(this)
-                            .load(img)
+                            .load(portrait)
                             .listener(new RequestListener<Drawable>() {
                                 @Override
                                 public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
