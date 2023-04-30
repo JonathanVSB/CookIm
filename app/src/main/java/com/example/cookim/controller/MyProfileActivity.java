@@ -3,11 +3,21 @@ package com.example.cookim.controller;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.widget.TableRow;
 
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
+import com.example.cookim.databinding.ActivityMyProfileBinding;
+import com.example.cookim.databinding.ItemMyRecipeContentBinding;
+import com.example.cookim.databinding.ItemStepContentBinding;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
@@ -24,11 +34,14 @@ public class MyProfileActivity extends Activity {
     String token;
 
     Executor executor;
+    private ActivityMyProfileBinding binding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
+        binding = ActivityMyProfileBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         model = new Model();
         token = readToken();
         executor = Executors.newSingleThreadExecutor();
@@ -48,6 +61,7 @@ public class MyProfileActivity extends Activity {
                         //search all recipes of the user
                         List<Recipe> recipes = model.findUserRecipes(token);
 
+                        loadMyPage(user, recipes);
                     } else {
                         //if the server can't validate the token
                         System.out.println("usuario nulo");
@@ -67,6 +81,75 @@ public class MyProfileActivity extends Activity {
 
 
 
+    }
+
+    private void loadMyPage(UserModel user, List<Recipe> recipes) {
+        binding.tvUsername.setText(user.getUsername());
+        binding.tvName.setText(user.getFull_name());
+        binding.tvDescription.setText(user.getDescription());
+        String img = model.downloadImg(user.getPath_img());
+        Glide.with(MyProfileActivity.this)
+                .load(img)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        // Manejar el fallo de carga de la imagen aquí
+                        binding.userimg.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        // La imagen se ha cargado correctamente
+                        return false;
+                    }
+                })
+                .into(binding.userimg);
+
+        if (recipes.size()>0){
+
+            for (int i = 0; i < recipes.size(); i++){
+                Recipe recipe = recipes.get(i);
+                ItemMyRecipeContentBinding recipeBinding = ItemMyRecipeContentBinding.inflate(getLayoutInflater());
+
+                recipeBinding.nameRecipe.setText(recipe.getName());
+                if (recipe.getPath_img()!=null){
+                    String portrait = model.downloadImg(recipe.getPath_img());
+                    Glide.with(this)
+                            .load(img)
+                            .listener(new RequestListener<Drawable>() {
+                                @Override
+                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                    // Handle image loading failure here
+                                    recipeBinding.img01.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                    // The image has been loaded successfully
+                                    return false;
+                                }
+                            })
+                            .into(recipeBinding.img01);
+
+
+                }
+
+                // Create a new row for the table
+                TableRow row = new TableRow(MyProfileActivity.this);
+
+                TableRow.LayoutParams params = new TableRow.LayoutParams();
+                params.setMargins(100, 0, 0, 0); // Replace -50 with the number of pixels you want to move to the left
+                row.setLayoutParams(params);
+
+                row.addView(recipeBinding.getRoot());
+
+                binding.tlRecipes.addView(row);
+
+            }
+
+        }
     }
 
     /**
