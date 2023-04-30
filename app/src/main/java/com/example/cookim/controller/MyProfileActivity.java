@@ -157,7 +157,7 @@ public class MyProfileActivity extends Activity {
                 TableRow row = new TableRow(MyProfileActivity.this);
 
                 TableRow.LayoutParams params = new TableRow.LayoutParams();
-                params.setMargins(100, 0, 0, 0); // Replace -50 with the number of pixels you want to move to the left
+                params.setMargins(100, 0, 0, 40); // Replace -50 with the number of pixels you want to move to the left
                 row.setLayoutParams(params);
 
                 row.addView(recipeBinding.getRoot());
