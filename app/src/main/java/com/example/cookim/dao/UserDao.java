@@ -138,6 +138,12 @@ public class UserDao {
     }
 
 
+    /**
+     * creates a request to the path specified, using the token of the user as validation key
+     * @param urlString
+     * @param token
+     * @return
+     */
     public UserModel readUserResponse(String urlString, String token) {
         UserModel result = null;
         try {

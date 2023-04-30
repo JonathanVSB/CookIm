@@ -14,39 +14,58 @@ import com.example.cookim.model.user.UserModel;
 
 import java.io.FileInputStream;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MyProfileActivity extends Activity {
 
 
     Model model;
+    String token;
+
+    Executor executor;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
-        model= new Model();
-        String token = readToken();
+        model = new Model();
+        token = readToken();
+        executor = Executors.newSingleThreadExecutor();
 
         //If theres token saved in file
-        if (!token.isEmpty()){
+        if (!token.isEmpty()) {
 
-            //find user by his token
-            UserModel user = model.myProfile(token);
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    //find user by his token
+                    UserModel user = model.myProfile(token);
 
-            //if user is not null
-            if (user!= null){
+                    //if user is not null
+                    if (user != null) {
 
-                //search all recipes of the user
-                List<Recipe> recipes = model.findUserRecipes(token);
+                        //search all recipes of the user
+                        List<Recipe> recipes = model.findUserRecipes(token);
 
-            }else{
+                    } else {
+                        //if the server can't validate the token
+                        System.out.println("usuario nulo");
+                        displayLogInPage();
 
-                System.out.println("usuario nulo");
-            }
+                    }
+                }
+
+            });
         }else{
-
+            //if there's no token saved
+            System.out.println("not token found");
             displayLogInPage();
 
         }
+
+
+
 
     }
 
@@ -85,6 +104,7 @@ public class MyProfileActivity extends Activity {
         // if file is empty, returns null
         return null;
     }
+
     /**
      * Display the login Page
      */

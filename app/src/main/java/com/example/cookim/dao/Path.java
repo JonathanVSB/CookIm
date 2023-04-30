@@ -16,7 +16,7 @@ public class Path {
     public final String LOGIN =  PATH + "login";
     public final String LOGOUT = PATH + "logout";
     public final String MYPROFILE = PATH + "my-profile";
-    public final String MYRECIPES = PATH + "my-recipes";
+    public final String MYRECIPES = PATH + "full-profile";
     public final String HOMEPAGE = PATH + "home-page";
     public final String LIKE = PATH + "like";
     public final String SIGN = PATH + "sign-in";

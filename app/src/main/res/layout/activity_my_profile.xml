@@ -1,6 +1,257 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/pageCons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                >
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="My profile"
+                    android:fontFamily="@font/ubuntumedium"
+                    android:textAlignment="center"/>
+
+            </androidx.appcompat.widget.Toolbar>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/dataCons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/title">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/userimg"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginStart="44dp"
+                    android:layout_marginTop="68dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_burger"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/circleImageView" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvUsername"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Username"
+                    android:fontFamily="@font/ubunturegular"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
+                    app:layout_constraintStart_toEndOf="@id/userimg"
+                    app:layout_constraintTop_toTopOf="@id/userimg"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/ubunturegular"
+                    android:text="name"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/text"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="@id/tvUsername"
+                    app:layout_constraintTop_toBottomOf="@id/tvUsername" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+           <androidx.constraintlayout.widget.ConstraintLayout
+               android:id="@+id/descriptionCons"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="20dp"
+               app:layout_constraintTop_toBottomOf="@id/dataCons">
+
+               <androidx.appcompat.widget.AppCompatTextView
+                   android:id="@+id/tvDescription"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:fontFamily="@font/ubunturegular"
+                   android:text="text with the description of the user"
+                   android:layout_marginStart="30dp"
+                   android:textAlignment="center"
+                   android:textColor="@color/text"
+                   android:textSize="20sp"
+                   app:layout_constraintTop_toTopOf="parent" />
+
+
+           </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/separator"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="@drawable/separator_line"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="40dp"
+                app:layout_constraintBottom_toBottomOf="@id/descriptionCons"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/statsCons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@id/separator">
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="320dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TableLayout
+                        android:id="@+id/tbIngredients"
+                        android:layout_width="300dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@color/white_transparent"
+                        android:elevation="4dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:background="@color/white"
+                            android:showDividers="middle">
+
+                            <TextView
+                                android:id="@+id/tvLikes"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:text="4.5/5"
+                                android:textAlignment="center"
+                                android:textColor="@android:color/black"
+                                android:textSize="30dp" />
+
+                            <TextView
+                                android:id="@+id/tvnumSteps"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:text="0"
+                                android:textAlignment="center"
+                                android:textColor="@android:color/black"
+                                android:textSize="30dp" />
+
+
+
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:background="@color/white"
+                            android:showDividers="middle">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:fontFamily="@font/ubunturegular"
+                                android:text="Recipes"
+                                android:textAlignment="center"
+                                android:textColor="@android:color/black"
+                                android:textSize="15dp" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="2"
+                                android:fontFamily="@font/ubunturegular"
+                                android:text="followers"
+                                android:textAlignment="center"
+                                android:textColor="@android:color/black"
+                                android:textSize="15dp" />
+
+
+                        </TableRow>
+                    </TableLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/statsCons"
+                android:layout_marginTop="30dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvYourposts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/ubunturegular"
+                    android:text="Your posts"
+                    android:layout_marginStart="30dp"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/text"
+                    android:textSize="20sp"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <TableLayout
+                    android:id="@+id/tlRecipes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvYourposts">
+
+
+
+                </TableLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+
+
+
+    </androidx.core.widget.NestedScrollView>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

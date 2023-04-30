@@ -23,6 +23,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
 import com.example.cookim.controller.LoginActivity;
+import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.model.DataResult;
@@ -91,9 +92,11 @@ public class HomeActivity extends Activity implements HomeListener {
             switch (item.getItemId()){
                 case R.id.profile:
                     closeNavMenu();
+                    displayMyProfile();
                     break;
                 case R.id.favorites:
                     closeNavMenu();
+
                     break;
                 case R.id.settings:
                     closeNavMenu();
@@ -244,6 +247,14 @@ public class HomeActivity extends Activity implements HomeListener {
     public void onItemClicked(int id) {
         Intent intent = new Intent(this, RecipeStepsActivity.class);
         intent.putExtra("recipe_id", id);
+        startActivity(intent);
+    }
+
+    /**
+     * Display my profile page
+     */
+    private void displayMyProfile() {
+        Intent intent = new Intent(this, MyProfileActivity.class);
         startActivity(intent);
     }
 

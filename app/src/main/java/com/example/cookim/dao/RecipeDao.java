@@ -200,6 +200,15 @@ public class RecipeDao {
         return result;
     }
 
+    /**
+     * Sends the token of the user. if finds this session else, returns null. Then search the recipe
+     * by his id. if find matches, return the recipe and the steps
+     * else returns null recipe
+     * @param path
+     * @param id
+     * @param token
+     * @return
+     */
     public Recipe loadRecipeSteps(String path, int id, String token) {
 
         Recipe result = null;
@@ -246,7 +255,11 @@ public class RecipeDao {
 
     }
 
-
+    /**
+     * Parses the json response into Recipe object
+     * @param inputStream
+     * @return
+     */
     public Recipe parseRecipe(InputStream inputStream) {
         Recipe result = null;
 
@@ -339,6 +352,12 @@ public class RecipeDao {
         return result;
     }
 
+    /**
+     * search all recipes of the user using his token as validation key
+     * @param path
+     * @param token
+     * @return
+     */
     public List<Recipe> loadMyRecipes(String path, String token){
             List<Recipe> recipes = new ArrayList<>();
             Recipe result = null;
@@ -385,6 +404,11 @@ public class RecipeDao {
 
         }
 
+    /**
+     * Parses the Json response into Recipe List
+     * @param inputStream
+     * @return
+     */
     public List<Recipe> parseRecipeList(InputStream inputStream) {
         List<Recipe> result = new ArrayList<>();
 
@@ -392,25 +416,28 @@ public class RecipeDao {
             // Initializes a BufferedReader object to read the InputStream
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
-            // Reads each line of the InputStream and creates a Recipe object without ingredients and steps
-            String linea;
-            while ((linea = bufferedReader.readLine()) != null) {
-                // Parses the JSON object for the current line
-                JsonObject jsonObject = JsonParser.parseString(linea).getAsJsonObject();
+            // Parses the JSON response and extracts the "data" object
+            JsonObject responseJson = JsonParser.parseReader(bufferedReader).getAsJsonObject();
+            JsonObject dataJson = responseJson.get("data").getAsJsonObject();
 
+            // Extracts the "recipes" array from the "data" object
+            JsonArray recipesJson = dataJson.get("recipes").getAsJsonArray();
+
+            // Parses each recipe object in the "recipes" array and adds it to the result list
+            for (JsonElement recipeJson : recipesJson) {
                 // Extracts the recipe data from the JSON object
-                int id = jsonObject.get("id").getAsInt();
-                int user_id = jsonObject.get("id_user").getAsInt();
-                String name = jsonObject.get("name").getAsString();
-                String description = jsonObject.get("description").getAsString();
-                String path_img = jsonObject.get("path_img").getAsString();
-                double rating = jsonObject.get("rating").getAsDouble();
-                int likes = jsonObject.get("likes").getAsInt();
-                String user_name = jsonObject.get("user_name").getAsString();
-                String path = jsonObject.get("path").getAsString();
+                int id = recipeJson.getAsJsonObject().get("id").getAsInt();
+                int user_id = recipeJson.getAsJsonObject().get("id_user").getAsInt();
+                String name = recipeJson.getAsJsonObject().get("name").getAsString();
+                String description = recipeJson.getAsJsonObject().get("description").getAsString();
+                String path_img = recipeJson.getAsJsonObject().get("path_img").getAsString();
+                double rating = recipeJson.getAsJsonObject().get("rating").getAsDouble();
+                int likes = recipeJson.getAsJsonObject().get("likes").getAsInt();
+                //String user_name = recipeJson.getAsJsonObject().get("user_name").getAsString();
+                //String path = recipeJson.getAsJsonObject().get("path").getAsString();
 
                 // Creates a new Recipe object with the extracted data and empty ingredient and step lists
-                Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes, user_name, path, new ArrayList<>(), new ArrayList<>());
+                Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes);
 
                 // Adds the new Recipe object to the list of recipes
                 result.add(recipe);
@@ -429,6 +456,7 @@ public class RecipeDao {
 
         return result;
     }
+
 
 }
 

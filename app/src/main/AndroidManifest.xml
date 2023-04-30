@@ -73,6 +73,11 @@
             android:theme="@style/Theme.CookIm.NoActionBar"
             android:exported="true" />
 
+        <activity
+            android:name=".controller.MyProfileActivity"
+            android:theme="@style/Theme.CookIm.NoActionBar"
+            android:exported="true" />
+
     </application>
 
 </manifest>
