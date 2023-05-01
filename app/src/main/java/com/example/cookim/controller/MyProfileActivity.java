@@ -7,9 +7,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.widget.TableRow;
 
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -17,6 +19,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
+import com.example.cookim.controller.Home.HomeActivity;
+import com.example.cookim.controller.Home.HomeListener;
 import com.example.cookim.databinding.ActivityMyProfileBinding;
 import com.example.cookim.databinding.ItemMyRecipeContentBinding;
 import com.example.cookim.databinding.ItemStepContentBinding;
@@ -39,12 +43,14 @@ public class MyProfileActivity extends Activity {
     private ActivityMyProfileBinding binding;
     Handler handler;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
         binding = ActivityMyProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        bottomNavigationViewClick();
         handler = new Handler(Looper.getMainLooper());
         model = new Model();
         token = readToken();
@@ -88,6 +94,10 @@ public class MyProfileActivity extends Activity {
             displayLogInPage();
 
         }
+
+
+
+
 
 
 
@@ -153,6 +163,13 @@ public class MyProfileActivity extends Activity {
 
                 }
 
+                recipeBinding.imageContentCv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        displayDetails(recipe.getId());
+                    }
+                });
+
                 // Create a new row for the table
                 TableRow row = new TableRow(MyProfileActivity.this);
 
@@ -212,4 +229,43 @@ public class MyProfileActivity extends Activity {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
+
+    /**
+     * display the details of the recipe selected
+     * @param id
+     */
+    public void displayDetails(int id) {
+        Intent intent = new Intent(this, RecipeStepsActivity.class);
+        intent.putExtra("recipe_id", id);
+        startActivity(intent);
+    }
+
+   private void bottomNavigationViewClick(){
+       binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
+           switch (item.getItemId()) {
+               case R.id.home:
+                   showHomePage();
+                   return true;
+               case R.id.addrecipe:
+                   // TODO: Implement favorites screen
+                   return true;
+               case R.id.searchrecipe:
+                   // TODO: Implement settings screen
+                   return true;
+               default:
+                   return false;
+           }
+       });
+
+   }
+
+    /**
+     * Displays the home page of the app and senda the user object to next activity
+     */
+    private void showHomePage() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
 }

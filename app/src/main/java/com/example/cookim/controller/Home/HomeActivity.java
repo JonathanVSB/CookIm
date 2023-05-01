@@ -26,10 +26,13 @@ import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
 import com.example.cookim.databinding.ActivityHomeBinding;
+import com.example.cookim.databinding.ComponentNavHeaderBinding;
+import com.example.cookim.databinding.ItemMyRecipeContentBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,10 +73,44 @@ public class HomeActivity extends Activity implements HomeListener {
 
         loadHomePage(token);
 
+        bottomNavigationViewClick();
+
         initlistener();
 
 
     }
+
+    /**
+     * Fulfill the data of the navigation view with the data of the user
+     *
+     * @param user
+     */
+    private void loadHeader(UserModel userModel) {
+        View headerData = binding.profileNavMenu.getHeaderView(0);
+        ComponentNavHeaderBinding header = ComponentNavHeaderBinding.bind(headerData);
+
+        header.tvusername.setText(userModel.getUsername());
+        header.tvname.setText(userModel.getFull_name());
+        String img = model.downloadImg(userModel.getPath_img());
+        Glide.with(HomeActivity.this)
+                .load(img)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        // Manejar el fallo de carga de la imagen aquí
+                        header.optionProfile.setImageResource(R.drawable.guest_profile);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        // La imagen se ha cargado correctamente
+                        return false;
+                    }
+                })
+                .into(header.optionProfile);
+    }
+
 
     private void initlistener() {
         binding.profileImage.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +126,7 @@ public class HomeActivity extends Activity implements HomeListener {
     private void navigatioViewClick() {
         binding.homeActivityContent.openDrawer(GravityCompat.START);
         binding.profileNavMenu.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.profile:
                     closeNavMenu();
                     displayMyProfile();
@@ -109,6 +146,7 @@ public class HomeActivity extends Activity implements HomeListener {
             return true;
         });
     }
+
 
     private void logout() {
         executor.execute(new Runnable() {
@@ -170,6 +208,8 @@ public class HomeActivity extends Activity implements HomeListener {
                                             })
                                             .into(binding.profileImage);
 
+                                    loadHeader(user);
+
 
                                 } else {
 //                                    // Si no hay un usuario, establece la imagen predeterminada en el ImageView "profileImage"
@@ -177,7 +217,10 @@ public class HomeActivity extends Activity implements HomeListener {
                                 }
 
                             }
+
                         });
+
+
                     }
                 }
             });
@@ -257,5 +300,24 @@ public class HomeActivity extends Activity implements HomeListener {
         Intent intent = new Intent(this, MyProfileActivity.class);
         startActivity(intent);
     }
+
+    private void bottomNavigationViewClick() {
+        binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.home:
+                    loadHomePage(token);
+                    return true;
+                case R.id.addrecipe:
+                    // TODO: Implement favorites screen
+                    return true;
+                case R.id.searchrecipe:
+                    // TODO: Implement settings screen
+                    return true;
+                default:
+                    return false;
+            }
+        });
+    }
+
 
 }

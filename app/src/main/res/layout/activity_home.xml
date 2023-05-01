@@ -8,6 +8,7 @@
     tools:context=".controller.Home.HomeActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/ic_degraded_gray">
@@ -24,13 +25,12 @@
             app:shapeAppearanceOverlay="@style/circleImageView" />
 
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/recommendations_content"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_nav_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profileImage">
