@@ -17,6 +17,7 @@ public class UserModel implements Serializable {
     String path_img;
     String description;
     long id_rol;
+
     String token;
     List<UserModel> followers;
     List<UserModel> followed;
