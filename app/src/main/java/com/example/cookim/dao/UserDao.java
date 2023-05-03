@@ -347,4 +347,53 @@ public class UserDao {
 
         return result;
     }
+
+    public DataResult validateToken(String urlString, String token) {
+        DataResult result = null;
+        try {
+            // HTTPS request
+            System.out.println("ENTRA  " + urlString);
+            java.net.URL url = new URL(urlString);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Set authorization header with token
+            String authHeader = "Bearer " + token;
+            connection.setRequestProperty("Authorization", authHeader);
+
+            // Set content type to form url encoded
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            // Write parameters to the request body
+            String requestBody = "";
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            }
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into DataResult object
+                result = parseResponse(inputStream);
+                inputStream.close();
+
+            } else {
+                // Debugging statement
+                System.out.println("Error al conectar con el servidor: " + connection.getResponseMessage());
+            }
+
+            connection.disconnect();
+
+        } catch (Exception e) {
+            // Debugging statement
+            System.out.println("Error al conectar con el servidor: " + e.toString());
+        }
+
+        return result;
+    }
 }

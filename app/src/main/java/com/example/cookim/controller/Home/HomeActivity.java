@@ -3,13 +3,11 @@ package com.example.cookim.controller.Home;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -22,22 +20,20 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
+import com.example.cookim.controller.AddRecipeActivity;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
+import com.example.cookim.dao.BBDDIngredients;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.databinding.ComponentNavHeaderBinding;
-import com.example.cookim.databinding.ItemMyRecipeContentBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
+import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
-import com.google.android.material.imageview.ShapeableImageView;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -49,6 +45,9 @@ public class HomeActivity extends Activity implements HomeListener {
     Executor executor = Executors.newSingleThreadExecutor();
     Handler handler;
 
+    BBDDIngredients ingredients;
+    SQLiteDatabase dbIngredients;
+    String instrSQL;
     UserModel user;
     Model model;
     String token;
@@ -60,6 +59,7 @@ public class HomeActivity extends Activity implements HomeListener {
 
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        this.ingredients = new BBDDIngredients(this.getApplicationContext(), "Ingredientes", null, 1);
 
 
         handler = new Handler(Looper.getMainLooper());
@@ -71,19 +71,91 @@ public class HomeActivity extends Activity implements HomeListener {
 
         token = readToken();
 
-        loadHomePage(token);
+        if (token.isEmpty()) {
+            displayLogInPage();
 
-        bottomNavigationViewClick();
+        } else {
 
-        initlistener();
+            loadIngredients(this.ingredients);
+            loadHomePage(token);
+            bottomNavigationViewClick();
 
+            initlistener();
+
+
+        }
+
+
+    }
+
+    /**
+     * Load all ingredients Saved in database
+     */
+
+    private void loadIngredients(BBDDIngredients ingredients) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    int maxId = model.getMaxIdIngredient(ingredients);
+
+                    List<Ingredient> ingredientList = model.getNewIngredients(token, maxId);
+
+                    if (ingredientList != null) {
+
+                        if (ingredientList.size() == 0) {
+
+
+                        }else if (ingredientList.size() != 0 && ingredientList.get(ingredientList.size() - 1).getId() != maxId) {
+
+                            insert(ingredientList);
+                        }
+
+
+                    }
+
+                } catch (Exception e) {
+
+                    System.out.println("Ha petado ago de la base interna");
+                }
+
+
+            }
+        });
+    }
+
+    /**
+     * inserts ingredients in local database
+     */
+    private void insert(List<Ingredient> list) {
+        this.dbIngredients = this.ingredients.getWritableDatabase();
+
+        if (this.dbIngredients != null) {
+            System.out.println("Database ingredients ready");
+
+            for (Ingredient ing : list) {
+                String nombre = ing.getName();
+                String id = String.valueOf(ing.getId());
+                this.instrSQL = "INSERT INTO Ingrediente (PK_Id, Nombre) VALUES ('" + id + "," + nombre + "')";
+                this.dbIngredients.execSQL(this.instrSQL);
+            }
+
+            this.dbIngredients.close();
+            System.out.println("ingredientes guardados");
+
+        } else {
+
+            System.out.println("ERROR: saving ingredients");
+
+        }
 
     }
 
     /**
      * Fulfill the data of the navigation view with the data of the user
      *
-     * @param user
+     * @param userModel
      */
     private void loadHeader(UserModel userModel) {
         View headerData = binding.profileNavMenu.getHeaderView(0);
@@ -308,6 +380,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     loadHomePage(token);
                     return true;
                 case R.id.addrecipe:
+                    displayAddRecipe();
                     // TODO: Implement favorites screen
                     return true;
                 case R.id.searchrecipe:
@@ -317,6 +390,15 @@ public class HomeActivity extends Activity implements HomeListener {
                     return false;
             }
         });
+    }
+
+    /**
+     * Display the add recipe page
+     */
+    private void displayAddRecipe() {
+        Intent intent = new Intent(this, AddRecipeActivity.class);
+        startActivity(intent);
+
     }
 
 

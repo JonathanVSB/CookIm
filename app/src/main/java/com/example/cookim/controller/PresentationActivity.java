@@ -11,6 +11,7 @@ import com.example.cookim.R;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityPresentationBinding;
 import com.example.cookim.model.DataResult;
+import com.example.cookim.model.Model;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -22,14 +23,18 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PresentationActivity extends Activity {
 
 
     private ActivityPresentationBinding binding;
 
-    private final String URL = "http://91.107.198.64:7070/";
-    private final String URL2 = "http://192.168.127.102:7070/";
+    String token;
+    Model model;
+
+    ExecutorService executor;
 
 
     @Override
@@ -39,22 +44,42 @@ public class PresentationActivity extends Activity {
         binding = ActivityPresentationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        String token = readToken();
+        executor = Executors.newSingleThreadExecutor();
+        model = new Model();
+        token = readToken();
 
 
-        if (readToken() == null) {
+        if (token == null) {
             displayLogInPage();
 
-        } else if (readToken() != null) {
-            String url = URL2 + "/autologin";
-            DataResult result = validateToken(url, token);
+        } else if (token != null) {
 
-            if (result.getResult() == "1") {
-                showHomePage(token);
-            } else {
-                displayLogInPage();
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    //validates the token
+                    DataResult result = model.autologin(token);
 
-            }
+                    //if resuls is not null
+                    if (result != null) {
+
+                        //if result.getResult()==1 validation is correct
+                        if (result.getResult().equals("1")) {
+                            showHomePage();
+                        }
+                        //Token is not validated
+                        else {
+                            displayLogInPage();
+
+                        }
+                    } else {
+                        displayLogInPage();
+
+                    }
+
+                }
+            });
+
 
         }
 
@@ -108,120 +133,12 @@ public class PresentationActivity extends Activity {
         return null;
     }
 
-    /**
-     * Do petition
-     * @param urlString
-     * @param token
-     * @return
-     */
-    private DataResult validateToken(String urlString, String token) {
-        DataResult result = null;
-        try {
-            // HTTPS request
-            System.out.println("ENTRA  " + urlString);
-            java.net.URL url = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            // Set authorization header with token
-            String authHeader = "Bearer " + token;
-            connection.setRequestProperty("Authorization", authHeader);
-
-            // Set content type to form url encoded
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
-            // Write parameters to the request body
-            String requestBody = "";
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
-            }
-
-            connection.connect();
-
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                // read Stream
-                InputStream inputStream = connection.getInputStream();
-
-                // parse the response into DataResult object
-                result = parseDataResult(inputStream);
-
-                inputStream.close();
-            } else {
-                // Debugging statement
-                System.out.println("Error al conectar con el servidor: " + connection.getResponseMessage());
-            }
-
-            connection.disconnect();
-
-        } catch (Exception e) {
-            // Debugging statement
-            System.out.println("Error al conectar con el servidor: " + e.toString());
-        }
-
-        return result;
-    }
-
-
-    /**
-     * Reads the Json answer of the server and transforms it in DataResult object
-     *
-     * @param inputStream
-     * @return
-     */
-    private DataResult parseDataResult(InputStream inputStream) {
-        String jsonString = null;
-        DataResult result = null;
-
-        try {
-            // Initializes a BufferedReader object to read the InputStream
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-            // Initializes a StringBuilder object to hold the JSON-formatted string
-            StringBuilder stringBuilder = new StringBuilder();
-
-            // Reads each line of the InputStream and appends it to the StringBuilder object
-            String linea;
-            while ((linea = bufferedReader.readLine()) != null) {
-                stringBuilder.append(linea);
-            }
-
-            // Closes the BufferedReader
-            bufferedReader.close();
-
-            // Converts the StringBuilder object to a string
-            jsonString = stringBuilder.toString();
-
-            // Debugging statement
-            System.out.println("Respuesta JSON: " + jsonString);
-
-            if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
-                Gson gson = new Gson();
-                result = gson.fromJson(jsonString, DataResult.class);
-            } else {
-                // Debugging statement
-                System.out.println("La respuesta no es un objeto JSON válido");
-            }
-
-        } catch (IOException e) {
-            //Debugging statement
-            System.out.println("Error al leer la respuesta: " + e.toString());
-        }
-
-        // Returns the DataResult object or null if there was an error
-        return result;
-    }
 
     /**
      * display home page view
-     * @param token
      */
-    private void showHomePage(String token) {
+    private void showHomePage() {
         Intent intent = new Intent(this, HomeActivity.class);
-
-        intent.putExtra("token", token);
-
         startActivity(intent);
     }
 }

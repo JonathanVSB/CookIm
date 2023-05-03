@@ -1,24 +1,15 @@
 package com.example.cookim.model;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-
-import com.example.cookim.dao.NukeSSLCerts;
+import com.example.cookim.dao.BBDDIngredients;
+import com.example.cookim.dao.IngredientDao;
 import com.example.cookim.dao.Path;
 import com.example.cookim.dao.RecipeDao;
 import com.example.cookim.dao.UserDao;
+import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 public class Model {
@@ -26,6 +17,9 @@ public class Model {
     private UserDao userDao;
     private RecipeDao recipeDao;
     private Path path;
+    private IngredientDao ingredientDao;
+
+
 
 
 
@@ -33,6 +27,7 @@ public class Model {
         path = new Path();
         userDao = new UserDao();
         recipeDao = new RecipeDao();
+        ingredientDao = new IngredientDao();
 
 
     }
@@ -121,6 +116,25 @@ public class Model {
         List<Recipe> recipes = recipeDao.loadMyRecipes(path.MYRECIPES, token);
         return recipes;
 
+    }
+
+    public List<Ingredient> getNewIngredients(String token, int id){
+
+        List<Ingredient> ingredients =  ingredientDao.getAll(path.INGREDIENTS, token,id);
+        return ingredients;
+
+    }
+
+    public Integer getMaxIdIngredient(BBDDIngredients ingredients){
+
+        int id = ingredientDao.getMaxIngredientId(ingredients);
+        return id;
+    }
+
+    public DataResult autologin(String token){
+
+        DataResult result = userDao.validateToken(path.AUTOLOGIN, token);
+        return result;
     }
 
 

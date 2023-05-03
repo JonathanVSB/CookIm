@@ -360,7 +360,6 @@ public class RecipeDao {
      */
     public List<Recipe> loadMyRecipes(String path, String token){
             List<Recipe> recipes = new ArrayList<>();
-            Recipe result = null;
             String param = token;
             int i = 0;
             try {
@@ -456,6 +455,7 @@ public class RecipeDao {
 
         return result;
     }
+
 
 
 }
