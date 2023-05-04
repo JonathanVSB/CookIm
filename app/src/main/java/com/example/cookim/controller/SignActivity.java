@@ -201,44 +201,6 @@ public class SignActivity extends AppCompatActivity {
         }
 
     }
-    private void uploadPicture() throws IOException {
-        String url = URL3 + "upload/profile_picture";
-        String charset = "UTF-8";
-        String param = "value";
-        File binaryFile = file;
-        String boundary = Long.toHexString(System.currentTimeMillis()); // Just generate some unique random value.
-        String CRLF = "\r\n"; // Line separator required by multipart/form-data.
-
-        URLConnection connection = new URL(url).openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-        try (OutputStream output = connection.getOutputStream();
-             PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true);) {   // Send binary file.
-            writer.append("--" + boundary).append(CRLF);
-            writer.append("Content-Disposition: form-data; name=\"binaryFile\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
-            writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(binaryFile.getName())).append(CRLF);
-            writer.append("Content-Transfer-Encoding: binary").append(CRLF);
-            writer.append(CRLF).flush();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Files.copy(binaryFile.toPath(), output);
-            }
-            output.flush(); // Important before continuing with writer!
-            writer.append(CRLF).flush(); // CRLF is important! It indicates end of boundary.
-
-            // End of multipart/form-data.
-            writer.append("--" + boundary + "--").append(CRLF).flush();
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        // Request is lazily fired whenever you need to obtain information about response.
-
-        //int responseCode =
-        //System.out.println(responseCode); // Should be 200
-    }
-
 
     /**
      * Check the fields of the view to check if any of them is empty

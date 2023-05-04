@@ -1,5 +1,6 @@
 package com.example.cookim.model.recipe;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ public class Recipe {
 
     public int id;
     public int user_id;
-
+    public File file;
     public String name;
     public String description;
     public String path_img;
@@ -38,6 +39,14 @@ public class Recipe {
     }*/
 
     public Recipe() {
+    }
+
+    public Recipe(File file, String name, String description, List<Step> steps, List<Ingredient> ingredients) {
+        this.file = file;
+        this.name = name;
+        this.description = description;
+        this.steps = steps;
+        this.ingredients = ingredients;
     }
 
     public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, List<Ingredient> ingredients, List<Step>

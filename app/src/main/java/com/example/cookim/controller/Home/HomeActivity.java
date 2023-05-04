@@ -397,6 +397,7 @@ public class HomeActivity extends Activity implements HomeListener {
      */
     private void displayAddRecipe() {
         Intent intent = new Intent(this, AddRecipeActivity.class);
+
         startActivity(intent);
 
     }
