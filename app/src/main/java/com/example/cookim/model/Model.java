@@ -137,5 +137,14 @@ public class Model {
         return result;
     }
 
+    public DataResult createRecipe(Recipe recipe, String token){
+
+        DataResult result = recipeDao.addRecipe(path.ADDRECIPE, token, recipe);
+        return result;
+    }
+
+
+
+
 
 }

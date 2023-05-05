@@ -15,12 +15,16 @@ import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -456,7 +460,72 @@ public class RecipeDao {
         return result;
     }
 
+    /**
+     * send pttion to add new Recipe to server
+     * @param path
+     * @param token
+     * @param recipe
+     * @return
+     */
+    public DataResult addRecipe(String path, String token, Recipe recipe) {
+        DataResult result = null;
+        File file = recipe.getFile();
 
+        try {
+            Gson gson = new Gson();
+            System.out.println("ENTRA  " + path);
+            URL url = new URL(path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "");
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Create the multipart/form-data request body
+            String boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
+            OutputStream os = connection.getOutputStream();
+            DataOutputStream wr = new DataOutputStream(os);
+            wr.writeBytes("--" + boundary + "\r\n");
+            wr.writeBytes("Content-Disposition: form-data; name=\"recipe\"\r\n\r\n" + gson.toJson(recipe) + "\r\n");
+
+            if (file != null) {
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"image\"; filename=\"" + file.getName() + "\"\r\n");
+                wr.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + "\r\n\r\n");
+                FileInputStream inputStream = new FileInputStream(file);
+                byte[] buffer = new byte[4096];
+                int bytesRead = -1;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    wr.write(buffer, 0, bytesRead);
+                }
+                wr.writeBytes("\r\n");
+                inputStream.close();
+            }
+
+            wr.writeBytes("--" + boundary + "--\r\n");
+            wr.flush();
+            wr.close();
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into DataResult object
+                result = parseResponse(inputStream);
+
+                inputStream.close();
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return null;
+        }
+
+        return result;
+    }
 
 }
 

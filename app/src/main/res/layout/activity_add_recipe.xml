@@ -54,7 +54,8 @@
         android:id="@+id/scrolldata"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/options">
+        app:layout_constraintTop_toBottomOf="@id/options"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -176,7 +177,7 @@
                     android:layout_height="50dp"
                     android:layout_marginStart="20dp"
                     android:background="@drawable/rounded_corners"
-                    android:src="@drawable/id_add_element"
+                    android:src="@drawable/ic_add_element"
                     app:layout_constraintStart_toEndOf="@id/ingredientstitle"
                     app:layout_constraintTop_toTopOf="parent"/>
 
@@ -202,24 +203,50 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-
-                <Button
-                    android:id="@+id/addbutton"
-                    android:layout_width="377dp"
-                    android:layout_height="120dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bg_outlined"
-                    android:drawableLeft="@drawable/id_add_element"
-                    android:drawablePadding="8dp"
-                    android:gravity="center"
-                    android:padding="24dp"
-                    android:text="Agregar"
-                    android:textSize="18sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                <TableLayout
+                    android:id="@+id/tlsteps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/stepstitle" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/stepstitle">
+
+
+
+                </TableLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@id/tlsteps">
+
+                    <Button
+                        android:id="@+id/addbutton"
+                        android:layout_width="323dp"
+                        android:layout_height="121dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/bg_outlined"
+                        android:drawableTop="@drawable/ic_add_element"
+                        android:drawablePadding="20dp"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="Agregar"
+                        android:textColor="@color/text"
+                        android:textSize="18sp"
+                        />
+
+                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Space
+                android:id="@+id/bottomspace"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                app:layout_constraintTop_toBottomOf="@id/steps"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

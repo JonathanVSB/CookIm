@@ -1,7 +1,12 @@
 package com.example.cookim.model.recipe;
 
+import android.os.Build;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class Recipe {
@@ -19,7 +24,7 @@ public class Recipe {
     public List<Step> steps;
     public List<Comment> comments;
     public List<Ingredient> ingredients;
-
+//    private String base64Image;
 
     private boolean liked;
 
@@ -47,6 +52,14 @@ public class Recipe {
         this.description = description;
         this.steps = steps;
         this.ingredients = ingredients;
+    }
+
+    public Recipe(File file, String name, String description) {
+        this.file = file;
+        this.name = name;
+        this.description = description;
+        this.likes = 0;
+//        this.base64Image = encodeFileToBase64(file);
     }
 
     public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, List<Ingredient> ingredients, List<Step>
@@ -205,8 +218,6 @@ public class Recipe {
         return liked;
     }
 
-
-
     public void setLiked(boolean liked) {
         this.liked = liked;
     }
@@ -218,4 +229,32 @@ public class Recipe {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    ///METHODS
+
+//    private String encodeFileToBase64(File file) {
+//        String code= "";
+//        try {
+//            FileInputStream inputStream = new FileInputStream(file);
+//            byte[] bytes = new byte[(int) file.length()];
+//            inputStream.read(bytes);
+//            inputStream.close();
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                code = Base64.getEncoder().encodeToString(bytes);
+//                return code;
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//        return code;
+//    }
 }

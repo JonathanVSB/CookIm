@@ -1,7 +1,10 @@
 package com.example.cookim.model.recipe;
 
+import java.io.File;
+
 public class Step {
 
+    File file;
     long id;
     long recipe_id;
     long step_number;
@@ -11,6 +14,12 @@ public class Step {
     public Step(long id, long recipe_id, long step_number, String description) {
         this.id = id;
         this.recipe_id = recipe_id;
+        this.step_number = step_number;
+        this.description = description;
+    }
+
+    public Step(File file, long step_number, String description) {
+        this.file = file;
         this.step_number = step_number;
         this.description = description;
     }

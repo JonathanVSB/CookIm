@@ -14,6 +14,7 @@ public class Path {
     //443
     //Server 91.107.198.64:7070
     public final String LOGIN =  PATH + "login";
+    public final String ADDRECIPE = PATH +"add-recipe";
     public final String INGREDIENTS = PATH + "ingredient-list";
     public final String LOGOUT = PATH + "logout";
     public final String MYPROFILE = PATH + "my-profile";

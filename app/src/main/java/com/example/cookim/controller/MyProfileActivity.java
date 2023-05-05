@@ -55,10 +55,17 @@ public class MyProfileActivity extends Activity {
         model = new Model();
         token = readToken();
         executor = Executors.newSingleThreadExecutor();
+        Intent intent = getIntent();
+        int id = intent.getIntExtra("userID", -1);
+        int myId = intent.getIntExtra("MyUserID", -1);
+
 
         //If theres token saved in file
         if (!token.isEmpty()) {
-
+            binding.btfollow.setVisibility(View.GONE);
+            if (myId == id) {
+                binding.btfollow.setVisibility(View.GONE);
+            }
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -88,7 +95,7 @@ public class MyProfileActivity extends Activity {
                 }
 
             });
-        }else{
+        } else {
             //if there's no token saved
             System.out.println("not token found");
             displayLogInPage();
@@ -96,16 +103,13 @@ public class MyProfileActivity extends Activity {
         }
 
 
-
-
-
-
-
-
     }
+
+
 
     /**
      * load the data of the user in the view
+     *
      * @param user
      * @param recipes
      */
@@ -133,14 +137,14 @@ public class MyProfileActivity extends Activity {
                 })
                 .into(binding.userimg);
 
-        if (recipes.size()>0){
+        if (recipes.size() > 0) {
 
-            for (int i = 0; i < recipes.size(); i++){
+            for (int i = 0; i < recipes.size(); i++) {
                 Recipe recipe = recipes.get(i);
                 ItemMyRecipeContentBinding recipeBinding = ItemMyRecipeContentBinding.inflate(getLayoutInflater());
 
                 recipeBinding.nameRecipe.setText(recipe.getName());
-                if (recipe.getPath_img()!=null){
+                if (recipe.getPath_img() != null) {
                     String portrait = model.downloadImg(recipe.getPath_img());
                     Glide.with(this)
                             .load(portrait)
@@ -232,6 +236,7 @@ public class MyProfileActivity extends Activity {
 
     /**
      * display the details of the recipe selected
+     *
      * @param id
      */
     public void displayDetails(int id) {
@@ -240,24 +245,24 @@ public class MyProfileActivity extends Activity {
         startActivity(intent);
     }
 
-   private void bottomNavigationViewClick(){
-       binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
-           switch (item.getItemId()) {
-               case R.id.home:
-                   showHomePage();
-                   return true;
-               case R.id.addrecipe:
-                   // TODO: Implement favorites screen
-                   return true;
-               case R.id.searchrecipe:
-                   // TODO: Implement settings screen
-                   return true;
-               default:
-                   return false;
-           }
-       });
+    private void bottomNavigationViewClick() {
+        binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.home:
+                    showHomePage();
+                    return true;
+                case R.id.addrecipe:
+                    // TODO: Implement favorites screen
+                    return true;
+                case R.id.searchrecipe:
+                    // TODO: Implement settings screen
+                    return true;
+                default:
+                    return false;
+            }
+        });
 
-   }
+    }
 
     /**
      * Displays the home page of the app and senda the user object to next activity

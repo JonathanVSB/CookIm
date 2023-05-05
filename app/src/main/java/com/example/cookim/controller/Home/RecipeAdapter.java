@@ -130,7 +130,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                homeListener.onItemClicked(recipe.getId());
+                homeListener.onItemClicked(recipe.getId(), 1);
+            }
+        });
+
+        holder.binding.tvPoster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                homeListener.onItemClicked(recipe.getUser_id(), 2);
             }
         });
 

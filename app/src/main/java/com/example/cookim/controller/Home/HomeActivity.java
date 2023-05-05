@@ -359,10 +359,25 @@ public class HomeActivity extends Activity implements HomeListener {
     }
 
     @Override
-    public void onItemClicked(int id) {
-        Intent intent = new Intent(this, RecipeStepsActivity.class);
-        intent.putExtra("recipe_id", id);
-        startActivity(intent);
+    public void onItemClicked(int id, int action) {
+        Intent intent = null;
+        switch (action){
+            case 1:
+                intent = new Intent(this, RecipeStepsActivity.class);
+                intent.putExtra("recipe_id", id);
+                startActivity(intent);
+                break;
+
+            case 2:
+                intent = new Intent(this, MyProfileActivity.class);
+                intent.putExtra("userID", id);
+                intent.putExtra("MyUserID", user.getId());
+                startActivity(intent);
+                break;
+
+        }
+
+
     }
 
     /**

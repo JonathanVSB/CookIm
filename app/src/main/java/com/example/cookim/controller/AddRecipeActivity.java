@@ -1,6 +1,7 @@
 package com.example.cookim.controller;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -8,22 +9,33 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.cookim.R;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityAddRecipeBinding;
+import com.example.cookim.databinding.ItemNewStepContentBinding;
+import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.recipe.Step;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,16 +47,20 @@ public class AddRecipeActivity extends AppCompatActivity {
     private Intent data;
     private File file;
 
+    Handler handler;
     List<Ingredient> ingredients;
     List<Step> steps;
+    Model model;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAddRecipeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        handler = new Handler(Looper.getMainLooper());
         ingredients = new ArrayList<>();
         steps = new ArrayList<>();
+        model = new Model();
 
         prepareElements();
     }
@@ -102,9 +118,12 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         } else if (v.getId() == binding.ivaccept.getId()) {
 
-            if (file != null && steps != null && ingredients != null) {
-                Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
-                        binding.etdescription.getText().toString(), steps, ingredients);
+            if (file != null /*&& steps != null && ingredients != null*/) {
+//                Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
+//                        binding.etdescription.getText().toString(), steps, ingredients);
+
+                Recipe recipe = new Recipe(file, binding.etname.getText().toString(),binding.etdescription.getText().toString());
+                model.createRecipe(recipe, readToken());
 
             } else {
                 //TODO
@@ -112,17 +131,88 @@ public class AddRecipeActivity extends AppCompatActivity {
 
             }
 
-        } else if (v.getId() == binding.addingredientPic.getId()){
+        } else if (v.getId() == binding.addingredientPic.getId()) {
             //TODO
             //Display add ingredient
 
-        }else if (v.getId() == binding.addbutton.getId()){
+        } else if (v.getId() == binding.addbutton.getId()) {
             //TODO
             //add New step empty item
+
+            ItemNewStepContentBinding stepContentBinding = ItemNewStepContentBinding.inflate(getLayoutInflater());
+
+            TableRow row = new TableRow(this);
+            TableRow.LayoutParams params = new TableRow.LayoutParams();
+            params.setMargins(0, 0, 0, 20); // Replace -50 with the number of pixels you want to move to the left
+            row.setLayoutParams(params);
+
+            stepContentBinding.stepnum.setText(String.valueOf(binding.tlsteps.getChildCount() + 1));
+            stepContentBinding.stepPic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(intent, RESULT_LOAD_IMAGE);
+                }
+            });
+            row.addView(stepContentBinding.getRoot());
+
+            // Agregar el botón de eliminación a la fila
+            ImageView btremove = new ImageView(this);
+            btremove.setId(View.generateViewId());
+            btremove.setImageResource(R.drawable.ic_remove);
+            TableRow.LayoutParams btremoveParams = new TableRow.LayoutParams(90, 90); // Nuevo tamaño
+            btremoveParams.gravity = Gravity.END | Gravity.TOP;
+            btremove.setLayoutParams(btremoveParams);
+            row.addView(btremove);
+
+
+            // Agregar la fila a la tabla
+            binding.tlsteps.addView(row);
+
+            // Asignar el listener al botón de eliminación
+            btremove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Obtener la referencia a la fila que contiene el botón
+                    TableRow parentRow = (TableRow) view.getParent();
+                    // Eliminar la fila de la tabla
+                    binding.tlsteps.removeView(parentRow);
+                    refactorSteps(binding.tlsteps);
+
+
+                }
+
+            });
+
+
         }
 
 
     }
+
+    /**
+     * Refactors the step number if one row is deleted from tablelayout
+     *
+     * @param tlsteps
+     * @param
+     */
+    private void refactorSteps(TableLayout tlsteps) {
+        // Refactor the step number if one is deleted
+        for (int i = 0; i < tlsteps.getChildCount(); i++) {
+            TableRow row = (TableRow) tlsteps.getChildAt(i);
+            ItemNewStepContentBinding stepContentBinding = ItemNewStepContentBinding.bind(row.getChildAt(0));
+
+            int stepNum = i + 1;
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    stepContentBinding.stepnum.setText(String.valueOf(stepNum));
+                }
+            });
+        }
+    }
+
+
 
     /**
      * Displays the home page of the app and senda the user object to next activity
@@ -197,5 +287,45 @@ public class AddRecipeActivity extends AppCompatActivity {
         binding.stepPic.setImageBitmap(bitmap);
 
         return new File(picturePath);
+    }
+
+    /**
+     * Read an internal file read the token stored there
+     *
+     * @return the token or null
+     */
+    private String readToken() {
+        // Gets an instance of the application context
+        Context context = getApplicationContext();
+
+        // Open the file in write mode and create the FileOutputStream object
+        FileInputStream inputStream;
+        try {
+            inputStream = context.openFileInput("token.txt");
+
+
+            //Reads the token data from file
+            StringBuilder stringBuilder = new StringBuilder();
+            int c;
+            while ((c = inputStream.read()) != -1) {
+                stringBuilder.append((char) c);
+            }
+            String token = stringBuilder.toString();
+
+
+            //Close the FileInputStream Object
+            inputStream.close();
+
+            // returns token
+            return token;
+        } catch (Exception e) {
+            //e.printStackTrace();
+            System.out.println("Error al leer la respuesta: " + e.toString());
+
+        }
+
+
+        // if file is empty, returns null
+        return null;
     }
 }
