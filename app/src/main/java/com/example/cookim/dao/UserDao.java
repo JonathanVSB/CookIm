@@ -416,6 +416,7 @@ public class UserDao {
             String authHeader = "Bearer " + param;
             connection.setRequestProperty("Authorization", authHeader);
 
+
             // Set content type to form url encoded
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
