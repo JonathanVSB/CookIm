@@ -44,7 +44,7 @@ public class UserDao {
         DataResult result = null;
         int i = 0;
         try {
-            //HTTP request
+            //HTTPS request
             System.out.println("ENTRA  " + urlString);
             URL url = new URL(urlString);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -140,6 +140,7 @@ public class UserDao {
 
     /**
      * creates a request to the path specified, using the token of the user as validation key
+     *
      * @param urlString
      * @param token
      * @return
@@ -199,34 +200,21 @@ public class UserDao {
 
     public UserModel parseUserModel(InputStream inputStream) {
         UserModel result = null;
-        DataResult data = null;
 
         try {
-            // Initializes a BufferedReader object to read the InputStream
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-            // Initializes a StringBuilder object to hold the JSON-formatted string
             StringBuilder stringBuilder = new StringBuilder();
-
-            // Reads each line of the InputStream and appends it to the StringBuilder object
             String linea;
             while ((linea = bufferedReader.readLine()) != null) {
                 stringBuilder.append(linea);
             }
 
-            // Closes the BufferedReader
             bufferedReader.close();
-
-            // Removes the quotes around the braces
             String jsonString = stringBuilder.toString().replaceAll("\"\\{", "{").replaceAll("\\}\"", "}");
 
-
-            // Debugging statement
             System.out.println("Respuesta JSON modificada: " + jsonString);
 
-            // Checks if the modified string starts and ends with "{" and "}"
             if (jsonString.trim().startsWith("{") && jsonString.trim().endsWith("}")) {
-
                 JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
 
                 if (jsonObject.has("data")) {
@@ -237,6 +225,7 @@ public class UserDao {
                     result.setFull_name(dataObject.get("full_name").getAsString());
                     result.setEmail(dataObject.get("email").getAsString());
                     result.setPhone(dataObject.get("phone").getAsString());
+
                     if (dataObject.has("path_img")) {
                         result.setPath_img(dataObject.get("path_img").getAsString());
                     }
@@ -246,29 +235,26 @@ public class UserDao {
                     }
                     result.setId_rol(dataObject.get("id_rol").getAsLong());
                 } else {
-                    // Debugging statement
                     System.out.println("La respuesta indica un error");
                 }
 
             } else {
-                // Debugging statement
                 System.out.println("La respuesta no es un objeto JSON válido");
             }
         } catch (IOException e) {
-            //Debugging statement
             System.out.println("Error al leer la respuesta: " + e.toString());
         } catch (JsonSyntaxException e) {
-            // Debugging statement
             System.out.println("Error al analizar la respuesta JSON: " + e.toString());
         }
 
-        // Returns the UserModel object
         return result;
     }
+
 
     /**
      * Gets the data introduced by user in all camps and send petition to create this new user
      * if the user adds profile image it sends the image to
+     *
      * @param username
      * @param password
      * @param full_name
@@ -348,6 +334,15 @@ public class UserDao {
         return result;
     }
 
+    /**
+     * Autologin validation. sends the token an receives response from server
+     * if response =1 token is validated
+     * else token is not validated.
+     *
+     * @param urlString
+     * @param token
+     * @return
+     */
     public DataResult validateToken(String urlString, String token) {
         DataResult result = null;
         try {
@@ -392,6 +387,60 @@ public class UserDao {
         } catch (Exception e) {
             // Debugging statement
             System.out.println("Error al conectar con el servidor: " + e.toString());
+        }
+
+        return result;
+    }
+
+    /**
+     * Search data of the other users
+     *
+     * @param path
+     * @param token
+     * @param id
+     * @return
+     */
+    public UserModel readOtherUserResponse(String path, String token, long id) {
+        UserModel result = null;
+        String param = token + ":" + String.valueOf(id);
+        try {
+            // HTTPS request
+            System.out.println("ENTRA  " + path);
+            URL url = new URL(path);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Set authorization header with token
+            String authHeader = "Bearer " + param;
+            connection.setRequestProperty("Authorization", authHeader);
+
+            // Set content type to form url encoded
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+            // Write parameters to the request body
+            String requestBody = "";
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            }
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into DataResult object
+                result = parseUserModel(inputStream);
+
+                inputStream.close();
+
+            }
+
+        } catch (Exception e) {
+            //  Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+            System.out.println("PETA EN ESTA LINEA: " + e.toString());
         }
 
         return result;

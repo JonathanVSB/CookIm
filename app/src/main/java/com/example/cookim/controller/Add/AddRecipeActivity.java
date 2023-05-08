@@ -1,4 +1,4 @@
-package com.example.cookim.controller;
+package com.example.cookim.controller.Add;
 
 import android.Manifest;
 import android.content.Context;
@@ -29,6 +29,7 @@ import com.example.cookim.R;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityAddRecipeBinding;
 import com.example.cookim.databinding.ItemNewStepContentBinding;
+import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
@@ -38,6 +39,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AddRecipeActivity extends AppCompatActivity {
 
@@ -46,6 +49,9 @@ public class AddRecipeActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private Intent data;
     private File file;
+    private View currentView;
+    ExecutorService executor;
+
 
     Handler handler;
     List<Ingredient> ingredients;
@@ -61,6 +67,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         ingredients = new ArrayList<>();
         steps = new ArrayList<>();
         model = new Model();
+        executor = Executors.newSingleThreadExecutor();
 
         prepareElements();
     }
@@ -113,6 +120,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             showHomePage();
 
         } else if (v.getId() == binding.stepPic.getId()) {
+            currentView = v;
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, RESULT_LOAD_IMAGE);
 
@@ -121,9 +129,23 @@ public class AddRecipeActivity extends AppCompatActivity {
             if (file != null /*&& steps != null && ingredients != null*/) {
 //                Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
 //                        binding.etdescription.getText().toString(), steps, ingredients);
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Recipe recipe = new Recipe(binding.etname.getText().toString(), binding.etdescription.getText().toString());
+                        DataResult res = model.createRecipe(recipe, readToken(), file);
 
-                Recipe recipe = new Recipe(file, binding.etname.getText().toString(),binding.etdescription.getText().toString());
-                model.createRecipe(recipe, readToken());
+                        if (res.getResult().equals("1")){
+                            showHomePage();
+                        }else{
+
+                            //TODO
+                            //show Error message
+
+                        }
+                    }
+                });
+
 
             } else {
                 //TODO
@@ -150,6 +172,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             stepContentBinding.stepPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    currentView = view; // Agrega esta línea para guardar la referencia al 'View' actual
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(intent, RESULT_LOAD_IMAGE);
                 }
@@ -213,7 +236,6 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * Displays the home page of the app and senda the user object to next activity
      */
@@ -237,14 +259,14 @@ public class AddRecipeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        this.data = data; // Agrega esta línea para guardar la referencia a 'data'
+        this.data = data;
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             } else {
-                file = loadImage(data);
+                file = loadImage(data, currentView); // Agrega 'currentView' como argumento
             }
         }
     }
@@ -259,10 +281,9 @@ public class AddRecipeActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                loadImage(data);
+                loadImage(data, currentView); // Agrega 'currentView' como argumento
             } else {
                 Toast.makeText(this, "Permiso denegado para leer el almacenamiento externo", Toast.LENGTH_SHORT).show();
             }
@@ -274,7 +295,7 @@ public class AddRecipeActivity extends AppCompatActivity {
      *
      * @param data
      */
-    private File loadImage(Intent data) {
+    private File loadImage(Intent data, View view) {
         Uri selectedImage = data.getData();
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -284,10 +305,18 @@ public class AddRecipeActivity extends AppCompatActivity {
         cursor.close();
 
         Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
-        binding.stepPic.setImageBitmap(bitmap);
+
+        // Establecer la imagen en función del 'View' que se le pase
+        if (view == binding.stepPic) {
+            binding.stepPic.setImageBitmap(bitmap);
+        } else {
+            ImageView stepPic = (ImageView) view;
+            stepPic.setImageBitmap(bitmap);
+        }
 
         return new File(picturePath);
     }
+
 
     /**
      * Read an internal file read the token stored there

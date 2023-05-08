@@ -20,9 +20,6 @@ public class Model {
     private IngredientDao ingredientDao;
 
 
-
-
-
     public Model() {
         path = new Path();
         userDao = new UserDao();
@@ -40,6 +37,7 @@ public class Model {
 
     /**
      * returns the data of the user by his token
+     *
      * @param token
      * @return
      */
@@ -54,7 +52,7 @@ public class Model {
 
     }
 
-    public DataResult likeRecipe(String parametros){
+    public DataResult likeRecipe(String parametros) {
         DataResult result = recipeDao.readResponse(path.LIKE, parametros);
         return result;
 
@@ -62,13 +60,13 @@ public class Model {
     }
 
 
-    public DataResult logout(String token){
+    public DataResult logout(String token) {
         DataResult result = userDao.readResponse(path.LOGOUT, token);
         return result;
 
     }
 
-    public DataResult signIn(String username, String password, String full_name, String email, String phone, long id_rol, File file){
+    public DataResult signIn(String username, String password, String full_name, String email, String phone, long id_rol, File file) {
         DataResult result = userDao.validationNewUser(username,
                 password,
                 full_name,
@@ -83,13 +81,13 @@ public class Model {
 
     /**
      * returns the details of the recipe found by his id
+     *
      * @param id
      * @param token
      * @return
      */
-    public Recipe loadRecipeSteps(int id, String token)
-    {
-        Recipe recipe = recipeDao.loadRecipeSteps(path.STEPS,id, token);
+    public Recipe loadRecipeSteps(int id, String token) {
+        Recipe recipe = recipeDao.loadRecipeSteps(path.STEPS, id, token);
 
         return recipe;
 
@@ -97,6 +95,7 @@ public class Model {
 
     /**
      * creates a path to select where search the images neededs
+     *
      * @param pathImg
      * @return
      */
@@ -104,47 +103,51 @@ public class Model {
 
 
         String profileUrl = path.RELATIVEPATH + pathImg;
+
         return profileUrl;
     }
 
     /**
      * returns the recipes of the user identified by his token
+     *
      * @param token
      * @return
      */
-    public List<Recipe> findUserRecipes(String token){
-        List<Recipe> recipes = recipeDao.loadMyRecipes(path.MYRECIPES, token);
+    public List<Recipe> findUserRecipes(String token, long id) {
+        List<Recipe> recipes = recipeDao.loadMyRecipes(path.MYRECIPES, token, id);
         return recipes;
 
     }
 
-    public List<Ingredient> getNewIngredients(String token, int id){
+    public List<Ingredient> getNewIngredients(String token, int id) {
 
-        List<Ingredient> ingredients =  ingredientDao.getAll(path.INGREDIENTS, token,id);
+        List<Ingredient> ingredients = ingredientDao.getAll(path.INGREDIENTS, token, id);
         return ingredients;
 
     }
 
-    public Integer getMaxIdIngredient(BBDDIngredients ingredients){
+    public Integer getMaxIdIngredient(BBDDIngredients ingredients) {
 
         int id = ingredientDao.getMaxIngredientId(ingredients);
         return id;
     }
 
-    public DataResult autologin(String token){
+    public DataResult autologin(String token) {
 
         DataResult result = userDao.validateToken(path.AUTOLOGIN, token);
         return result;
     }
 
-    public DataResult createRecipe(Recipe recipe, String token){
+    public DataResult createRecipe(Recipe recipe, String token, File file) {
 
-        DataResult result = recipeDao.addRecipe(path.ADDRECIPE, token, recipe);
+        DataResult result = recipeDao.addRecipe(path.ADDRECIPE, token, recipe, file);
         return result;
     }
 
-
-
+    public UserModel userProfile(String token, long id) {
+        UserModel userModel = userDao.readOtherUserResponse(path.OTHERPROFILES, token, id);
+        return userModel;
+    }
 
 
 }

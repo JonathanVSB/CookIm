@@ -207,6 +207,7 @@ public class RecipeDao {
      * Sends the token of the user. if finds this session else, returns null. Then search the recipe
      * by his id. if find matches, return the recipe and the steps
      * else returns null recipe
+     *
      * @param path
      * @param id
      * @param token
@@ -260,6 +261,7 @@ public class RecipeDao {
 
     /**
      * Parses the json response into Recipe object
+     *
      * @param inputStream
      * @return
      */
@@ -326,7 +328,7 @@ public class RecipeDao {
                             int step_number = stepObject.get("step_number").getAsInt();
                             String stepDescription = stepObject.get("description").getAsString();
                             String stepImg = stepObject.get("path").getAsString();
-                            steps.add(new Step(stepId, recipe_id, step_number, stepDescription,stepImg));
+                            steps.add(new Step(stepId, recipe_id, step_number, stepDescription, stepImg));
                         }
 
                         result = new Recipe(id, user_id, name, description, path_img, rating, likes, user, path, steps, ingredients);
@@ -357,57 +359,59 @@ public class RecipeDao {
 
     /**
      * search all recipes of the user using his token as validation key
+     *
      * @param path
      * @param token
      * @return
      */
-    public List<Recipe> loadMyRecipes(String path, String token){
-            List<Recipe> recipes = new ArrayList<>();
-            String param = token;
-            int i = 0;
-            try {
-                // HTTP request
-                System.out.println("ENTRA  " + path);
-                URL url = new URL(path);
-                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-                connection.setRequestProperty("User-Agent", "");
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                connection.setRequestMethod("POST");
-                connection.setDoInput(true);
-                connection.setDoOutput(true);
+    public List<Recipe> loadMyRecipes(String path, String token, long id) {
+        List<Recipe> recipes = new ArrayList<>();
+        String param = token + ":" + String.valueOf(id);
+        int i = 0;
+        try {
+            // HTTP request
+            System.out.println("ENTRA  " + path);
+            URL url = new URL(path);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
 
-                String authHeader = "Bearer " + param;
-                connection.setRequestProperty("Authorization", authHeader);
+            String authHeader = "Bearer " + param;
+            connection.setRequestProperty("Authorization", authHeader);
 
-                // Write parameters to the request
-                try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                    wr.write(param.getBytes(StandardCharsets.UTF_8));
-                }
-
-                connection.connect();
-
-                if (connection != null) {
-                    // read Stream
-                    InputStream inputStream = connection.getInputStream();
-
-                    // parse the response into UserModel object
-
-                    recipes = parseRecipeList(inputStream);
-
-                    inputStream.close();
-
-                }
-
-            } catch (Exception e) {
-                System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
+            // Write parameters to the request
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(param.getBytes(StandardCharsets.UTF_8));
             }
 
-            return recipes;
+            connection.connect();
 
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into UserModel object
+
+                recipes = parseRecipeList(inputStream);
+
+                inputStream.close();
+
+            }
+
+        } catch (Exception e) {
+            System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
         }
+
+        return recipes;
+
+    }
 
     /**
      * Parses the Json response into Recipe List
+     *
      * @param inputStream
      * @return
      */
@@ -461,22 +465,24 @@ public class RecipeDao {
 
     /**
      * send pttion to add new Recipe to server
+     *
      * @param path
      * @param token
      * @param recipe
      * @return
      */
-    public DataResult addRecipe(String path, String token, Recipe recipe) {
+    public DataResult addRecipe(String path, String token, Recipe recipe, File file) {
         DataResult result = null;
-        File file = recipe.getFile();
 
         try {
             Gson gson = new Gson();
             System.out.println("ENTRA  " + path);
+
             URL url = new URL(path);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "");
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
+            connection.setRequestProperty("Authorization", "Bearer " + token);
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
@@ -485,9 +491,12 @@ public class RecipeDao {
             String boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
             OutputStream os = connection.getOutputStream();
             DataOutputStream wr = new DataOutputStream(os);
+
+            // Send recipe as JSON
             wr.writeBytes("--" + boundary + "\r\n");
             wr.writeBytes("Content-Disposition: form-data; name=\"recipe\"\r\n\r\n" + gson.toJson(recipe) + "\r\n");
 
+            // Send file
             if (file != null) {
                 wr.writeBytes("--" + boundary + "\r\n");
                 wr.writeBytes("Content-Disposition: form-data; name=\"image\"; filename=\"" + file.getName() + "\"\r\n");
@@ -527,6 +536,7 @@ public class RecipeDao {
     }
 
 }
+
 
 
 

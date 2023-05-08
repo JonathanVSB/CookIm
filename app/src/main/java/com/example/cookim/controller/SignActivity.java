@@ -124,7 +124,7 @@ public class SignActivity extends AppCompatActivity {
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            //Background work here
+
                             //System.out.println("ENTRA");
                             sendNewUser(user);
 //

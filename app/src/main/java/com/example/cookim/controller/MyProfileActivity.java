@@ -42,6 +42,7 @@ public class MyProfileActivity extends Activity {
     Executor executor;
     private ActivityMyProfileBinding binding;
     Handler handler;
+    UserModel user;
 
 
     @Override
@@ -56,27 +57,31 @@ public class MyProfileActivity extends Activity {
         token = readToken();
         executor = Executors.newSingleThreadExecutor();
         Intent intent = getIntent();
+
         int id = intent.getIntExtra("userID", -1);
         int myId = intent.getIntExtra("MyUserID", -1);
 
 
         //If theres token saved in file
         if (!token.isEmpty()) {
-            binding.btfollow.setVisibility(View.GONE);
-            if (myId == id) {
-                binding.btfollow.setVisibility(View.GONE);
-            }
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
                     //find user by his token
-                    UserModel user = model.myProfile(token);
 
+                    if (myId == id) {
+                        binding.btfollow.setVisibility(View.GONE);
+                        user = model.myProfile(token);
+
+                    } else {
+                        user = model.userProfile(token, id);
+
+                    }
                     //if user is not null
                     if (user != null) {
 
                         //search all recipes of the user
-                        List<Recipe> recipes = model.findUserRecipes(token);
+                        List<Recipe> recipes = model.findUserRecipes(token, user.getId());
 
                         handler.post(new Runnable() {
                             @Override
@@ -104,7 +109,6 @@ public class MyProfileActivity extends Activity {
 
 
     }
-
 
 
     /**

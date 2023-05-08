@@ -29,10 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     View.OnClickListener listener;
     Switch swLogOption;
 
-    private final String URL = "http://91.107.198.64:7070/Cookim/";
-    private final String URL2 = "http://192.168.127.102:7070/Cookim/";
-
-    private final String URL3 = "http://192.168.127.94:7070/Cookim/";
     ExecutorService executor;
     Handler handler;
 
@@ -138,7 +134,6 @@ public class LoginActivity extends AppCompatActivity {
      * @param loginModel
      */
     private void validation(LoginModel loginModel) {
-        String url = URL3 + "login";
         String username = loginModel.getUserName();
         String password = loginModel.getPassword();
         String parametros = username + ":" + password;
@@ -147,11 +142,8 @@ public class LoginActivity extends AppCompatActivity {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    //Background work here
-                    //System.out.println("ENTRA");
-//                    UserModel userModel = readResponse(url, parametros);
-                    //String token = readResponse(url, parametros);
-                    DataResult result = model.login(parametros);/*readResponse(url, parametros);*/
+
+                    DataResult result = model.login(parametros);
                     if (result.getResult().equals("1")) {
                         String token = result.getData().toString();
                         saveToken(result.getData().toString());
@@ -159,7 +151,6 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 // Post Execute
-
                                 showHomePage();
 
                             }

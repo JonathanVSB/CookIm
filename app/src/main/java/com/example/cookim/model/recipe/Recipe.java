@@ -54,8 +54,8 @@ public class Recipe {
         this.ingredients = ingredients;
     }
 
-    public Recipe(File file, String name, String description) {
-        this.file = file;
+    public Recipe(/*File file, */String name, String description) {
+//        this.file = file;
         this.name = name;
         this.description = description;
         this.likes = 0;

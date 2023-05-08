@@ -59,7 +59,7 @@
             android:paddingStart="8dp"
             android:paddingTop="8dp"
             android:gravity="top|start"
-            android:layout_marginStart="-10dp"
+            android:layout_marginStart="10dp"
             android:hint="añade una descripcion"
             android:background="@drawable/edit_text_border"/>
 

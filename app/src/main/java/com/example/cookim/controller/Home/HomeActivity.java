@@ -20,7 +20,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
-import com.example.cookim.controller.AddRecipeActivity;
+import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
@@ -107,7 +107,7 @@ public class HomeActivity extends Activity implements HomeListener {
                         if (ingredientList.size() == 0) {
 
 
-                        }else if (ingredientList.size() != 0 && ingredientList.get(ingredientList.size() - 1).getId() != maxId) {
+                        } else if (ingredientList.size() != 0 && ingredientList.get(ingredientList.size() - 1).getId() != maxId) {
 
                             insert(ingredientList);
                         }
@@ -280,6 +280,7 @@ public class HomeActivity extends Activity implements HomeListener {
                                             })
                                             .into(binding.profileImage);
 
+                                    //uses
                                     loadHeader(user);
 
 
@@ -361,7 +362,7 @@ public class HomeActivity extends Activity implements HomeListener {
     @Override
     public void onItemClicked(int id, int action) {
         Intent intent = null;
-        switch (action){
+        switch (action) {
             case 1:
                 intent = new Intent(this, RecipeStepsActivity.class);
                 intent.putExtra("recipe_id", id);
@@ -385,6 +386,8 @@ public class HomeActivity extends Activity implements HomeListener {
      */
     private void displayMyProfile() {
         Intent intent = new Intent(this, MyProfileActivity.class);
+        intent.putExtra("userID", user.getId());
+        intent.putExtra("MyUserID", user.getId());
         startActivity(intent);
     }
 

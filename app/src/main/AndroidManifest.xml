@@ -79,7 +79,7 @@
             android:exported="true" />
 
         <activity
-            android:name=".controller.AddRecipeActivity"
+            android:name=".controller.Add.AddRecipeActivity"
             android:theme="@style/Theme.CookIm.NoActionBar"
             android:exported="true" />
 
