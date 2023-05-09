@@ -1,18 +1,13 @@
 package com.example.cookim.model.recipe;
 
-import android.os.Build;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class Recipe {
 
     public int id;
-    public int user_id;
+    public int id_user;
     public File file;
     public String name;
     public String description;
@@ -27,6 +22,7 @@ public class Recipe {
 //    private String base64Image;
 
     private boolean liked;
+    private boolean saved;
 
 
 
@@ -62,10 +58,10 @@ public class Recipe {
 //        this.base64Image = encodeFileToBase64(file);
     }
 
-    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, List<Ingredient> ingredients, List<Step>
+    public Recipe(int id, int id_user, String name, String description, String path_img, double rating, int likes, List<Ingredient> ingredients, List<Step>
             steps) {
         this.id = id;
-        this.user_id = user_id;
+        this.id_user = id_user;
         this.name = name;
         this.description = description;
         this.path_img = path_img;
@@ -76,9 +72,9 @@ public class Recipe {
 
     }
 
-    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, String user_name, String path, List<Step> steps, List<Ingredient> ingredients) {
+    public Recipe(int id, int id_user, String name, String description, String path_img, double rating, int likes, String user_name, String path, List<Step> steps, List<Ingredient> ingredients) {
         this.id = id;
-        this.user_id = user_id;
+        this.id_user = id_user;
         this.name = name;
         this.description = description;
         this.path_img = path_img;
@@ -90,9 +86,9 @@ public class Recipe {
         this.ingredients = ingredients;
     }
 
-    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes, String user_name) {
+    public Recipe(int id, int id_user, String name, String description, String path_img, double rating, int likes, String user_name) {
         this.id = id;
-        this.user_id = user_id;
+        this.id_user = id_user;
         this.name = name;
         this.description = description;
         this.path_img = path_img;
@@ -105,9 +101,9 @@ public class Recipe {
 
     }
 
-    public Recipe(int id, int user_id, String name, String description, String path_img, double rating, int likes) {
+    public Recipe(int id, int id_user, String name, String description, String path_img, double rating, int likes) {
         this.id = id;
-        this.user_id = user_id;
+        this.id_user = id_user;
         this.name = name;
         this.description = description;
         this.path_img = path_img;
@@ -133,12 +129,12 @@ public class Recipe {
         this.id = id;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getId_user() {
+        return id_user;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setId_user(int id_user) {
+        this.id_user = id_user;
     }
 
     public String getName() {
@@ -238,6 +234,13 @@ public class Recipe {
         this.file = file;
     }
 
+    public boolean isSaved() {
+        return saved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
+    }
     ///METHODS
 
 //    private String encodeFileToBase64(File file) {

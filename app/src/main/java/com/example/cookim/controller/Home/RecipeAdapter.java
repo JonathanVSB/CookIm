@@ -1,8 +1,6 @@
 package com.example.cookim.controller.Home;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -10,19 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
-import com.example.cookim.controller.RecipeStepsActivity;
 import com.example.cookim.databinding.ItemRecipeContentBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
@@ -40,13 +32,15 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     ExecutorService executor;
     Handler handler;
     Model model;
-
+    String token;
 
     HomeListener homeListener;
 
-    public RecipeAdapter(List<Recipe> recipeList) {
+
+    public RecipeAdapter(List<Recipe> recipeList, String token) {
 
         this.recipeList = recipeList;
+        this.token = token;
 
         model = new Model();
         executor = Executors.newSingleThreadExecutor();
@@ -94,7 +88,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         }
 
 
-
 //
 //            Glide.with(holder.itemView.getContext())
 //                    .load(img)
@@ -104,28 +97,60 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.btLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean press = !recipe.isLiked();
-                recipe.setLiked(press);
-                recipe.setLikes(press ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
+
+                boolean pressLike = !recipe.isLiked();
+                recipe.setLiked(pressLike);
+                recipe.setLikes(pressLike ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
+                holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
                 holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
 
                 //send 1 if user likes the recipe, 0 if unlikes
-                int likeValue = press ? 1 : 0;
-                DataResult result = sendLike(likeValue, String.valueOf(recipe.getId()));
+                int likeValue = pressLike ? 1 : 0;
 
+                DataResult result = sendLike(likeValue, String.valueOf(recipe.getId()));
                 if (result.getResult().equals("1")) {
                     try {
                         holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
-                        holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
-                    } catch (Exception e) {
+                        } catch (Exception e) {
                         System.out.println(e.toString());
                     }
                 } else {
 
-                    press = false;
+//                            pressLike = false;
                 }
             }
+
+
         });
+
+        holder.binding.btSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                boolean pressSave = !recipe.isSaved();
+                recipe.setSaved(pressSave);
+
+                int saveValue = press ? 1 : 0;
+                DataResult result = saveRecipe(saveValue, String.valueOf(recipe.getId()));
+
+                if (result.getResult().equals("1")) {
+                    try {
+                        holder.binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
+
+                    } catch (Exception e) {
+                        System.out.println(e.toString());
+                    }
+
+
+                } else {
+
+                    pressSave = false;
+                }
+
+
+            }
+        });
+
 
         holder.binding.viewRecipe.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,10 +162,27 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.tvPoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                homeListener.onItemClicked(recipe.getUser_id(), 2);
+                homeListener.onItemClicked(recipe.getId_user(), 2);
             }
         });
 
+    }
+
+    private DataResult saveRecipe(int num, String id) {
+        String numero = String.valueOf(num);
+        String parametros = token + ":" + numero + ":" + id;
+        DataResult result = null;
+
+        try {
+
+            result = executor.submit(() -> {
+                return model.saveRecipe(parametros);
+            }).get();
+        } catch (Exception e) {
+            System.out.println("Error al enviar like: " + e.getMessage());
+        }
+
+        return result;
     }
 
 
@@ -157,14 +199,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             super(itemView);
             binding = ItemRecipeContentBinding.bind(itemView);
         }
+
     }
 
     private DataResult sendLike(int num, String id) {
         String numero = String.valueOf(num);
-        String parametros = "num=" + numero + "&recipe_id=" + id;
+        String parametros = token + ":" + numero + ":" + id;
         DataResult result = null;
 
         try {
+
             result = executor.submit(() -> {
                 return model.likeRecipe(parametros);
             }).get();
@@ -179,6 +223,30 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void setHomeListener(HomeListener listener) {
         this.homeListener = listener;
     }
+
+//    private DataResult gestionateActions(int num, String id, View v) {
+//        DataResult result = null;
+//        String parametros = token + ":" + num + ":" + id;
+//        try{
+//            if (v.getId() == binding.btLike.getId())
+//            {
+//                result = executor.submit(() -> {
+//                    return model.likeRecipe(parametros);
+//                }).get();
+//            } else if (v.getId() == binding.btSave.getId()){
+//
+//                result = executor.submit(() -> {
+//                    return model.saveRecipe(parametros);
+//                }).get();
+//            }
+//
+//        }catch (Exception e){
+//
+//            System.out.println("Error al procesar la acción: " + e.getMessage());
+//        }
+//
+//        return result;
+//    }
 
 
 }

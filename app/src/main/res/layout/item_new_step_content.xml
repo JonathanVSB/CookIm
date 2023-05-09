@@ -38,17 +38,6 @@
             app:layout_goneMarginStart="5dp"
             />
 
-<!--        <ImageView-->
-<!--            android:id="@+id/btremove"-->
-<!--            android:layout_width="35dp"-->
-<!--            android:layout_height="35dp"-->
-<!--            android:layout_marginStart="150dp"-->
-<!--            app:layout_constraintStart_toEndOf="@id/stepnum"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="@id/stepnum"-->
-<!--            android:src="@drawable/ic_remove"/>-->
-
-
         <EditText
             android:id="@+id/etElavoration"
             android:layout_width="325dp"
@@ -83,11 +72,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvDescription" />
 
-
-
         </androidx.cardview.widget.CardView>
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

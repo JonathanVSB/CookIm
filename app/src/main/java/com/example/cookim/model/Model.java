@@ -58,6 +58,10 @@ public class Model {
 
 
     }
+    public DataResult saveRecipe(String parametros){
+        DataResult result = recipeDao.readResponse(path.SAVE, parametros);
+        return result;
+    }
 
 
     public DataResult logout(String token) {
@@ -113,8 +117,8 @@ public class Model {
      * @param token
      * @return
      */
-    public List<Recipe> findUserRecipes(String token, long id) {
-        List<Recipe> recipes = recipeDao.loadMyRecipes(path.MYRECIPES, token, id);
+    public List<Recipe> userRecipes(String token, long id) {
+        List<Recipe> recipes = recipeDao.loadMyRecipes(path.OTHERPROFILES, token, id);
         return recipes;
 
     }

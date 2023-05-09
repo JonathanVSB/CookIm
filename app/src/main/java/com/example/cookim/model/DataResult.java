@@ -20,6 +20,12 @@ public class DataResult implements Serializable {
 
     }
 
+
+    public DataResult() {
+
+
+    }
+
     public DataResult(String result, Object data) {
         this.result = result;
         this.data = data;

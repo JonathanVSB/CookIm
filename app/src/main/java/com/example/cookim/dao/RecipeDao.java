@@ -112,6 +112,7 @@ public class RecipeDao {
     public DataResult readResponse(String urlString, String parameters) {
 
         DataResult result = null;
+        String param = parameters;
         int i = 0;
         try {
             //HTTP request
@@ -124,9 +125,12 @@ public class RecipeDao {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
+            String authHeader = "Bearer " + param;
+            connection.setRequestProperty("Authorization", authHeader);
+
             // Write parameters to the request
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.write(parameters.getBytes(StandardCharsets.UTF_8));
+                wr.write(param.getBytes(StandardCharsets.UTF_8));
             }
 
             connection.connect();

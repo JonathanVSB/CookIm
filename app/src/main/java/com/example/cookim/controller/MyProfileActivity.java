@@ -43,6 +43,7 @@ public class MyProfileActivity extends Activity {
     private ActivityMyProfileBinding binding;
     Handler handler;
     UserModel user;
+    boolean followed;
 
 
     @Override
@@ -56,10 +57,13 @@ public class MyProfileActivity extends Activity {
         model = new Model();
         token = readToken();
         executor = Executors.newSingleThreadExecutor();
+
+
         Intent intent = getIntent();
 
+        long myId = intent.getLongExtra("MyUserID", -1);
         int id = intent.getIntExtra("userID", -1);
-        int myId = intent.getIntExtra("MyUserID", -1);
+
 
 
         //If theres token saved in file
@@ -81,7 +85,8 @@ public class MyProfileActivity extends Activity {
                     if (user != null) {
 
                         //search all recipes of the user
-                        List<Recipe> recipes = model.findUserRecipes(token, user.getId());
+                        List<Recipe> recipes = model.userRecipes(token, user.getId());
+
 
                         handler.post(new Runnable() {
                             @Override
@@ -188,6 +193,13 @@ public class MyProfileActivity extends Activity {
                 row.addView(recipeBinding.getRoot());
 
                 binding.tlRecipes.addView(row);
+
+                binding.btfollow.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                       // int followers = model.
+                    }
+                });
 
             }
 

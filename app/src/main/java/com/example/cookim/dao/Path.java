@@ -14,14 +14,14 @@ public class Path {
     //443
     //Server 91.107.198.64:7070
     public final String LOGIN =  PATH + "login";
-    public final String OTHERPROFILES = PATH + "other-user-profile";
+    public final String OTHERPROFILES = PATH + "show-user-profile";
     public final String ADDRECIPE = PATH +"add-recipe";
     public final String INGREDIENTS = PATH + "ingredient-list";
     public final String LOGOUT = PATH + "logout";
-    public final String MYPROFILE = PATH + "my-profile";
-    public final String MYRECIPES = PATH + "full-profile";
+    public final String MYPROFILE = PATH + "show-user-home-data";
     public final String HOMEPAGE = PATH + "home-page";
     public final String LIKE = PATH + "like";
+    public final String SAVE = PATH + "save";
     public final String SIGN = PATH + "sign-in";
     public final String AUTOLOGIN = PATH + "autologin";
 

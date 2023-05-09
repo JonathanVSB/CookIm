@@ -309,7 +309,7 @@ public class HomeActivity extends Activity implements HomeListener {
      * @param recipes
      */
     private void displayRecipes(List<Recipe> recipes) {
-        RecipeAdapter adapter = new RecipeAdapter(recipes);
+        RecipeAdapter adapter = new RecipeAdapter(recipes, token);
         adapter.setHomeListener(this);
         binding.recommendationsRv.setAdapter(adapter);
         binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
@@ -371,8 +371,8 @@ public class HomeActivity extends Activity implements HomeListener {
 
             case 2:
                 intent = new Intent(this, MyProfileActivity.class);
-                intent.putExtra("userID", id);
                 intent.putExtra("MyUserID", user.getId());
+                intent.putExtra("userID", id);
                 startActivity(intent);
                 break;
 
@@ -386,8 +386,9 @@ public class HomeActivity extends Activity implements HomeListener {
      */
     private void displayMyProfile() {
         Intent intent = new Intent(this, MyProfileActivity.class);
+        int myId = (int) user.getId();
         intent.putExtra("userID", user.getId());
-        intent.putExtra("MyUserID", user.getId());
+        intent.putExtra("MyUserID", myId);
         startActivity(intent);
     }
 
