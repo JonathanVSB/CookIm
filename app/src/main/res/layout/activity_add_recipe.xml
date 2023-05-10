@@ -58,6 +58,7 @@
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/Consportrait"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -181,6 +182,16 @@
                     app:layout_constraintStart_toEndOf="@id/ingredientstitle"
                     app:layout_constraintTop_toTopOf="parent"/>
 
+                <TableLayout
+                    android:id="@+id/tlIngredients"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/ingredientstitle"
+                    app:layout_constraintTop_toBottomOf="@id/ingredientstitle">
+
+
+
+                </TableLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,24 +2,38 @@ package com.example.cookim.controller.Add;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+
+import androidx.appcompat.widget.SearchView;
+
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -27,7 +41,9 @@ import androidx.core.content.ContextCompat;
 
 import com.example.cookim.R;
 import com.example.cookim.controller.Home.HomeActivity;
+import com.example.cookim.dao.BBDDIngredients;
 import com.example.cookim.databinding.ActivityAddRecipeBinding;
+import com.example.cookim.databinding.ItemAddIngredientBinding;
 import com.example.cookim.databinding.ItemNewStepContentBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
@@ -37,6 +53,8 @@ import com.example.cookim.model.recipe.Step;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -57,6 +75,9 @@ public class AddRecipeActivity extends AppCompatActivity {
     List<Ingredient> ingredients;
     List<Step> steps;
     Model model;
+    SQLiteDatabase dbIngredients;
+    BBDDIngredients dataBase;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,6 +89,8 @@ public class AddRecipeActivity extends AppCompatActivity {
         steps = new ArrayList<>();
         model = new Model();
         executor = Executors.newSingleThreadExecutor();
+        this.dataBase = new BBDDIngredients(this.getApplicationContext(), "Ingredientes", null, 1);
+
 
         prepareElements();
     }
@@ -126,6 +149,40 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         } else if (v.getId() == binding.ivaccept.getId()) {
 
+            //Fulfill ingredients list
+            for (int i = 0; i < binding.tlIngredients.getChildCount(); i++){
+                TableRow row = (TableRow) binding.tlIngredients.getChildAt(i);
+                int columnCount = row.getChildCount();
+
+                //get all ingredients from view
+                for (int j = 0; j < columnCount; j++) {
+                    View view = row.getChildAt(j);
+
+                    //creates new ingredient
+                    if (view instanceof TextView) {
+                        Ingredient ingredient = new Ingredient((((TextView) view).getText().toString()));
+
+                        //adds new ingredient to list
+                        ingredients.add(ingredient);
+
+                    }
+                }
+
+            }
+
+            //Fulfill step list
+            for (int i = 0; i < binding.tlsteps.getChildCount(); i++){
+                TableRow row = (TableRow) binding.tlsteps.getChildAt(i);
+                Step step = (Step) row.getTag();
+                if (step != null) {
+                    // Aquí puedes hacer lo que necesites con la información del paso
+                    // Por ejemplo, agregarlo a una lista
+                    steps.add(step);
+                }
+
+            }
+
+
             if (file != null /*&& steps != null && ingredients != null*/) {
 //                Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
 //                        binding.etdescription.getText().toString(), steps, ingredients);
@@ -135,9 +192,9 @@ public class AddRecipeActivity extends AppCompatActivity {
                         Recipe recipe = new Recipe(binding.etname.getText().toString(), binding.etdescription.getText().toString());
                         DataResult res = model.createRecipe(recipe, readToken(), file);
 
-                        if (res.getResult().equals("1")){
+                        if (res.getResult().equals("1")) {
                             showHomePage();
-                        }else{
+                        } else {
 
                             //TODO
                             //show Error message
@@ -154,10 +211,101 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
 
         } else if (v.getId() == binding.addingredientPic.getId()) {
-            //TODO
-            //Display add ingredient
+            this.dbIngredients = this.dataBase.getWritableDatabase();
+            AlertDialog.Builder builder = new AlertDialog.Builder(AddRecipeActivity.this);
+            ItemAddIngredientBinding ingredientView = ItemAddIngredientBinding.inflate(getLayoutInflater());
+            builder.setView(ingredientView.getRoot());
 
-        } else if (v.getId() == binding.addbutton.getId()) {
+            builder.setTitle("Ingredientes")
+                    .setCancelable(true)
+                    .setPositiveButton("Añadir", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (!ingredientView.idSearch.getQuery().toString().equals("")){
+                                TableRow row = new TableRow(AddRecipeActivity.this);
+                                TableRow.LayoutParams params = new TableRow.LayoutParams();
+                                params.setMargins(0, 10, 0, 20);
+                                row.setLayoutParams(params);
+
+                                TextView ingredientTextView = new TextView(AddRecipeActivity.this);
+                                ingredientTextView.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
+                                ingredientTextView.setText(ingredientView.idSearch.getQuery().toString()); // Reemplaza "ingredientName" con el nombre del ingrediente que deseas mostrar
+                                ingredientTextView.setTextSize(20);
+                                ingredientTextView.setTypeface(null, Typeface.BOLD);
+//                            ingredientTextView.setGravity(Gravity.LEFT);
+                                row.addView(ingredientTextView);
+
+                                ImageView btremove = new ImageView(AddRecipeActivity.this);
+                                btremove.setId(View.generateViewId());
+                                btremove.setImageResource(R.drawable.ic_remove);
+                                TableRow.LayoutParams btremoveParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT); // Establece los parámetros de layout de la imagen en MATCH_PARENT
+                                btremoveParams.gravity = Gravity.END | Gravity.TOP;
+                                btremove.setLayoutParams(btremoveParams);
+                                row.addView(btremove);
+
+                                binding.tlIngredients.addView(row);
+
+                                btremove.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // Obtener la referencia a la fila que contiene el botón
+                                        TableRow parentRow = (TableRow) view.getParent();
+                                        // Removes row from table
+                                        binding.tlIngredients.removeView(parentRow);
+                                    }
+                                });
+
+                            }
+
+
+
+
+                        }
+                    })
+                    .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            //close the dialog
+                            dialog.cancel();
+                        }
+                    });
+
+            // Listen for text changes in the search field.
+            ingredientView.idSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    return false; // Don't care about this.
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    if (s.length() >= 3) {
+                        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(AddRecipeActivity.this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+                        ingredientView.lvResults.setAdapter(adapter);
+                        String query = "SELECT * FROM Ingrediente WHERE Nombre LIKE '%" + s + "%'";
+                        Cursor cursor = dbIngredients.rawQuery(query, null);
+                        while (cursor.moveToNext()) {
+                            String item = cursor.getString(cursor.getColumnIndexOrThrow("Nombre"));
+                            adapter.add(item);
+                        }
+                    }
+                    return false;
+                }
+            });
+
+            // Listen for clicks on the ListView items.
+            ingredientView.lvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String selected = (String) parent.getItemAtPosition(position);
+                    ingredientView.idSearch.setQuery(selected, false);
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+        else if (v.getId() == binding.addbutton.getId()) {
             //TODO
             //add New step empty item
 
@@ -179,6 +327,35 @@ public class AddRecipeActivity extends AppCompatActivity {
             });
             row.addView(stepContentBinding.getRoot());
 
+            if (currentView != null){
+
+            }else{
+
+                // Obtener el drawable del ImageView
+                Drawable drawable = stepContentBinding.stepPic.getDrawable();
+
+//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), ((BitmapDrawable) drawable).getBitmap());
+
+                File imageFile = null;
+                try {
+                    imageFile = File.createTempFile("stepImage", ".jpg", getCacheDir());
+
+                    FileOutputStream fos = new FileOutputStream(imageFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+                Step newStep = new Step(imageFile, row.indexOfChild((View)currentView.getParent()), stepContentBinding.etElavoration.getText().toString() );
+//                newStep.setStepNum(binding.tlsteps.getChildCount() + 1);
+
+                row.setTag(newStep);
+
+            }
+
+
             // Agregar el botón de eliminación a la fila
             ImageView btremove = new ImageView(this);
             btremove.setId(View.generateViewId());
@@ -189,7 +366,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             row.addView(btremove);
 
 
-            // Agregar la fila a la tabla
+            // Add row to table
             binding.tlsteps.addView(row);
 
             // Asignar el listener al botón de eliminación
@@ -210,8 +387,8 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         }
 
-
     }
+
 
     /**
      * Refactors the step number if one row is deleted from tablelayout

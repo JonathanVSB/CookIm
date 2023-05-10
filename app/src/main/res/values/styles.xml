@@ -10,4 +10,9 @@
         <item name="android:textSize">19sp</item>
         <item name="android:stateListAnimator">@null</item>
     </style>
+
+    <style name="RoundedSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="queryBackground">@drawable/rounded_search_view</item>
+        <item name="submitBackground">@null</item>
+    </style>
 </resources>
