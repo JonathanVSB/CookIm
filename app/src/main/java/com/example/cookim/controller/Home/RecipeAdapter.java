@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
     private List<Recipe> recipeList;
+    private List<Long> recipesLiked;
     private ItemRecipeContentBinding binding;
     private View.OnClickListener listener;
     private boolean press;
@@ -37,10 +38,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     HomeListener homeListener;
 
 
-    public RecipeAdapter(List<Recipe> recipeList, String token) {
+    public RecipeAdapter(List<Recipe> recipeList, String token, List<Long> recipesLiked) {
 
         this.recipeList = recipeList;
         this.token = token;
+        this.recipesLiked = recipesLiked;
 
         model = new Model();
         executor = Executors.newSingleThreadExecutor();
@@ -66,6 +68,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.nameRecipe.setText(recipe.getName());
         holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
         holder.binding.tvPoster.setText(recipe.getUsername());
+
+        if (recipesLiked.contains(recipe.getId())) {
+            recipe.setLiked(true);  // if recipe is already liked
+        } else {
+            recipe.setLiked(false);  // if recipe is not liked
+        }
+
         holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
 
         if (recipe.getPath_img() != null && !recipe.getPath_img().isEmpty()) {
@@ -87,19 +96,17 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             holder.binding.img01.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
         }
 
-
-//
-//            Glide.with(holder.itemView.getContext())
-//                    .load(img)
-//
-
-
         holder.binding.btLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 boolean pressLike = !recipe.isLiked();
                 recipe.setLiked(pressLike);
+
+                if (pressLike) {
+                    recipesLiked.add((long) recipe.getId());
+
+                }
                 recipe.setLikes(pressLike ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
                 holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
                 holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
@@ -111,7 +118,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 if (result.getResult().equals("1")) {
                     try {
                         holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
-                        } catch (Exception e) {
+                    } catch (Exception e) {
                         System.out.println(e.toString());
                     }
                 } else {

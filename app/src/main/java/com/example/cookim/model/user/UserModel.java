@@ -21,6 +21,7 @@ public class UserModel implements Serializable {
     String token;
     List<UserModel> followers;
     List<UserModel> followed;
+    List<Long> recipe_likes;
     List<Recipe> favorites_recipes;
 
     //CONSTRUCTORS
@@ -226,9 +227,12 @@ public class UserModel implements Serializable {
         this.password = password;
     }
 
+    public List<Long> getRecipe_likes() {
+        return recipe_likes;
+    }
 
-
-
-
+    public void setRecipe_likes(List<Long> recipe_likes) {
+        this.recipe_likes = recipe_likes;
+    }
 }
 

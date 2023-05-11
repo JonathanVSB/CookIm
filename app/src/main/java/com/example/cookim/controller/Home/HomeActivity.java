@@ -51,6 +51,7 @@ public class HomeActivity extends Activity implements HomeListener {
     UserModel user;
     Model model;
     String token;
+    List<Long> recipes_likeds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,6 +249,7 @@ public class HomeActivity extends Activity implements HomeListener {
                 @Override
                 public void run() {
                     user = model.myProfile(token); /*readUserResponse((url + data1), token);*/
+                    recipes_likeds = user.getRecipe_likes();
                     List<Recipe> recipes = model.loadRecipes();
                     List<RecipeAdapter> adapters = new ArrayList<>();
 
@@ -314,7 +316,7 @@ public class HomeActivity extends Activity implements HomeListener {
      * @param recipes
      */
     private void displayRecipes(List<Recipe> recipes) {
-        RecipeAdapter adapter = new RecipeAdapter(recipes, token);
+        RecipeAdapter adapter = new RecipeAdapter(recipes, token, recipes_likeds);
         adapter.setHomeListener(this);
         binding.recommendationsRv.setAdapter(adapter);
         binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));

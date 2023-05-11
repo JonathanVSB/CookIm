@@ -1,8 +1,11 @@
 package com.example.cookim.dao;
 
 import com.example.cookim.model.DataResult;
+import com.example.cookim.model.recipe.Step;
 import com.example.cookim.model.user.UserModel;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -19,6 +22,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -233,7 +238,17 @@ public class UserDao {
                     if (dataObject.has("description")) {
                         result.setDescription(dataObject.get("description").getAsString());
                     }
+
                     result.setId_rol(dataObject.get("id_rol").getAsLong());
+
+                    if (dataObject.has("recipe_likes")) {
+                        JsonArray recipeLikesArray = dataObject.getAsJsonArray("recipe_likes");
+                        List<Long> recipeLikes = new ArrayList<>();
+                        for (JsonElement recipeLikeElement : recipeLikesArray) {
+                            recipeLikes.add(recipeLikeElement.getAsLong());
+                        }
+                        result.setRecipe_likes(recipeLikes);
+                    }
                 } else {
                     System.out.println("La respuesta indica un error");
                 }

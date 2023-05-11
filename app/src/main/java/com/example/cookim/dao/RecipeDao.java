@@ -513,13 +513,13 @@ public class RecipeDao {
 
                 // Send step as JSON
                 wr.writeBytes("--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"steps[" + i + "]\"\r\n\r\n" + gson.toJson(step) + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"steps[" + (i+1)+ "]\"\r\n\r\n" + gson.toJson(step) + "\r\n");
 
                 // Send step image
                 File stepImage = step.getFile();
                 if (stepImage != null) {
                     wr.writeBytes("--" + boundary + "\r\n");
-                    wr.writeBytes("Content-Disposition: form-data; name=\"steps[" + i + "].image\"; filename=\"" + stepImage.getName() + "\"\r\n");
+                    wr.writeBytes("Content-Disposition: form-data; name=\"step_file_" + (i+1) + "\"; filename=\"" + stepImage.getName() + "\"\r\n");
                     wr.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(stepImage.getName()) + "\r\n\r\n");
                     FileInputStream inputStream = new FileInputStream(stepImage);
                     byte[] buffer = new byte[4096];
