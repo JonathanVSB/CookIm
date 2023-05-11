@@ -117,7 +117,7 @@ public class IngredientDao {
         SQLiteDatabase db = ingredients.getReadableDatabase();
         String query = "SELECT MAX(PK_Id) FROM Ingrediente";
         Cursor cursor = db.rawQuery(query, null);
-        int maxId = 0;
+        int maxId = -1;
         if (cursor.moveToFirst() && !cursor.isNull(0)) {
             maxId = cursor.getInt(0);
         }

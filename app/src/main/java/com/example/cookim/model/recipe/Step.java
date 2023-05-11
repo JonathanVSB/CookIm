@@ -75,6 +75,14 @@ public class Step {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
 }
 
 

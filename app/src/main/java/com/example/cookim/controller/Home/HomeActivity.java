@@ -100,24 +100,29 @@ public class HomeActivity extends Activity implements HomeListener {
                 try {
                     int maxId = model.getMaxIdIngredient(ingredients);
 
-                    List<Ingredient> ingredientList = model.getNewIngredients(token, maxId);
+                    if (maxId != -1) {
+                        List<Ingredient> ingredientList = model.getNewIngredients(token, maxId);
 
-                    if (ingredientList != null) {
+                        if (ingredientList != null) {
 
-                        if (ingredientList.size() == 0) {
+                            if (ingredientList.size() == 0) {
 
 
-                        } else if (ingredientList.size() != 0 && ingredientList.get(ingredientList.size() - 1).getId() != maxId) {
+                            } else if (ingredientList.size() != 0 && ingredientList.get(ingredientList.size() - 1).getId() != maxId) {
 
-                            insert(ingredientList);
+                                insert(ingredientList);
+                            }
+
+
                         }
 
-
                     }
+
 
                 } catch (Exception e) {
 
                     System.out.println("Ha petado ago de la base interna");
+                    System.out.println(e.toString());
                 }
 
 

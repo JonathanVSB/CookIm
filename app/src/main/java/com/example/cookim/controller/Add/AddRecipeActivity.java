@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -22,6 +23,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -38,6 +40,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 import com.example.cookim.R;
 import com.example.cookim.controller.Home.HomeActivity;
@@ -130,6 +133,13 @@ public class AddRecipeActivity extends AppCompatActivity {
                 gestionateProcess(view);
             }
         });
+
+        binding.addingredientPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gestionateProcess(v);
+            }
+        });
     }
 
     /**
@@ -171,25 +181,47 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
 
             //Fulfill step list
-            for (int i = 0; i < binding.tlsteps.getChildCount(); i++){
+            for (int i = 0; i < binding.tlsteps.getChildCount(); i++) {
                 TableRow row = (TableRow) binding.tlsteps.getChildAt(i);
-                Step step = (Step) row.getTag();
-                if (step != null) {
-                    // Aquí puedes hacer lo que necesites con la información del paso
-                    // Por ejemplo, agregarlo a una lista
-                    steps.add(step);
+
+                EditText editText = row.findViewById(R.id.etElavoration);
+                ImageView imageView = row.findViewById(R.id.stepPic);
+
+                editText.requestFocus();
+
+                // Get the description from the EditText and the temporary image file from the ImageView
+                String description = editText.getText().toString();
+                long stepnum = i+1;
+
+                // Get the image from the ImageView and save it to a temporary file
+                Drawable drawable = imageView.getDrawable();
+                Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                File imageFile = null;
+                try {
+                    imageFile = File.createTempFile("stepImage", ".jpg", getCacheDir());
+                    FileOutputStream fos = new FileOutputStream(imageFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
 
+                // Create a Step object with the values from the EditText and the temporary image file
+                Step step = new Step(imageFile, stepnum, description);
+
+                steps.add(step);
             }
 
 
-            if (file != null /*&& steps != null && ingredients != null*/) {
-//                Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
-//                        binding.etdescription.getText().toString(), steps, ingredients);
+
+            if (file != null && steps.size() != 0 && ingredients.size() !=0) {
+                //Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
+                        //binding.etdescription.getText().toString(), steps, ingredients);
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Recipe recipe = new Recipe(binding.etname.getText().toString(), binding.etdescription.getText().toString());
+                        Recipe recipe = new Recipe(file,binding.etname.getText().toString(), binding.etdescription.getText().toString()
+                                , steps, ingredients);
                         DataResult res = model.createRecipe(recipe, readToken(), file);
 
                         if (res.getResult().equals("1")) {
@@ -317,6 +349,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             row.setLayoutParams(params);
 
             stepContentBinding.stepnum.setText(String.valueOf(binding.tlsteps.getChildCount() + 1));
+            stepContentBinding.etElavoration.setText("");
             stepContentBinding.stepPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -327,33 +360,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             });
             row.addView(stepContentBinding.getRoot());
 
-            if (currentView != null){
 
-            }else{
-
-                // Obtener el drawable del ImageView
-                Drawable drawable = stepContentBinding.stepPic.getDrawable();
-
-//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), ((BitmapDrawable) drawable).getBitmap());
-
-                File imageFile = null;
-                try {
-                    imageFile = File.createTempFile("stepImage", ".jpg", getCacheDir());
-
-                    FileOutputStream fos = new FileOutputStream(imageFile);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    fos.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-
-                Step newStep = new Step(imageFile, row.indexOfChild((View)currentView.getParent()), stepContentBinding.etElavoration.getText().toString() );
-//                newStep.setStepNum(binding.tlsteps.getChildCount() + 1);
-
-                row.setTag(newStep);
-
-            }
 
 
             // Agregar el botón de eliminación a la fila
@@ -529,7 +536,6 @@ public class AddRecipeActivity extends AppCompatActivity {
             System.out.println("Error al leer la respuesta: " + e.toString());
 
         }
-
 
         // if file is empty, returns null
         return null;

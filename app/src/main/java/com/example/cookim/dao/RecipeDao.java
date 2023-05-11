@@ -500,6 +500,38 @@ public class RecipeDao {
             wr.writeBytes("--" + boundary + "\r\n");
             wr.writeBytes("Content-Disposition: form-data; name=\"recipe\"\r\n\r\n" + gson.toJson(recipe) + "\r\n");
 
+            List<Ingredient> ingredients = recipe.getIngredients();
+            for (int i = 0; i < ingredients.size(); i++) {
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"ingredients[" + i + "]\"\r\n\r\n" + gson.toJson(ingredients.get(i)) + "\r\n");
+            }
+
+            // Send steps as JSON and images
+            List<Step> steps = recipe.getSteps();
+            for (int i = 0; i < steps.size(); i++) {
+                Step step = steps.get(i);
+
+                // Send step as JSON
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"steps[" + i + "]\"\r\n\r\n" + gson.toJson(step) + "\r\n");
+
+                // Send step image
+                File stepImage = step.getFile();
+                if (stepImage != null) {
+                    wr.writeBytes("--" + boundary + "\r\n");
+                    wr.writeBytes("Content-Disposition: form-data; name=\"steps[" + i + "].image\"; filename=\"" + stepImage.getName() + "\"\r\n");
+                    wr.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(stepImage.getName()) + "\r\n\r\n");
+                    FileInputStream inputStream = new FileInputStream(stepImage);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = -1;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        wr.write(buffer, 0, bytesRead);
+                    }
+                    wr.writeBytes("\r\n");
+                    inputStream.close();
+                }
+            }
+
             // Send file
             if (file != null) {
                 wr.writeBytes("--" + boundary + "\r\n");
@@ -535,9 +567,9 @@ public class RecipeDao {
             System.out.println(e.toString());
             return null;
         }
-
         return result;
     }
+
 
 }
 
