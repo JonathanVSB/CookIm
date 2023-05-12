@@ -46,7 +46,8 @@ public class PresentationActivity extends Activity {
 
         executor = Executors.newSingleThreadExecutor();
         model = new Model();
-        token = readToken();
+//        token = readToken();
+        token = model.readToken(getApplicationContext());
 
 
         if (token == null) {
@@ -92,47 +93,6 @@ public class PresentationActivity extends Activity {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
-
-    /**
-     * Read an internal file read the token stored there
-     *
-     * @return the token or null
-     */
-    private String readToken() {
-        // Gets an instance of the application context
-        Context context = getApplicationContext();
-
-        // Open the file in write mode and create the FileOutputStream object
-        FileInputStream inputStream;
-        try {
-            inputStream = context.openFileInput("token.txt");
-
-
-            //Reads the token data from file
-            StringBuilder stringBuilder = new StringBuilder();
-            int c;
-            while ((c = inputStream.read()) != -1) {
-                stringBuilder.append((char) c);
-            }
-            String token = stringBuilder.toString();
-
-
-            //Close the FileInputStream Object
-            inputStream.close();
-
-            // returns token
-            return token;
-        } catch (Exception e) {
-            //e.printStackTrace();
-            System.out.println("Error al leer la respuesta: " + e.toString());
-
-        }
-
-
-        // if file is empty, returns null
-        return null;
-    }
-
 
     /**
      * display home page view

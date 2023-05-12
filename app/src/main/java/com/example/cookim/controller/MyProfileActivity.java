@@ -55,7 +55,7 @@ public class MyProfileActivity extends Activity {
         bottomNavigationViewClick();
         handler = new Handler(Looper.getMainLooper());
         model = new Model();
-        token = readToken();
+        token = model.readToken(getApplicationContext());
         executor = Executors.newSingleThreadExecutor();
 
 
@@ -63,7 +63,6 @@ public class MyProfileActivity extends Activity {
 
         long myId = intent.getLongExtra("MyUserID", -1);
         int id = intent.getIntExtra("userID", -1);
-
 
 
         //If theres token saved in file
@@ -197,49 +196,13 @@ public class MyProfileActivity extends Activity {
                 binding.btfollow.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                       // int followers = model.
+                        // int followers = model.
                     }
                 });
 
             }
 
         }
-    }
-
-    /**
-     * Read an internal file read the token stored there
-     *
-     * @return the token or null
-     */
-    private String readToken() {
-        // Gets an instance of the application context
-        Context context = getApplicationContext();
-
-        // Open the file in write mode and create the FileOutputStream object
-        FileInputStream inputStream;
-        try {
-            inputStream = context.openFileInput("token.txt");
-
-            //Reads the token data from file
-            StringBuilder stringBuilder = new StringBuilder();
-            int c;
-            while ((c = inputStream.read()) != -1) {
-                stringBuilder.append((char) c);
-            }
-            String token = stringBuilder.toString();
-
-            //Close the FileInputStream Object
-            inputStream.close();
-
-            // returns token
-            return token;
-        } catch (Exception e) {
-            //e.printStackTrace();
-            System.out.println("Error al leer la respuesta: " + e.toString());
-        }
-
-        // if file is empty, returns null
-        return null;
     }
 
     /**

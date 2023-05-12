@@ -223,7 +223,7 @@ public class RecipeDao {
         String param = token + ":" + String.valueOf(id);
         int i = 0;
         try {
-            // HTTP request
+            // HTTPS request
             System.out.println("ENTRA  " + path);
             URL url = new URL(path);
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();

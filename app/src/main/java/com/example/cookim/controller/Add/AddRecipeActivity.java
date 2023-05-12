@@ -80,6 +80,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     Model model;
     SQLiteDatabase dbIngredients;
     BBDDIngredients dataBase;
+    String token;
 
 
     @Override
@@ -91,6 +92,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         ingredients = new ArrayList<>();
         steps = new ArrayList<>();
         model = new Model();
+        token = model.readToken(getApplicationContext());
         executor = Executors.newSingleThreadExecutor();
         this.dataBase = new BBDDIngredients(this.getApplicationContext(), "Ingredientes", null, 1);
 
@@ -160,7 +162,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         } else if (v.getId() == binding.ivaccept.getId()) {
 
             //Fulfill ingredients list
-            for (int i = 0; i < binding.tlIngredients.getChildCount(); i++){
+            for (int i = 0; i < binding.tlIngredients.getChildCount(); i++) {
                 TableRow row = (TableRow) binding.tlIngredients.getChildAt(i);
                 int columnCount = row.getChildCount();
 
@@ -191,7 +193,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
                 // Get the description from the EditText and the temporary image file from the ImageView
                 String description = editText.getText().toString();
-                long stepnum = i+1;
+                long stepnum = i + 1;
 
                 // Get the image from the ImageView and save it to a temporary file
                 Drawable drawable = imageView.getDrawable();
@@ -213,16 +215,15 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
 
 
-
-            if (file != null && steps.size() != 0 && ingredients.size() !=0) {
+            if (file != null && steps.size() != 0 && ingredients.size() != 0) {
                 //Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
-                        //binding.etdescription.getText().toString(), steps, ingredients);
+                //binding.etdescription.getText().toString(), steps, ingredients);
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Recipe recipe = new Recipe(file,binding.etname.getText().toString(), binding.etdescription.getText().toString()
+                        Recipe recipe = new Recipe(file, binding.etname.getText().toString(), binding.etdescription.getText().toString()
                                 , steps, ingredients);
-                        DataResult res = model.createRecipe(recipe, readToken(), file);
+                        DataResult res = model.createRecipe(recipe, token, file);
 
                         if (res.getResult().equals("1")) {
                             showHomePage();
@@ -253,7 +254,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                     .setPositiveButton("Añadir", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (!ingredientView.idSearch.getQuery().toString().equals("")){
+                            if (!ingredientView.idSearch.getQuery().toString().equals("")) {
                                 TableRow row = new TableRow(AddRecipeActivity.this);
                                 TableRow.LayoutParams params = new TableRow.LayoutParams();
                                 params.setMargins(0, 10, 0, 20);
@@ -288,8 +289,6 @@ public class AddRecipeActivity extends AppCompatActivity {
                                 });
 
                             }
-
-
 
 
                         }
@@ -336,8 +335,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
             AlertDialog dialog = builder.create();
             dialog.show();
-        }
-        else if (v.getId() == binding.addbutton.getId()) {
+        } else if (v.getId() == binding.addbutton.getId()) {
             //TODO
             //add New step empty item
 
@@ -359,8 +357,6 @@ public class AddRecipeActivity extends AppCompatActivity {
                 }
             });
             row.addView(stepContentBinding.getRoot());
-
-
 
 
             // Agregar el botón de eliminación a la fila
@@ -501,43 +497,4 @@ public class AddRecipeActivity extends AppCompatActivity {
         return new File(picturePath);
     }
 
-
-    /**
-     * Read an internal file read the token stored there
-     *
-     * @return the token or null
-     */
-    private String readToken() {
-        // Gets an instance of the application context
-        Context context = getApplicationContext();
-
-        // Open the file in write mode and create the FileOutputStream object
-        FileInputStream inputStream;
-        try {
-            inputStream = context.openFileInput("token.txt");
-
-
-            //Reads the token data from file
-            StringBuilder stringBuilder = new StringBuilder();
-            int c;
-            while ((c = inputStream.read()) != -1) {
-                stringBuilder.append((char) c);
-            }
-            String token = stringBuilder.toString();
-
-
-            //Close the FileInputStream Object
-            inputStream.close();
-
-            // returns token
-            return token;
-        } catch (Exception e) {
-            //e.printStackTrace();
-            System.out.println("Error al leer la respuesta: " + e.toString());
-
-        }
-
-        // if file is empty, returns null
-        return null;
-    }
 }

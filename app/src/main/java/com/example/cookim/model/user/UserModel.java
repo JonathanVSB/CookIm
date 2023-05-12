@@ -23,6 +23,7 @@ public class UserModel implements Serializable {
     List<UserModel> followed;
     List<Long> recipe_likes;
     List<Recipe> favorites_recipes;
+    Boolean follow;
 
     //CONSTRUCTORS
 

@@ -130,6 +130,14 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
         });
 
+        holder.binding.btComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                homeListener.onItemClicked(recipe.getId(), 3);
+
+            }
+        });
+
         holder.binding.btSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

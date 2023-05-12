@@ -21,6 +21,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
 import com.example.cookim.controller.Add.AddRecipeActivity;
+import com.example.cookim.controller.CommentActivity;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
@@ -29,6 +30,7 @@ import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.databinding.ComponentNavHeaderBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
+import com.example.cookim.model.recipe.Comment;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
@@ -70,7 +72,7 @@ public class HomeActivity extends Activity implements HomeListener {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        token = readToken();
+        token = model.readToken(getApplicationContext());
 
         if (token.isEmpty()) {
             displayLogInPage();
@@ -323,42 +325,6 @@ public class HomeActivity extends Activity implements HomeListener {
     }
 
     /**
-     * Read an internal file read the token stored there
-     *
-     * @return the token or null
-     */
-    private String readToken() {
-        // Gets an instance of the application context
-        Context context = getApplicationContext();
-
-        // Open the file in write mode and create the FileOutputStream object
-        FileInputStream inputStream;
-        try {
-            inputStream = context.openFileInput("token.txt");
-
-            //Reads the token data from file
-            StringBuilder stringBuilder = new StringBuilder();
-            int c;
-            while ((c = inputStream.read()) != -1) {
-                stringBuilder.append((char) c);
-            }
-            String token = stringBuilder.toString();
-
-            //Close the FileInputStream Object
-            inputStream.close();
-
-            // returns token
-            return token;
-        } catch (Exception e) {
-            //e.printStackTrace();
-            System.out.println("Error al leer la respuesta: " + e.toString());
-        }
-
-        // if file is empty, returns null
-        return null;
-    }
-
-    /**
      * Display the login Page
      */
     private void displayLogInPage() {
@@ -380,6 +346,12 @@ public class HomeActivity extends Activity implements HomeListener {
                 intent = new Intent(this, MyProfileActivity.class);
                 intent.putExtra("MyUserID", user.getId());
                 intent.putExtra("userID", id);
+                startActivity(intent);
+                break;
+
+            case 3:
+                intent = new Intent(this, CommentActivity.class);
+                intent.putExtra("recipe_id", id);
                 startActivity(intent);
                 break;
 

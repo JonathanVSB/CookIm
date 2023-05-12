@@ -24,6 +24,8 @@ public class Path {
     public final String SAVE = PATH + "save";
     public final String SIGN = PATH + "sign-in";
     public final String AUTOLOGIN = PATH + "autologin";
+    public final String COMMENTS = PATH + "get-recipe-parent-comment";
+    public final String NEWCOMMENT = PATH+ "recipe-comment";
 
 
 
