@@ -3,6 +3,8 @@ package com.example.cookim.controller;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -83,6 +85,14 @@ public class MyProfileActivity extends Activity {
                     //if user is not null
                     if (user != null) {
 
+                        if (user.getFollow())
+                        {
+                            binding.btfollow.setText("Dejar de seguir");
+                            int colorLightGray = Color.parseColor("#D3D3D3");
+                            binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
+
+
+                        }
                         //search all recipes of the user
                         List<Recipe> recipes = model.userRecipes(token, user.getId());
 
@@ -126,6 +136,26 @@ public class MyProfileActivity extends Activity {
         binding.tvName.setText(user.getFull_name());
         binding.tvDescription.setText(user.getDescription());
         binding.tvposts.setText(String.valueOf(recipes.size()));
+
+        binding.btfollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (user.getFollow()) {
+
+                    Drawable gradientDrawable = getResources().getDrawable(R.drawable.bg_button_background);
+                    binding.btfollow.setBackground(gradientDrawable);
+                    binding.btfollow.setText("Seguir");
+                    user.setFollow(false);
+                } else {
+                    // Cambiar el color del botón a un tono más apagado y establecer el texto como "Dejar de seguir"
+                    int colorLightGray = Color.parseColor("#D3D3D3");
+                    binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
+                    binding.btfollow.setText("Dejar de seguir");
+                    user.setFollow(true);
+                }
+            }
+        });
+
         String img = model.downloadImg(user.getPath_img());
         Glide.with(MyProfileActivity.this)
                 .load(img)
@@ -144,7 +174,7 @@ public class MyProfileActivity extends Activity {
                     }
                 })
                 .into(binding.userimg);
-
+        //if the user has recipes in data base
         if (recipes.size() > 0) {
 
             for (int i = 0; i < recipes.size(); i++) {
@@ -193,12 +223,7 @@ public class MyProfileActivity extends Activity {
 
                 binding.tlRecipes.addView(row);
 
-                binding.btfollow.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // int followers = model.
-                    }
-                });
+
 
             }
 

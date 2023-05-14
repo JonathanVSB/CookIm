@@ -43,6 +43,8 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 
 import com.example.cookim.R;
+import com.example.cookim.controller.CommentActivity;
+import com.example.cookim.controller.Controller;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.dao.BBDDIngredients;
 import com.example.cookim.databinding.ActivityAddRecipeBinding;
@@ -78,6 +80,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     List<Ingredient> ingredients;
     List<Step> steps;
     Model model;
+    Controller controller;
     SQLiteDatabase dbIngredients;
     BBDDIngredients dataBase;
     String token;
@@ -92,6 +95,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         ingredients = new ArrayList<>();
         steps = new ArrayList<>();
         model = new Model();
+        controller = new Controller();
         token = model.readToken(getApplicationContext());
         executor = Executors.newSingleThreadExecutor();
         this.dataBase = new BBDDIngredients(this.getApplicationContext(), "Ingredientes", null, 1);
@@ -217,29 +221,38 @@ public class AddRecipeActivity extends AppCompatActivity {
 
             if (file != null && steps.size() != 0 && ingredients.size() != 0) {
                 //Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
-                //binding.etdescription.getText().toString(), steps, ingredients);
+                //binding.etdescription.getText().toString(), steps, ingredients)
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        Recipe recipe = new Recipe(file, binding.etname.getText().toString(), binding.etdescription.getText().toString()
+
+                        Recipe recipe = createRecipe(file, binding.etname.getText().toString(), binding.etdescription.getText().toString()
                                 , steps, ingredients);
-                        DataResult res = model.createRecipe(recipe, token, file);
 
-                        if (res.getResult().equals("1")) {
-                            showHomePage();
+                        if (recipe != null) {
+
+                            DataResult res = model.createRecipe(recipe, token, file);
+
+                            if (res.getResult().equals("1")) {
+                                showHomePage();
+                            } else {
+
+                                controller.displayErrorMessage(getApplicationContext(),"Algo ha salido mal. La receta no ha sido creada");
+
+                            }
                         } else {
-
-                            //TODO
-                            //show Error message
+                            controller.displayErrorMessage(getApplicationContext(),"La receta contiene datos no válidos");
 
                         }
+
+
                     }
                 });
 
 
             } else {
-                //TODO
-                //Display error message
+
+                controller.displayErrorMessage(getApplicationContext(),"La receta debe tener foto de portada, ingredientes, y pasos");
 
             }
 
@@ -390,6 +403,33 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    /**
+     * Create a new Recipe with data of the view or return null
+     *
+     * @param file
+     * @param toString
+     * @param toString1
+     * @param steps
+     * @param ingredients
+     * @return
+     */
+    private Recipe createRecipe(File file, String toString, String toString1, List<Step> steps, List<Ingredient> ingredients) {
+        Recipe recipe = null;
+
+        // Check if all parameters are not null and not empty
+        if (file != null &&
+                toString != null && !toString.trim().isEmpty() &&
+                toString1 != null && !toString1.trim().isEmpty() &&
+                steps != null && !steps.isEmpty() &&
+                ingredients != null && !ingredients.isEmpty()) {
+
+            // Create the Recipe object
+            recipe = new Recipe(file, toString, toString1, steps, ingredients);
+        }
+
+        return recipe;
     }
 
 

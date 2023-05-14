@@ -38,6 +38,7 @@ public class CommentActivity extends Activity {
 
 
     Model model;
+    Controller controller;
     List<Comment> comments;
     ActivityCommentBinding binding;
     Handler handler;
@@ -51,6 +52,7 @@ public class CommentActivity extends Activity {
         super.onCreate(savedInstanceState);
         handler = new Handler(Looper.getMainLooper());
         model = new Model();
+        controller = new Controller();
         executor = Executors.newSingleThreadExecutor();
         binding = ActivityCommentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -104,19 +106,8 @@ public class CommentActivity extends Activity {
 
 
                     } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this);
+                        controller.displayErrorMessage(getApplicationContext(),"El comentario no ha podido ser subido");
 
-                        builder.setTitle("ERROR")
-                                .setMessage("El comentario no ha podido ser subido")
-                                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                });
-
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
                     }
 
 

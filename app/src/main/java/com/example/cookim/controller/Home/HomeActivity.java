@@ -22,6 +22,7 @@ import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
 import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.controller.CommentActivity;
+import com.example.cookim.controller.Controller;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
@@ -52,6 +53,7 @@ public class HomeActivity extends Activity implements HomeListener {
     String instrSQL;
     UserModel user;
     Model model;
+    Controller controller;
     String token;
     List<Long> recipes_likeds;
 
@@ -67,6 +69,7 @@ public class HomeActivity extends Activity implements HomeListener {
 
         handler = new Handler(Looper.getMainLooper());
         model = new Model();
+        controller = new Controller();
 
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
@@ -234,7 +237,9 @@ public class HomeActivity extends Activity implements HomeListener {
             public void run() {
                 DataResult result = model.logout(token);
                 if (result != null) {
-                    displayLogInPage();
+                    controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
+
+                    //displayLogInPage();
                 }
             }
         });
@@ -343,16 +348,19 @@ public class HomeActivity extends Activity implements HomeListener {
                 break;
 
             case 2:
-                intent = new Intent(this, MyProfileActivity.class);
-                intent.putExtra("MyUserID", user.getId());
-                intent.putExtra("userID", id);
-                startActivity(intent);
+
+                controller.displayMyProfile(this, MyProfileActivity.class, user.getId(), id);
+                //intent = new Intent(this, MyProfileActivity.class);
+                //intent.putExtra("MyUserID", user.getId());
+                //intent.putExtra("userID", id);
+                //startActivity(intent);
                 break;
 
             case 3:
-                intent = new Intent(this, CommentActivity.class);
-                intent.putExtra("recipe_id", id);
-                startActivity(intent);
+                controller.displayCommentPage(this, CommentActivity.class, id);
+                //intent = new Intent(this, CommentActivity.class);
+                //intent.putExtra("recipe_id", id);
+                //startActivity(intent);
                 break;
 
         }
@@ -378,7 +386,8 @@ public class HomeActivity extends Activity implements HomeListener {
                     loadHomePage(token);
                     return true;
                 case R.id.addrecipe:
-                    displayAddRecipe();
+                    controller.displayAddRecipe(this, AddRecipeActivity.class);
+                    //displayAddRecipe();
                     // TODO: Implement favorites screen
                     return true;
                 case R.id.searchrecipe:

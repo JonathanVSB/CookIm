@@ -67,14 +67,16 @@ public class PresentationActivity extends Activity {
                         //if result.getResult()==1 validation is correct
                         if (result.getResult().equals("1")) {
                             showHomePage();
+                            finish();
                         }
                         //Token is not validated
                         else {
                             displayLogInPage();
-
+                            finish();
                         }
                     } else {
                         displayLogInPage();
+                        finish();
 
                     }
 

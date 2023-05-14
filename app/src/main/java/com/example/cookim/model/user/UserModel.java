@@ -235,5 +235,13 @@ public class UserModel implements Serializable {
     public void setRecipe_likes(List<Long> recipe_likes) {
         this.recipe_likes = recipe_likes;
     }
+
+    public Boolean getFollow() {
+        return follow;
+    }
+
+    public void setFollow(Boolean follow) {
+        this.follow = follow;
+    }
 }
 

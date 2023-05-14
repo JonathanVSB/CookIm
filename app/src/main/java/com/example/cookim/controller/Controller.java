@@ -1,5 +1,12 @@
 package com.example.cookim.controller;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+
+import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.user.LoginModel;
 import com.example.cookim.model.user.UserModel;
@@ -18,10 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Controller {
-
-
-    private List<UserModel> userList = new ArrayList<>();
+public class Controller extends Activity {
 
     Model model;
 
@@ -29,83 +33,67 @@ public class Controller {
 
     }
 
-    private void HomePage() {
+    public static void displayErrorMessage(Context context, String mensaje) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("ERROR")
+                .setMessage(mensaje)
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Acciones a realizar al hacer clic en "Aceptar"
+                    }
+                });
 
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
-    public boolean validateUser(LoginModel loginModel) {
-        boolean result = false;
-
-        //Search matches in list of users
-        for (UserModel usr : userList) {
-            //if find matches result is true
-            if (usr.getUsername().equals(loginModel.getUserName()) && usr.getPassword().equals(loginModel.getPassword())) {
-                result = true;
-            }
-
-        }
-
-        return result;
+    /**
+     * Display the add recipe page
+     * @param context The context from which the method is called
+     * @param Class The class of the AddRecipeActivity
+     */
+    public void displayAddRecipe(Context context, Class<?> Class) {
+        Intent intent = new Intent(context, Class);
+        context.startActivity(intent);
     }
 
-    public boolean validateUserServer(LoginModel loginModel) {
-        boolean validation = false;
-        String url = "http://192.168.1.47:7070/login";
-        String username = loginModel.getUserName();
-        String password = loginModel.getPassword();
-
-        try {
-            // Creamos instancia URL
-            URL obj = new URL(url);
-
-            // Creamos una conexión HTTP con el servidor
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-            // Establecemos el método de solicitud POST
-            con.setRequestMethod("POST");
-
-            // Establecemos el tipo de contenido de la solicitud como JSON
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setDoOutput(true);
-
-            // Creamos un objeto JSON para enviar las credenciales del usuario
-            JSONObject requestJson = new JSONObject();
-            requestJson.put("username", username);
-            requestJson.put("password", password);
-
-            // Escribimos los datos de la solicitud al servidor se escriben los parámetros de la
-            // solicitud en él en forma de bytes.
-            try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-                wr.write(requestJson.toString().getBytes(StandardCharsets.UTF_8));
-            }
-
-            // Obtenemos la respuesta del servidor y la leemos como un objeto JSON
-            JSONObject responseJson;
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                responseJson = new JSONObject(response.toString());
-            }
-
-            // Verificamos si las credenciales son válidas y obtenemos el token de sesión
-            if (responseJson.getBoolean("success")) {
-                String token = responseJson.getString("token");
-                // Aquí podemos guardar el token en una variable global o en SharedPreferences para mantener
-                // la sesión iniciada en futuras solicitudes.
-                validation = true;
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return validation;
-
+    /**
+     * Display the login page
+     * @param context The context from which the method is called
+     * @param Class The class of the LoginActivity
+     */
+    public void displayLogInPage(Context context, Class<?> Class) {
+        Intent intent = new Intent(context, Class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
+
+    /**
+     * Display my profile Page
+     * @param context
+     * @param Class
+     * @param id
+     * @param id2
+     */
+    public void displayMyProfile(Context context, Class<?> Class, long id, int id2) {
+        Intent intent = new Intent(context, Class);
+        intent.putExtra("MyUserID", id);
+        intent.putExtra("userID", id2);
+        context.startActivity(intent);
+    }
+
+    /**
+     * Display comment activity
+     * @param context
+     * @param Class
+     * @param id
+     */
+    public void displayCommentPage(Context context, Class<?> Class,int id) {
+        Intent intent = new Intent(context, Class);
+        intent.putExtra("recipe_id", id);
+        context.startActivity(intent);
+    }
+
+
 }

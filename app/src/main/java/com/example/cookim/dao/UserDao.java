@@ -249,6 +249,10 @@ public class UserDao {
                         }
                         result.setRecipe_likes(recipeLikes);
                     }
+
+                    if (dataObject.has("follow")) {
+                        result.setFollow(dataObject.get("follow").getAsBoolean());
+                    }
                 } else {
                     System.out.println("La respuesta indica un error");
                 }
