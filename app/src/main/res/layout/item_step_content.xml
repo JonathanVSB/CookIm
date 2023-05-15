@@ -28,6 +28,7 @@
             app:layout_goneMarginStart="5dp"
              />
 
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/stepnum"
             android:layout_width="70dp"

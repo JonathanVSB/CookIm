@@ -88,6 +88,12 @@
             android:theme="@style/Theme.CookIm.NoActionBar"
             android:exported="true" />
 
+        <activity
+            android:name=".controller.FavoritesActivity"
+            android:theme="@style/Theme.CookIm.NoActionBar"
+            android:exported="true" />
+
+
     </application>
 
 </manifest>

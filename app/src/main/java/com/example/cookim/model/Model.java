@@ -57,6 +57,7 @@ public class Model {
 
     /**
      * ask for all recipes to database
+     *
      * @return
      */
     public List<Recipe> loadRecipes() {
@@ -67,6 +68,7 @@ public class Model {
 
     /**
      * Sends to server petition to update likes of the recipe
+     *
      * @param parametros
      * @return
      */
@@ -79,16 +81,18 @@ public class Model {
 
     /**
      * Sends to server petition to update the recipes saved
+     *
      * @param parametros
      * @return
      */
-    public DataResult saveRecipe(String parametros){
+    public DataResult saveRecipe(String parametros) {
         DataResult result = recipeDao.readResponse(path.SAVE, parametros);
         return result;
     }
 
     /**
      * Sends petition to server to end session
+     *
      * @param token
      * @return
      */
@@ -100,6 +104,7 @@ public class Model {
 
     /**
      * Send petition to server to create a new user using the next params
+     *
      * @param username
      * @param password
      * @param full_name
@@ -157,13 +162,15 @@ public class Model {
      * @return
      */
     public List<Recipe> userRecipes(String token, long id) {
-        List<Recipe> recipes = recipeDao.loadMyRecipes(path.OTHERPROFILES, token, id);
+        String param = token + ":" + String.valueOf(id);
+        List<Recipe> recipes = recipeDao.loadMyRecipes(path.OTHERPROFILES, token);
         return recipes;
 
     }
 
     /**
      * Request to server for the new ingredients available in database
+     *
      * @param token
      * @param id
      * @return
@@ -177,6 +184,7 @@ public class Model {
 
     /**
      * Ask to local database the max Id of the ingredients table
+     *
      * @param ingredients
      * @return
      */
@@ -188,6 +196,7 @@ public class Model {
 
     /**
      * Validates if the token saved still
+     *
      * @param token
      * @return
      */
@@ -199,6 +208,7 @@ public class Model {
 
     /**
      * sends petition to create a new recipe
+     *
      * @param recipe
      * @param token
      * @param file
@@ -212,6 +222,7 @@ public class Model {
 
     /**
      * Sends petition to recover the data of the profile of users
+     *
      * @param token
      * @param id
      * @return
@@ -223,12 +234,13 @@ public class Model {
 
     /**
      * Request all comments of the recipe
+     *
      * @param token
      * @param id
      * @return
      */
     public List<Comment> getCommentsOfRecipe(String token, long id) {
-        List<Comment> result = commentDao.getAllComments(path.COMMENTS,token,id);
+        List<Comment> result = commentDao.getAllComments(path.COMMENTS, token, id);
         return result;
 
 
@@ -276,6 +288,7 @@ public class Model {
 
     /**
      * Sends new petition to server to post a new comment
+     *
      * @param token
      * @param comment
      * @return
@@ -283,5 +296,18 @@ public class Model {
     public DataResult createNewComment(String token, Comment comment) {
         DataResult result = commentDao.addNewComment(path.NEWCOMMENT, token, comment);
         return result;
+    }
+
+    public DataResult followUser(String token, int userId, int num) {
+        String param = token + ":" + String.valueOf(num) + ":" + String.valueOf(userId);
+        DataResult result = userDao.readResponse(path.FOLLOW, param);
+        return result;
+
+    }
+
+    public List<Recipe> getFavorites(String token) {
+        List<Recipe> recipes = recipeDao.loadMyRecipes(path.FAVORITES, token);
+        return recipes;
+
     }
 }

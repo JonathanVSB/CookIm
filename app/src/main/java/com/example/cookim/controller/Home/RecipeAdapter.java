@@ -34,16 +34,17 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     Handler handler;
     Model model;
     String token;
+    long rol;
 
     HomeListener homeListener;
 
 
-    public RecipeAdapter(List<Recipe> recipeList, String token, List<Long> recipesLiked) {
+    public RecipeAdapter(List<Recipe> recipeList, String token, List<Long> recipesLiked, long userRol) {
 
         this.recipeList = recipeList;
         this.token = token;
         this.recipesLiked = recipesLiked;
-
+        this.rol = userRol;
         model = new Model();
         executor = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
@@ -68,7 +69,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.nameRecipe.setText(recipe.getName());
         holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
         holder.binding.tvPoster.setText(recipe.getUsername());
-
+        if (rol!=1) {
+            holder.binding.ivoptions.setVisibility(View.GONE);
+        }
         if (recipesLiked.contains(recipe.getId())) {
             recipe.setLiked(true);  // if recipe is already liked
         } else {
@@ -141,28 +144,21 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.btSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 boolean pressSave = !recipe.isSaved();
                 recipe.setSaved(pressSave);
 
-                int saveValue = press ? 1 : 0;
+                int saveValue = recipe.isSaved() ? 1 : 0;
                 DataResult result = saveRecipe(saveValue, String.valueOf(recipe.getId()));
 
                 if (result.getResult().equals("1")) {
                     try {
                         holder.binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
-
                     } catch (Exception e) {
                         System.out.println(e.toString());
                     }
-
-
                 } else {
-
-                    pressSave = false;
+                    recipe.setSaved(!recipe.isSaved());
                 }
-
-
             }
         });
 

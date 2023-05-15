@@ -365,12 +365,12 @@ public class RecipeDao {
      * search all recipes of the user using his token as validation key
      *
      * @param path
-     * @param token
+     * @param param
      * @return
      */
-    public List<Recipe> loadMyRecipes(String path, String token, long id) {
+    public List<Recipe> loadMyRecipes(String path, String param) {
         List<Recipe> recipes = new ArrayList<>();
-        String param = token + ":" + String.valueOf(id);
+
         int i = 0;
         try {
             // HTTP request

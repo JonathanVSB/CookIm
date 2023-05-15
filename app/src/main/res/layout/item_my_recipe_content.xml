@@ -17,6 +17,16 @@
         android:layout_marginTop="20dp"
         >
 
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivoptions"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="fitXY"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/image_content_cv"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_options"
+            />
         <androidx.cardview.widget.CardView
             android:id="@+id/image_content_cv"
             android:layout_width="wrap_content"
@@ -24,7 +34,7 @@
             app:cardCornerRadius="30dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/ivoptions">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/img01"

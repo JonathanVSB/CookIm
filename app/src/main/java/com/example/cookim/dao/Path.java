@@ -21,11 +21,15 @@ public class Path {
     public final String MYPROFILE = PATH + "show-user-home-data";
     public final String HOMEPAGE = PATH + "home-page";
     public final String LIKE = PATH + "like";
-    public final String SAVE = PATH + "save";
+    public final String FOLLOW = PATH + "user-follow";
+    public final String SAVE = PATH + "favorite-recipes";
     public final String SIGN = PATH + "sign-in";
     public final String AUTOLOGIN = PATH + "autologin";
     public final String COMMENTS = PATH + "get-recipe-parent-comment";
     public final String NEWCOMMENT = PATH+ "recipe-comment";
+    public final String SEARCH = PATH+ "search-recipes";
+    public final String FAVORITES = PATH + "get-favorite-recipes";
+    public final String REMOVERECIPE = PATH + "remove-recipe";
 
 
 

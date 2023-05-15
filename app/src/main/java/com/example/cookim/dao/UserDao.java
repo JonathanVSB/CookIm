@@ -64,8 +64,9 @@ public class UserDao {
 
 
             // Write parameters to the request
+            String requestBody = "";
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.write(parameters.getBytes(StandardCharsets.UTF_8));
+                wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
             }
 
             connection.connect();

@@ -18,6 +18,18 @@
         android:textColor="@color/black"
         android:textSize="20sp" />
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivoptions"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_options"
+        />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/view_recipe"
         android:layout_width="match_parent"

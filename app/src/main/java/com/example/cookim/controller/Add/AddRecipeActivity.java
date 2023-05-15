@@ -156,7 +156,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private void gestionateProcess(View v) {
 
         if (v.getId() == binding.ivcancel.getId()) {
-            showHomePage();
+            finish();
 
         } else if (v.getId() == binding.stepPic.getId()) {
             currentView = v;
@@ -234,7 +234,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                             DataResult res = model.createRecipe(recipe, token, file);
 
                             if (res.getResult().equals("1")) {
-                                showHomePage();
+                                finish();
                             } else {
 
                                 controller.displayErrorMessage(getApplicationContext(),"Algo ha salido mal. La receta no ha sido creada");
@@ -453,16 +453,6 @@ public class AddRecipeActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-
-    /**
-     * Displays the home page of the app and senda the user object to next activity
-     */
-    private void showHomePage() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     /**

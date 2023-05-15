@@ -1,7 +1,6 @@
 package com.example.cookim.controller;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.widget.TableRow;
 
 import androidx.annotation.Nullable;
-import androidx.core.view.GravityCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -21,16 +19,15 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
+import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.controller.Home.HomeActivity;
-import com.example.cookim.controller.Home.HomeListener;
 import com.example.cookim.databinding.ActivityMyProfileBinding;
 import com.example.cookim.databinding.ItemMyRecipeContentBinding;
-import com.example.cookim.databinding.ItemStepContentBinding;
+import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
 
-import java.io.FileInputStream;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -39,6 +36,7 @@ public class MyProfileActivity extends Activity {
 
 
     Model model;
+    Controller controller;
     String token;
 
     Executor executor;
@@ -46,6 +44,8 @@ public class MyProfileActivity extends Activity {
     Handler handler;
     UserModel user;
     boolean followed;
+    int id;
+    long myId;
 
 
     @Override
@@ -57,14 +57,15 @@ public class MyProfileActivity extends Activity {
         bottomNavigationViewClick();
         handler = new Handler(Looper.getMainLooper());
         model = new Model();
+        controller = new Controller();
         token = model.readToken(getApplicationContext());
         executor = Executors.newSingleThreadExecutor();
 
 
         Intent intent = getIntent();
 
-        long myId = intent.getLongExtra("MyUserID", -1);
-        int id = intent.getIntExtra("userID", -1);
+        myId = intent.getLongExtra("MyUserID", -1);
+        id = intent.getIntExtra("userID", -1);
 
 
         //If theres token saved in file
@@ -76,6 +77,7 @@ public class MyProfileActivity extends Activity {
 
                     if (myId == id) {
                         binding.btfollow.setVisibility(View.GONE);
+
                         user = model.myProfile(token);
 
                     } else {
@@ -85,8 +87,7 @@ public class MyProfileActivity extends Activity {
                     //if user is not null
                     if (user != null) {
 
-                        if (user.getFollow())
-                        {
+                        if (user.getFollow()) {
                             binding.btfollow.setText("Dejar de seguir");
                             int colorLightGray = Color.parseColor("#D3D3D3");
                             binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
@@ -140,18 +141,41 @@ public class MyProfileActivity extends Activity {
         binding.btfollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                DataResult res = null;
                 if (user.getFollow()) {
 
-                    Drawable gradientDrawable = getResources().getDrawable(R.drawable.bg_button_background);
-                    binding.btfollow.setBackground(gradientDrawable);
-                    binding.btfollow.setText("Seguir");
-                    user.setFollow(false);
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            DataResult res = model.followUser(token, id, 0);
+                            if (res.getResult().equals("1")) {
+                                Drawable gradientDrawable = getResources().getDrawable(R.drawable.bg_button_background);
+                                binding.btfollow.setBackground(gradientDrawable);
+                                binding.btfollow.setText("Seguir");
+                                user.setFollow(false);
+
+                            }
+
+                        }
+                    });
+
                 } else {
-                    // Cambiar el color del botón a un tono más apagado y establecer el texto como "Dejar de seguir"
-                    int colorLightGray = Color.parseColor("#D3D3D3");
-                    binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
-                    binding.btfollow.setText("Dejar de seguir");
-                    user.setFollow(true);
+
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            DataResult res = model.followUser(token, id, 1);
+                            if (res.getResult().equals("1")) {
+                                int colorLightGray = Color.parseColor("#D3D3D3");
+                                binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
+                                binding.btfollow.setText("Dejar de seguir");
+                                user.setFollow(true);
+
+                            }
+                        }
+                    });
+
                 }
             }
         });
@@ -181,6 +205,9 @@ public class MyProfileActivity extends Activity {
                 Recipe recipe = recipes.get(i);
                 ItemMyRecipeContentBinding recipeBinding = ItemMyRecipeContentBinding.inflate(getLayoutInflater());
 
+                if (myId != id){
+                    recipeBinding.ivoptions.setVisibility(View.GONE);
+                }
                 recipeBinding.nameRecipe.setText(recipe.getName());
                 if (recipe.getPath_img() != null) {
                     String portrait = model.downloadImg(recipe.getPath_img());
@@ -224,7 +251,6 @@ public class MyProfileActivity extends Activity {
                 binding.tlRecipes.addView(row);
 
 
-
             }
 
         }
@@ -253,10 +279,10 @@ public class MyProfileActivity extends Activity {
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.home:
-                    showHomePage();
+                    finish();
                     return true;
                 case R.id.addrecipe:
-                    // TODO: Implement favorites screen
+                    controller.displayActivity(this, AddRecipeActivity.class);
                     return true;
                 case R.id.searchrecipe:
                     // TODO: Implement settings screen

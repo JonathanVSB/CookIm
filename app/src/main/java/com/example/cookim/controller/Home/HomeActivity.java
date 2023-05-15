@@ -1,7 +1,6 @@
 package com.example.cookim.controller.Home;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
@@ -23,6 +22,7 @@ import com.example.cookim.R;
 import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.controller.CommentActivity;
 import com.example.cookim.controller.Controller;
+import com.example.cookim.controller.FavoritesActivity;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
@@ -31,12 +31,10 @@ import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.databinding.ComponentNavHeaderBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
-import com.example.cookim.model.recipe.Comment;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -216,6 +214,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     break;
                 case R.id.favorites:
                     closeNavMenu();
+                    controller.displayActivity(this, FavoritesActivity.class);
 
                     break;
                 case R.id.settings:
@@ -263,7 +262,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            displayRecipes(recipes);
+                            displayRecipes(recipes, user.getId_rol());
                         }
                     });
 
@@ -322,8 +321,8 @@ public class HomeActivity extends Activity implements HomeListener {
      *
      * @param recipes
      */
-    private void displayRecipes(List<Recipe> recipes) {
-        RecipeAdapter adapter = new RecipeAdapter(recipes, token, recipes_likeds);
+    private void displayRecipes(List<Recipe> recipes, long rol) {
+        RecipeAdapter adapter = new RecipeAdapter(recipes, token, recipes_likeds, rol);
         adapter.setHomeListener(this);
         binding.recommendationsRv.setAdapter(adapter);
         binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
@@ -386,7 +385,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     loadHomePage(token);
                     return true;
                 case R.id.addrecipe:
-                    controller.displayAddRecipe(this, AddRecipeActivity.class);
+                    controller.displayActivity(this, AddRecipeActivity.class);
                     //displayAddRecipe();
                     // TODO: Implement favorites screen
                     return true;

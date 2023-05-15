@@ -60,6 +60,7 @@ public class CommentActivity extends Activity {
         int recipeId = intent.getIntExtra("recipe_id", -1);
         token = model.readToken(getApplicationContext());
         setupEditTextListener();
+        binding.message.setVisibility(View.GONE);
 
         binding.ivcancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,6 +211,7 @@ public class CommentActivity extends Activity {
                     comments = model.getCommentsOfRecipe(token, id);
 
                     if (comments != null) {
+
                         System.out.println("la lista de comentarios esta llena");
 
                         for (int i = 0; i < comments.size(); i++) {
@@ -257,6 +259,8 @@ public class CommentActivity extends Activity {
                         }
 
 
+                    }else{
+                        binding.message.setVisibility(View.VISIBLE);
                     }
                 }
             });
