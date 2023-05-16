@@ -60,7 +60,7 @@ public class CommentActivity extends Activity {
         int recipeId = intent.getIntExtra("recipe_id", -1);
         token = model.readToken(getApplicationContext());
         setupEditTextListener();
-        binding.message.setVisibility(View.GONE);
+        binding.message.setVisibility(View.VISIBLE);
 
         binding.ivcancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,9 +105,8 @@ public class CommentActivity extends Activity {
                         System.out.println("new comment successfully created");
 
 
-
                     } else {
-                        controller.displayErrorMessage(getApplicationContext(),"El comentario no ha podido ser subido");
+                        controller.displayErrorMessage(getApplicationContext(), "El comentario no ha podido ser subido");
 
                     }
 
@@ -212,56 +211,67 @@ public class CommentActivity extends Activity {
 
                     if (comments != null) {
 
-                        System.out.println("la lista de comentarios esta llena");
+                        if (comments.size() != 0) {
 
-                        for (int i = 0; i < comments.size(); i++) {
-
-                            ItemCommentBinding commentBinding = ItemCommentBinding.inflate(getLayoutInflater());
-                            int position = i;
-                            handler.post(new Runnable() {
+                            //hide the message to new comments
+                            runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    commentBinding.tvUsername.setText(comments.get(position).getUsername());
-                                    commentBinding.tvComment.setText(comments.get(position).getText());
-                                    if (comments.get(position).getPath() != null) {
-                                        String img = model.downloadImg(comments.get(position).getPath());
-                                        Glide.with(CommentActivity.this)
-                                                .load(img)
-                                                .listener(new RequestListener<Drawable>() {
-                                                    @Override
-                                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                                        // Handle image loading failure here
-                                                        commentBinding.userimg.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
-                                                        return false;
-                                                    }
-
-                                                    @Override
-                                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                                        // The image has been loaded successfully
-                                                        return false;
-                                                    }
-                                                })
-                                                .into(commentBinding.userimg);
-
-                                    }
-                                    TableRow row = new TableRow(CommentActivity.this);
-
-                                    TableRow.LayoutParams params = new TableRow.LayoutParams();
-                                    params.setMargins(100, 0, 0, 0); // Replace -50 with the number of pixels you want to move to the left
-                                    row.setLayoutParams(params);
-
-                                    row.addView(commentBinding.getRoot());
-
-                                    binding.tlComments.addView(row);
+                                    binding.message.setVisibility(View.GONE);
                                 }
                             });
 
+                            System.out.println("la lista de comentarios esta llena");
+
+                            for (int i = 0; i < comments.size(); i++) {
+
+                                ItemCommentBinding commentBinding = ItemCommentBinding.inflate(getLayoutInflater());
+                                int position = i;
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        commentBinding.tvUsername.setText(comments.get(position).getUsername());
+                                        commentBinding.tvComment.setText(comments.get(position).getText());
+                                        if (comments.get(position).getPath() != null) {
+                                            String img = model.downloadImg(comments.get(position).getPath());
+                                            Glide.with(CommentActivity.this)
+                                                    .load(img)
+                                                    .listener(new RequestListener<Drawable>() {
+                                                        @Override
+                                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                                            // Handle image loading failure here
+                                                            commentBinding.userimg.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
+                                                            return false;
+                                                        }
+
+                                                        @Override
+                                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                                            // The image has been loaded successfully
+                                                            return false;
+                                                        }
+                                                    })
+                                                    .into(commentBinding.userimg);
+
+                                        }
+                                        TableRow row = new TableRow(CommentActivity.this);
+
+                                        TableRow.LayoutParams params = new TableRow.LayoutParams();
+                                        params.setMargins(100, 0, 0, 0); // Replace -50 with the number of pixels you want to move to the left
+                                        row.setLayoutParams(params);
+
+                                        row.addView(commentBinding.getRoot());
+
+                                        binding.tlComments.addView(row);
+                                    }
+                                });
+
+                            }
+
+
                         }
-
-
-                    }else{
-                        binding.message.setVisibility(View.VISIBLE);
                     }
+
+
                 }
             });
 

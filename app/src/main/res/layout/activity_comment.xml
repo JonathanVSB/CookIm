@@ -29,11 +29,11 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/title"
             android:layout_width="310dp"
-            android:layout_height="21dp"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/ubuntumedium"
             android:text="Comentarios"
             android:textAlignment="center"
-            android:textSize="20sp"
+            android:textSize="20dp"
             app:layout_constraintHeight_default="wrap"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:textAlignment="center"
         android:text="Se el primero en comentar"
-        android:textSize="20sp"
+        android:textSize="20dp"
         android:fontFamily="@font/ubuntumedium"
         />
 
@@ -91,7 +91,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/Space"
         >
 
         <EditText
@@ -117,5 +117,11 @@
 
     </LinearLayout>
 
+    <Space
+        android:id="@+id/Space"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+       />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

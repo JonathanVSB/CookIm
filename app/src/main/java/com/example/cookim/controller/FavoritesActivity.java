@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TableRow;
 
@@ -50,6 +51,13 @@ public class FavoritesActivity extends Activity {
         token = model.readToken(getApplicationContext());
         executor = Executors.newSingleThreadExecutor();
 
+        binding.ivcancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         if (token != null){
             loadData();
 
@@ -94,20 +102,16 @@ public class FavoritesActivity extends Activity {
      */
     private void loadView(List<Recipe> recipes) {
 
-        binding.ivcancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+
         for (int i = 0; i < recipes.size(); i++) {
             Recipe recipe = recipes.get(i);
             ItemRecipeContentBinding recipeBinding = ItemRecipeContentBinding.inflate(getLayoutInflater());
 
+
             recipeBinding.ivoptions.setVisibility(View.GONE);
             recipeBinding.tvPoster.setText(recipe.getUsername());
             recipeBinding.nameRecipe.setText(recipe.getName());
-            recipeBinding.tvLikes.setText(recipe.getLikes());
+            recipeBinding.tvLikes.setText(String.valueOf(recipe.getLikes()));
             if (recipe.getPath_img()!= null){
                 String portrait = model.downloadImg(recipe.getPath_img());
                 Glide.with(this)
@@ -131,11 +135,27 @@ public class FavoritesActivity extends Activity {
 
 
             }
+
+            recipeBinding.imageContentCv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    controller.displayRecipeDetails(getApplicationContext(), RecipeStepsActivity.class, recipe.getId());
+                }
+            });
+
+            recipeBinding.btComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    controller.displayCommentPage(getApplicationContext(), CommentActivity.class, recipe.getId());
+                }
+            });
+
             TableRow row = new TableRow(FavoritesActivity.this);
 
             TableRow.LayoutParams params = new TableRow.LayoutParams();
-            params.setMargins(100, 0, 0, 40); // Replace -50 with the number of pixels you want to move to the left
+            params.setMargins(0, 0, 30, 40); // Replace -50 with the number of pixels you want to move to the left
             row.setLayoutParams(params);
+            row.setGravity(Gravity.CENTER);
 
             row.addView(recipeBinding.getRoot());
 

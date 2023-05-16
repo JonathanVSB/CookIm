@@ -165,6 +165,8 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         } else if (v.getId() == binding.ivaccept.getId()) {
 
+
+
             //Fulfill ingredients list
             for (int i = 0; i < binding.tlIngredients.getChildCount(); i++) {
                 TableRow row = (TableRow) binding.tlIngredients.getChildAt(i);

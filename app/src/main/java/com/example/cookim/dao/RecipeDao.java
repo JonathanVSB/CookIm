@@ -426,12 +426,27 @@ public class RecipeDao {
             // Initializes a BufferedReader object to read the InputStream
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
-            // Parses the JSON response and extracts the "data" object
-            JsonObject responseJson = JsonParser.parseReader(bufferedReader).getAsJsonObject();
-            JsonObject dataJson = responseJson.get("data").getAsJsonObject();
+            // Parses the JSON response
+            JsonElement responseElement = JsonParser.parseReader(bufferedReader);
 
-            // Extracts the "recipes" array from the "data" object
-            JsonArray recipesJson = dataJson.get("recipes").getAsJsonArray();
+            JsonArray recipesJson;
+
+            if (responseElement.isJsonObject()) {
+                // Extracts the "data" object
+                JsonObject responseJson = responseElement.getAsJsonObject();
+                JsonElement dataJson = responseJson.get("data");
+
+                // Extracts the "recipes" array from the "data" object
+                if (dataJson.isJsonObject() && dataJson.getAsJsonObject().has("recipes")) {
+                    recipesJson = dataJson.getAsJsonObject().get("recipes").getAsJsonArray();
+                } else if (dataJson.isJsonArray()) {
+                    recipesJson = dataJson.getAsJsonArray();
+                } else {
+                    throw new IllegalStateException("Unexpected JSON type for 'data': " + dataJson);
+                }
+            } else {
+                throw new IllegalStateException("Unexpected JSON type: " + responseElement);
+            }
 
             // Parses each recipe object in the "recipes" array and adds it to the result list
             for (JsonElement recipeJson : recipesJson) {
@@ -443,10 +458,8 @@ public class RecipeDao {
                 String path_img = recipeJson.getAsJsonObject().get("path_img").getAsString();
                 double rating = recipeJson.getAsJsonObject().get("rating").getAsDouble();
                 int likes = recipeJson.getAsJsonObject().get("likes").getAsInt();
-                //String user_name = recipeJson.getAsJsonObject().get("user_name").getAsString();
-                //String path = recipeJson.getAsJsonObject().get("path").getAsString();
 
-                // Creates a new Recipe object with the extracted data and empty ingredient and step lists
+                // Creates a new Recipe object with the extracted data
                 Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes);
 
                 // Adds the new Recipe object to the list of recipes
@@ -466,6 +479,73 @@ public class RecipeDao {
 
         return result;
     }
+
+
+
+//    public List<Recipe> parseRecipeList(InputStream inputStream) {
+//        List<Recipe> result = new ArrayList<>();
+//
+//        try {
+//            // Initializes a BufferedReader object to read the InputStream
+//            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//
+//            // Parses the JSON response and extracts the "data" object
+//            JsonObject responseJson = JsonParser.parseReader(bufferedReader).getAsJsonObject();
+//            JsonObject dataJson = responseJson.get("data").getAsJsonObject();
+//
+//            // Extracts the "recipes" array from the "data" object
+//            if (dataJson.has("recipes")) {
+//                JsonArray recipesJson = dataJson.get("recipes").getAsJsonArray();
+//
+//                // Parses each recipe object in the "recipes" array and adds it to the result list
+//                for (JsonElement recipeJson : recipesJson) {
+//                    // Extracts the recipe data from the JSON object
+//                    int id = recipeJson.getAsJsonObject().get("id").getAsInt();
+//                    int user_id = recipeJson.getAsJsonObject().get("id_user").getAsInt();
+//                    String name = recipeJson.getAsJsonObject().get("name").getAsString();
+//                    String description = recipeJson.getAsJsonObject().get("description").getAsString();
+//                    String path_img = recipeJson.getAsJsonObject().get("path_img").getAsString();
+//                    double rating = recipeJson.getAsJsonObject().get("rating").getAsDouble();
+//                    int likes = recipeJson.getAsJsonObject().get("likes").getAsInt();
+//                    //String user_name = recipeJson.getAsJsonObject().get("user_name").getAsString();
+//                    //String path = recipeJson.getAsJsonObject().get("path").getAsString();
+//
+//                    // Creates a new Recipe object with the extracted data and empty ingredient and step lists
+//                    Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes);
+//
+//                    // Adds the new Recipe object to the list of recipes
+//                    result.add(recipe);
+//                }
+//
+//            } else if (dataJson.isJsonArray()) {
+//                JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
+//                if (jsonObject.get("result").getAsInt() == 1) {
+//                    JsonArray jsonArray = jsonObject.getAsJsonArray("data");
+//                    Gson gson = new Gson();
+//                    for (JsonElement element : jsonArray) {
+//                        Recipe recipe = gson.fromJson(element, Recipe.class);
+//                        recipes.add(recipe);
+//                    }
+//                }
+//            }
+//
+//
+//            // Closes the BufferedReader
+//            bufferedReader.close();
+//
+//        } catch (
+//                IOException e) {
+//            // Debugging statement
+//            System.out.println("Error al leer la respuesta: " + e.toString());
+//        } catch (
+//                JsonSyntaxException e) {
+//            // Debugging statement
+//            System.out.println("Error al analizar la respuesta JSON: " + e.toString());
+//        }
+//
+//        return result;
+//    }
+//
 
     /**
      * send pttion to add new Recipe to server
@@ -513,13 +593,13 @@ public class RecipeDao {
 
                 // Send step as JSON
                 wr.writeBytes("--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"steps[" + (i+1)+ "]\"\r\n\r\n" + gson.toJson(step) + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"steps[" + (i + 1) + "]\"\r\n\r\n" + gson.toJson(step) + "\r\n");
 
                 // Send step image
                 File stepImage = step.getFile();
                 if (stepImage != null) {
                     wr.writeBytes("--" + boundary + "\r\n");
-                    wr.writeBytes("Content-Disposition: form-data; name=\"step_file_" + (i+1) + "\"; filename=\"" + stepImage.getName() + "\"\r\n");
+                    wr.writeBytes("Content-Disposition: form-data; name=\"step_file_" + (i + 1) + "\"; filename=\"" + stepImage.getName() + "\"\r\n");
                     wr.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(stepImage.getName()) + "\r\n\r\n");
                     FileInputStream inputStream = new FileInputStream(stepImage);
                     byte[] buffer = new byte[4096];

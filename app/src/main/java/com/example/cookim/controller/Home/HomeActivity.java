@@ -146,7 +146,7 @@ public class HomeActivity extends Activity implements HomeListener {
             for (Ingredient ing : list) {
                 String nombre = ing.getName();
                 String id = String.valueOf(ing.getId());
-                this.instrSQL = "INSERT INTO Ingrediente (PK_Id, Nombre) VALUES ('" + id + "," + nombre + "')";
+                this.instrSQL = "INSERT INTO Ingrediente (PK_Id, Nombre) VALUES ('" + id + "','" + nombre + "')";
                 this.dbIngredients.execSQL(this.instrSQL);
             }
 

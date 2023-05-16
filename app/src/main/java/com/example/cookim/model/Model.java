@@ -163,7 +163,7 @@ public class Model {
      */
     public List<Recipe> userRecipes(String token, long id) {
         String param = token + ":" + String.valueOf(id);
-        List<Recipe> recipes = recipeDao.loadMyRecipes(path.OTHERPROFILES, token);
+        List<Recipe> recipes = recipeDao.loadMyRecipes(path.OTHERPROFILES, param);
         return recipes;
 
     }
