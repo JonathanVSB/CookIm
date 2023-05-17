@@ -24,7 +24,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class IngredientDao {
 
-    public List<Ingredient> getAll(String path, String token, int id ){
+    public List<Ingredient> getAll(String path, String token, int id) {
         List<Ingredient> list = new ArrayList<>();
         String param = token + ":" + String.valueOf(id);
 
@@ -62,7 +62,7 @@ public class IngredientDao {
             }
 
         } catch (Exception e) {
-            System.out.println("PETA EN ESTA LINEA: " +e.toString());
+            System.out.println("PETA EN ESTA LINEA: " + e.toString());
         }
 
         return list;
@@ -110,21 +110,29 @@ public class IngredientDao {
 
     /**
      * Search the max id number of ingredients in local database
+     *
      * @param ingredients
      * @return
      */
     public int getMaxIngredientId(BBDDIngredients ingredients) {
-        SQLiteDatabase db = ingredients.getReadableDatabase();
-        String query = "SELECT MAX(PK_Id) FROM Ingrediente";
-        Cursor cursor = db.rawQuery(query, null);
         int maxId = -1;
-        if (cursor.moveToFirst() && !cursor.isNull(0)) {
-            maxId = cursor.getInt(0);
+
+        try {
+            SQLiteDatabase db = ingredients.getReadableDatabase();
+            String query = "SELECT MAX(PK_Id) FROM Ingrediente";
+            Cursor cursor = db.rawQuery(query, null);
+
+            if (cursor.moveToFirst()) {
+                maxId = cursor.getInt(0);
+            }
+            cursor.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        cursor.close();
+
         return maxId;
     }
-
 
 
 }

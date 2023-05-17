@@ -1,15 +1,22 @@
 package com.example.cookim.controller.Home;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -42,6 +49,7 @@ import java.util.concurrent.Executors;
 
 public class HomeActivity extends Activity implements HomeListener {
 
+
     private ActivityHomeBinding binding;
     Executor executor = Executors.newSingleThreadExecutor();
     Handler handler;
@@ -58,11 +66,17 @@ public class HomeActivity extends Activity implements HomeListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (shouldAskPermissions()) {
+            askPermissions();
+        }
+
         setContentView(R.layout.activity_home);
+
 
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        this.ingredients = new BBDDIngredients(this.getApplicationContext(), "Ingredientes", null, 1);
+        this.ingredients = new BBDDIngredients(this, "Ingredientes", null, 1);
 
 
         handler = new Handler(Looper.getMainLooper());
@@ -90,6 +104,33 @@ public class HomeActivity extends Activity implements HomeListener {
         }
 
 
+    }
+
+
+    /**
+     * Validació de la versió
+     * https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
+     *
+     * @return true
+     */
+    protected boolean shouldAskPermissions() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1); // > 22
+    }
+
+    @TargetApi(23)
+    protected void askPermissions() {
+        String[] permissions = {
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE"
+        };
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    this, permissions, 1);
+        }
     }
 
     /**

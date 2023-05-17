@@ -11,7 +11,7 @@ public class BBDDIngredients extends SQLiteOpenHelper {
 
     String instrSQL = "CREATE TABLE Ingrediente (PK_Id INTEGER PRIMARY KEY, Nombre TEXT)";
 
-    static String nomBBDD = "Ingredientes";
+    //static String nomBBDD = "Ingredientes";
 
     static int versio = 1;
 
@@ -19,10 +19,10 @@ public class BBDDIngredients extends SQLiteOpenHelper {
         super(context, name, factory, version);
     }
 
-    public BBDDIngredients(Context context) {
+    /*public BBDDIngredients(Context context) {
         super(context, nomBBDD, null, versio);
 
-    }
+    }*/
 
     @Override
     public void onCreate(SQLiteDatabase db) {
