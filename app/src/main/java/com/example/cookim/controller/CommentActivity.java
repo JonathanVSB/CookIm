@@ -62,22 +62,27 @@ public class CommentActivity extends Activity {
         setupEditTextListener();
         binding.message.setVisibility(View.VISIBLE);
 
-        binding.ivcancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showHomePage();
-            }
-        });
+        if (token != null) {
+            binding.ivcancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showHomePage();
+                }
+            });
 
-        binding.btSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createComment(recipeId);
-            }
-        });
+            binding.btSend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    createComment(recipeId);
+                }
+            });
 
 
-        loadComments(recipeId);
+            loadComments(recipeId);
+
+        } else {
+            controller.displayLogInPage(this, LoginActivity.class);
+        }
 
 
     }
@@ -268,7 +273,11 @@ public class CommentActivity extends Activity {
                             }
 
 
+                        } else {
+                            controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
                         }
+                    } else {
+                        controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
                     }
 
 
@@ -276,6 +285,7 @@ public class CommentActivity extends Activity {
             });
 
         } catch (Exception e) {
+
         }
 
 

@@ -39,7 +39,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     HomeListener homeListener;
 
 
-    public RecipeAdapter(List<Recipe> recipeList, String token, List<Long> recipesLiked, long userRol) {
+    public RecipeAdapter(List<Recipe> recipeList, String token, long userRol) {
 
         this.recipeList = recipeList;
         this.token = token;

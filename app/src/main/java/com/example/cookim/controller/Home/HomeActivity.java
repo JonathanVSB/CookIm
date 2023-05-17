@@ -53,7 +53,7 @@ public class HomeActivity extends Activity implements HomeListener {
     Model model;
     Controller controller;
     String token;
-    List<Long> recipes_likeds;
+    List<Recipe> recipes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -254,60 +254,68 @@ public class HomeActivity extends Activity implements HomeListener {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    user = model.myProfile(token); /*readUserResponse((url + data1), token);*/
-                    recipes_likeds = user.getRecipe_likes();
-                    List<Recipe> recipes = model.loadRecipes(token);
-                    List<RecipeAdapter> adapters = new ArrayList<>();
-
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            displayRecipes(recipes, user.getId_rol());
-                        }
-                    });
-
+                    user = model.myProfile(token);
                     if (user != null) {
-                        //binding.tvUsername.setText(user.getUsername());
+
+                        recipes = model.loadRecipes(token);
+                        List<RecipeAdapter> adapters = new ArrayList<>();
+
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                // Post Execute
-                                if (user != null) { // si hay un usuario
+                                displayRecipes(recipes, user.getId_rol());
+                            }
+                        });
 
-                                    String img = model.downloadImg(user.getPath_img());
-                                    Glide.with(HomeActivity.this)
-                                            .load(img)
-                                            .listener(new RequestListener<Drawable>() {
-                                                @Override
-                                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                                    // Manejar el fallo de carga de la imagen aquí
-                                                    binding.profileImage.setImageResource(R.drawable.guest_profile);
-                                                    return false;
-                                                }
+                        if (user != null) {
+                            //binding.tvUsername.setText(user.getUsername());
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Post Execute
+                                    if (user != null) { // si hay un usuario
 
-                                                @Override
-                                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                                    // La imagen se ha cargado correctamente
-                                                    return false;
-                                                }
-                                            })
-                                            .into(binding.profileImage);
+                                        String img = model.downloadImg(user.getPath_img());
+                                        Glide.with(HomeActivity.this)
+                                                .load(img)
+                                                .listener(new RequestListener<Drawable>() {
+                                                    @Override
+                                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                                        // Manejar el fallo de carga de la imagen aquí
+                                                        binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                                        return false;
+                                                    }
 
-                                    //uses
-                                    loadHeader(user);
+                                                    @Override
+                                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                                        // La imagen se ha cargado correctamente
+                                                        return false;
+                                                    }
+                                                })
+                                                .into(binding.profileImage);
+
+                                        //uses
+                                        loadHeader(user);
 
 
-                                } else {
+                                    } else {
 //                                    // Si no hay un usuario, establece la imagen predeterminada en el ImageView "profileImage"
-                                    binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                        binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                    }
+
                                 }
 
-                            }
+                            });
 
-                        });
+
+                        }
+                    } else {
+                        controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
 
 
                     }
+
+
                 }
             });
         } catch (Exception e) {
@@ -322,7 +330,7 @@ public class HomeActivity extends Activity implements HomeListener {
      * @param recipes
      */
     private void displayRecipes(List<Recipe> recipes, long rol) {
-        RecipeAdapter adapter = new RecipeAdapter(recipes, token, recipes_likeds, rol);
+        RecipeAdapter adapter = new RecipeAdapter(recipes, token, rol);
         adapter.setHomeListener(this);
         binding.recommendationsRv.setAdapter(adapter);
         binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
