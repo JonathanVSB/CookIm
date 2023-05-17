@@ -20,8 +20,7 @@
                 android:id="@+id/frontpage"
                 android:layout_width="414dp"
                 android:layout_height="180dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/tostadas_de_pollo_con_lechuga"
+                android:src="@drawable/gallery"
                 app:layout_constraintBaseline_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -52,7 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
-                    android:text="Tostada de pollo con lechuga"
+                    android:text=""
                     android:fontFamily="@font/ubunturegular"
                     android:textAlignment="textStart"
                     android:textColor="@color/text"

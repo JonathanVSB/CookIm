@@ -8,7 +8,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.TableRow;
 
 import androidx.annotation.Nullable;
@@ -32,7 +34,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class MyProfileActivity extends Activity {
+public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
 
 
     Model model;
@@ -138,6 +140,7 @@ public class MyProfileActivity extends Activity {
         binding.tvDescription.setText(user.getDescription());
         binding.tvposts.setText(String.valueOf(recipes.size()));
 
+
         binding.btfollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -187,7 +190,6 @@ public class MyProfileActivity extends Activity {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                         // Manejar el fallo de carga de la imagen aquí
-                        binding.userimg.setImageResource(R.drawable.tostadas_de_pollo_con_lechuga);
                         return false;
                     }
 
@@ -205,9 +207,32 @@ public class MyProfileActivity extends Activity {
                 Recipe recipe = recipes.get(i);
                 ItemMyRecipeContentBinding recipeBinding = ItemMyRecipeContentBinding.inflate(getLayoutInflater());
 
-                if (myId != id){
+                if (myId != id) {
                     recipeBinding.ivoptions.setVisibility(View.GONE);
                 }
+                recipeBinding.ivoptions.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PopupMenu popup = new PopupMenu(MyProfileActivity.this, view);
+                        popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                // Manejar la selección de los elementos del menú
+                                switch (item.getItemId()) {
+                                    case R.id.itemRemove:
+                                        removeRecipe(token, recipe.getId());
+                                        return true;
+                                    default:
+                                        return false;
+                                }
+                            }
+                        });
+
+                        popup.show();
+                    }
+                });
+
                 recipeBinding.nameRecipe.setText(recipe.getName());
                 if (recipe.getPath_img() != null) {
                     String portrait = model.downloadImg(recipe.getPath_img());
@@ -257,6 +282,40 @@ public class MyProfileActivity extends Activity {
     }
 
     /**
+     * Asks server to remove Recipe from his own recipe list
+     *
+     * @param token
+     * @param id
+     */
+    private void removeRecipe(String token, int id) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                DataResult result = model.removeRecipe(token, id);
+
+                if (result != null) {
+                    if (result.getResult().equals("1")) {
+                        int ownId = (int) user.getId();
+
+                        controller.displayMyProfile(getApplicationContext(), MyProfileActivity.class, user.getId(), ownId);
+//
+                    } else {
+
+//                        controller.displayErrorMessage(getApplicationContext(), "La receta no ha podido ser borrada");
+//
+                    }
+                } else {
+
+
+//                    controller.displayErrorMessage(getApplicationContext(), "La conexión ha fallado");
+
+                }
+            }
+        });
+    }
+
+
+    /**
      * Display the login Page
      */
     private void displayLogInPage() {
@@ -279,7 +338,7 @@ public class MyProfileActivity extends Activity {
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.home:
-                    finish();
+                    controller.displayActivity(this, HomeActivity.class);
                     return true;
                 case R.id.addrecipe:
                     controller.displayActivity(this, AddRecipeActivity.class);
@@ -303,4 +362,8 @@ public class MyProfileActivity extends Activity {
         finish();
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        return false;
+    }
 }

@@ -5,12 +5,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Looper;
 
 import com.example.cookim.model.Model;
+
+import java.util.logging.Handler;
 
 public class Controller extends Activity {
 
     Model model;
+
 
     public Controller() {
 
@@ -23,7 +27,7 @@ public class Controller extends Activity {
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // Acciones a realizar al hacer clic en "Aceptar"
+                        //
                     }
                 });
 
@@ -38,6 +42,7 @@ public class Controller extends Activity {
      */
     public void displayActivity(Context context, Class<?> Class) {
         Intent intent = new Intent(context, Class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -63,6 +68,7 @@ public class Controller extends Activity {
         Intent intent = new Intent(context, Class);
         intent.putExtra("MyUserID", id);
         intent.putExtra("userID", id2);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 

@@ -236,7 +236,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                             DataResult res = model.createRecipe(recipe, token, file);
 
                             if (res.getResult().equals("1")) {
-                                finish();
+                                controller.displayActivity(getApplicationContext(), HomeActivity.class);
                             } else {
 
                                 controller.displayErrorMessage(getApplicationContext(),"Algo ha salido mal. La receta no ha sido creada");

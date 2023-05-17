@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.cookim.dao.BBDDIngredients;
 import com.example.cookim.dao.CommentDao;
 import com.example.cookim.dao.IngredientDao;
+import com.example.cookim.dao.NetworkUtils;
 import com.example.cookim.dao.Path;
 import com.example.cookim.dao.RecipeDao;
 import com.example.cookim.dao.UserDao;
@@ -26,21 +27,28 @@ public class Model {
     private CommentDao commentDao;
     private Path path;
     private IngredientDao ingredientDao;
+    private NetworkUtils networkUtils;
+//    private Context context ;
 
 
-    public Model() {
+    public Model(/*Context appContext*/) {
+
         path = new Path();
         userDao = new UserDao();
         recipeDao = new RecipeDao();
         commentDao = new CommentDao();
+        networkUtils = new NetworkUtils();
         ingredientDao = new IngredientDao();
+//        this.context = appContext;
 
 
     }
 
     public DataResult login(String parametros) {
+
         DataResult result = userDao.readResponse(path.LOGIN, parametros);
         return result;
+
 
     }
 
@@ -61,7 +69,7 @@ public class Model {
      * @return
      */
     public List<Recipe> loadRecipes(String token) {
-        List<Recipe> recipes = recipeDao.loadMyRecipes(path.HOMEPAGE ,token);
+        List<Recipe> recipes = recipeDao.loadMyRecipes(path.HOMEPAGE, token);
         return recipes;
 
     }
@@ -179,6 +187,13 @@ public class Model {
 
         List<Ingredient> ingredients = ingredientDao.getAll(path.INGREDIENTS, token, id);
         return ingredients;
+
+    }
+
+    public DataResult removeRecipe(String token, int id) {
+        String param = token + ":" + String.valueOf(id);
+        DataResult result = recipeDao.readResponse(path.REMOVERECIPE, param);
+        return result;
 
     }
 

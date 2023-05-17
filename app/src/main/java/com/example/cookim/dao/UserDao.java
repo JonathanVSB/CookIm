@@ -385,7 +385,14 @@ public class UserDao {
             String requestBody = "";
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
                 wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
+            }catch (Exception e) {
+                // Debugging statement
+                result = new DataResult();
+                result.setResult("2");
+                result.setData("Error DataOutputStream: " + e.toString());
+                System.out.println("Error DataOutputStream: " + e.toString());
             }
+
 
             connection.connect();
 
@@ -398,6 +405,9 @@ public class UserDao {
                 inputStream.close();
 
             } else {
+                result = new DataResult();
+                result.setResult("3");
+                result.setData("Error al conectar con el servidor: " + connection.getResponseMessage());
                 // Debugging statement
                 System.out.println("Error al conectar con el servidor: " + connection.getResponseMessage());
             }

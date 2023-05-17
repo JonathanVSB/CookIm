@@ -20,11 +20,13 @@ import com.example.cookim.R;
 import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.databinding.ActivityFavoritesBinding;
 import com.example.cookim.databinding.ItemRecipeContentBinding;
+import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
@@ -33,7 +35,7 @@ public class FavoritesActivity extends Activity {
     private ActivityFavoritesBinding binding;
     Model model;
     Controller controller;
-    Executor executor;
+    ExecutorService executor;
     String token;
     Handler handler;
     List<Recipe> recipes;
@@ -106,12 +108,16 @@ public class FavoritesActivity extends Activity {
         for (int i = 0; i < recipes.size(); i++) {
             Recipe recipe = recipes.get(i);
             ItemRecipeContentBinding recipeBinding = ItemRecipeContentBinding.inflate(getLayoutInflater());
+            recipe.setSaved(true);
 
 
             recipeBinding.ivoptions.setVisibility(View.GONE);
             recipeBinding.tvPoster.setText(recipe.getUsername());
             recipeBinding.nameRecipe.setText(recipe.getName());
             recipeBinding.tvLikes.setText(String.valueOf(recipe.getLikes()));
+            recipeBinding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+            recipeBinding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
+
             if (recipe.getPath_img()!= null){
                 String portrait = model.downloadImg(recipe.getPath_img());
                 Glide.with(this)
@@ -150,6 +156,57 @@ public class FavoritesActivity extends Activity {
                 }
             });
 
+            recipeBinding.btSave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean pressSave = !recipe.isSaved();
+                    recipe.setSaved(pressSave);
+
+                    int saveValue = recipe.isSaved() ? 1 : 0;
+                    DataResult result = saveRecipe(saveValue, String.valueOf(recipe.getId()));
+
+                    if (result.getResult().equals("1")) {
+                        try {
+                            recipeBinding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
+                        } catch (Exception e) {
+                            System.out.println(e.toString());
+                        }
+                    } else {
+                        recipe.setSaved(!recipe.isSaved());
+                    }
+                }
+            });
+
+            recipeBinding.btLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    boolean pressLike = !recipe.isLiked();
+                    recipe.setLiked(pressLike);
+
+                    recipe.setLikes(pressLike ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
+                    recipeBinding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+                    recipeBinding.tvLikes.setText(String.valueOf(recipe.getLikes()));
+
+                    //send 1 if user likes the recipe, 0 if unlikes
+                    int likeValue = pressLike ? 1 : 0;
+
+                    DataResult result = sendLike(likeValue, String.valueOf(recipe.getId()));
+                    if (result.getResult().equals("1")) {
+                        try {
+                            recipeBinding.tvLikes.setText(String.valueOf(recipe.getLikes()));
+                        } catch (Exception e) {
+                            System.out.println(e.toString());
+                        }
+                    } else {
+
+//                            pressLike = false;
+                    }
+                }
+
+
+            });
+
             TableRow row = new TableRow(FavoritesActivity.this);
 
             TableRow.LayoutParams params = new TableRow.LayoutParams();
@@ -165,6 +222,55 @@ public class FavoritesActivity extends Activity {
 
     }
 
+    /**
+     *
+     * @param num
+     * @param id
+     * @return
+     */
+    private DataResult saveRecipe(int num, String id) {
+        String numero = String.valueOf(num);
+        String parametros = token + ":" + numero + ":" + id;
+        DataResult result = null;
+
+        try {
+
+            result = executor.submit(() -> {
+                return model.saveRecipe(parametros);
+            }).get();
+        } catch (Exception e) {
+            System.out.println("Error al enviar like: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     *
+     * @param num
+     * @param id
+     * @return
+     */
+    private DataResult sendLike(int num, String id) {
+        String numero = String.valueOf(num);
+        String parametros = token + ":" + numero + ":" + id;
+        DataResult result = null;
+
+        try {
+
+            result = executor.submit(() -> {
+                return model.likeRecipe(parametros);
+            }).get();
+        } catch (Exception e) {
+            System.out.println("Error al enviar like: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     *
+     */
     private void bottomNavigationViewClick() {
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {

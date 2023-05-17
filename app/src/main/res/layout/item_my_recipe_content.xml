@@ -26,6 +26,7 @@
             app:layout_constraintEnd_toEndOf="@id/image_content_cv"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_options"
+            android:onClick="showPopup"
             />
         <androidx.cardview.widget.CardView
             android:id="@+id/image_content_cv"

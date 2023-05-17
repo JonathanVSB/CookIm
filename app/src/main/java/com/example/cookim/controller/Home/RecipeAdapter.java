@@ -69,11 +69,12 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.nameRecipe.setText(recipe.getName());
         holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
         holder.binding.tvPoster.setText(recipe.getUsername());
-        if (rol!=1) {
+        if (rol != 1) {
             holder.binding.ivoptions.setVisibility(View.GONE);
         }
 
         holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+        holder.binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
 
         if (recipe.getPath_img() != null && !recipe.getPath_img().isEmpty()) {
             //Load img with Glide
@@ -101,10 +102,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 boolean pressLike = !recipe.isLiked();
                 recipe.setLiked(pressLike);
 
-//                if (pressLike) {
-//                    recipesLiked.add((long) recipe.getId());
-//
-//                }
                 recipe.setLikes(pressLike ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
                 holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
                 holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
@@ -229,31 +226,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void setHomeListener(HomeListener listener) {
         this.homeListener = listener;
     }
-
-//    private DataResult gestionateActions(int num, String id, View v) {
-//        DataResult result = null;
-//        String parametros = token + ":" + num + ":" + id;
-//        try{
-//            if (v.getId() == binding.btLike.getId())
-//            {
-//                result = executor.submit(() -> {
-//                    return model.likeRecipe(parametros);
-//                }).get();
-//            } else if (v.getId() == binding.btSave.getId()){
-//
-//                result = executor.submit(() -> {
-//                    return model.saveRecipe(parametros);
-//                }).get();
-//            }
-//
-//        }catch (Exception e){
-//
-//            System.out.println("Error al procesar la acción: " + e.getMessage());
-//        }
-//
-//        return result;
-//    }
-
 
 }
 
