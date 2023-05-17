@@ -451,20 +451,31 @@ public class RecipeDao {
             // Parses each recipe object in the "recipes" array and adds it to the result list
             for (JsonElement recipeJson : recipesJson) {
                 // Extracts the recipe data from the JSON object
-                int id = recipeJson.getAsJsonObject().get("id").getAsInt();
-                int user_id = recipeJson.getAsJsonObject().get("id_user").getAsInt();
-                String name = recipeJson.getAsJsonObject().get("name").getAsString();
-                String description = recipeJson.getAsJsonObject().get("description").getAsString();
-                String path_img = recipeJson.getAsJsonObject().get("path_img").getAsString();
-                double rating = recipeJson.getAsJsonObject().get("rating").getAsDouble();
-                int likes = recipeJson.getAsJsonObject().get("likes").getAsInt();
+                JsonObject recipeObject = recipeJson.getAsJsonObject();
+                int id = recipeObject.get("id").getAsInt();
+                int user_id = recipeObject.get("id_user").getAsInt();
+                String name = recipeObject.get("name").getAsString();
+                String description = recipeObject.get("description").getAsString();
+                String path_img = recipeObject.get("path_img").getAsString();
+                double rating = recipeObject.get("rating").getAsDouble();
+                int likes = recipeObject.get("likes").getAsInt();
+
+                // Check if "liked" key exists in the JSON object
+                boolean liked = recipeObject.has("liked") && recipeObject.get("liked").getAsBoolean();
+                // Check if "saved" key exists in the JSON object
+                boolean saved = recipeObject.has("saved") && recipeObject.get("saved").getAsBoolean();
 
                 // Creates a new Recipe object with the extracted data
                 Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes);
 
+                // Set liked and saved properties of the recipe
+                recipe.setLiked(liked);
+                recipe.setSaved(saved);
+
                 // Adds the new Recipe object to the list of recipes
                 result.add(recipe);
             }
+
 
             // Closes the BufferedReader
             bufferedReader.close();

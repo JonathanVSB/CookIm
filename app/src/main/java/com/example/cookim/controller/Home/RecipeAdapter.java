@@ -72,11 +72,6 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         if (rol!=1) {
             holder.binding.ivoptions.setVisibility(View.GONE);
         }
-        if (recipesLiked.contains(recipe.getId())) {
-            recipe.setLiked(true);  // if recipe is already liked
-        } else {
-            recipe.setLiked(false);  // if recipe is not liked
-        }
 
         holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
 
@@ -106,10 +101,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 boolean pressLike = !recipe.isLiked();
                 recipe.setLiked(pressLike);
 
-                if (pressLike) {
-                    recipesLiked.add((long) recipe.getId());
-
-                }
+//                if (pressLike) {
+//                    recipesLiked.add((long) recipe.getId());
+//
+//                }
                 recipe.setLikes(pressLike ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
                 holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
                 holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));

@@ -256,7 +256,7 @@ public class HomeActivity extends Activity implements HomeListener {
                 public void run() {
                     user = model.myProfile(token); /*readUserResponse((url + data1), token);*/
                     recipes_likeds = user.getRecipe_likes();
-                    List<Recipe> recipes = model.loadRecipes();
+                    List<Recipe> recipes = model.loadRecipes(token);
                     List<RecipeAdapter> adapters = new ArrayList<>();
 
                     handler.post(new Runnable() {

@@ -60,8 +60,8 @@ public class Model {
      *
      * @return
      */
-    public List<Recipe> loadRecipes() {
-        List<Recipe> recipes = recipeDao.loadRecipes(path.HOMEPAGE);
+    public List<Recipe> loadRecipes(String token) {
+        List<Recipe> recipes = recipeDao.loadMyRecipes(path.HOMEPAGE ,token);
         return recipes;
 
     }
