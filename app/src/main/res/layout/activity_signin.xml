@@ -11,7 +11,7 @@
         android:layout_width="149dp"
         android:layout_height="147dp"
         android:layout_marginTop="50dp"
-        android:src="@drawable/ic_add_image"
+        android:src="@drawable/deafult"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         app:layout_constraintEnd_toEndOf="parent"

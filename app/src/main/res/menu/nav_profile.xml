@@ -18,7 +18,21 @@
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings"
-        />
+        >
+
+        <menu>
+            <item
+                android:id="@+id/edit_profile"
+                android:title="Editar Perfil"
+                android:icon="@drawable/ic_user_pen" />
+
+            <item
+                android:id="@+id/change_password"
+                android:title="Contraseña"
+                android:icon="@drawable/ic_key" />
+        </menu>
+
+    </item>
 
     <group android:checkableBehavior="none">
         <item

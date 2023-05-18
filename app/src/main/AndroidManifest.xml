@@ -94,6 +94,11 @@
             android:theme="@style/Theme.CookIm.NoActionBar"
             android:exported="true" />
 
+        <activity
+            android:name=".controller.EditProfileActivity"
+            android:theme="@style/Theme.CookIm.NoActionBar"
+            android:exported="true" />
+
 
     </application>
 

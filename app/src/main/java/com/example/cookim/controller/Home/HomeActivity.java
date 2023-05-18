@@ -12,6 +12,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -29,6 +31,7 @@ import com.example.cookim.R;
 import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.controller.CommentActivity;
 import com.example.cookim.controller.Controller;
+import com.example.cookim.controller.EditProfileActivity;
 import com.example.cookim.controller.FavoritesActivity;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
@@ -248,6 +251,7 @@ public class HomeActivity extends Activity implements HomeListener {
     private void navigatioViewClick() {
         binding.homeActivityContent.openDrawer(GravityCompat.START);
         binding.profileNavMenu.setNavigationItemSelectedListener(item -> {
+            Intent intent = null;
             switch (item.getItemId()) {
                 case R.id.profile:
                     closeNavMenu();
@@ -258,8 +262,10 @@ public class HomeActivity extends Activity implements HomeListener {
                     controller.displayActivity(this, FavoritesActivity.class);
 
                     break;
-                case R.id.settings:
+                case R.id.edit_profile:
                     closeNavMenu();
+                    controller.displayEditProfile(this, EditProfileActivity.class, user);
+
                     break;
                 case R.id.logout:
                     closeNavMenu();
@@ -398,17 +404,12 @@ public class HomeActivity extends Activity implements HomeListener {
             case 2:
 
                 controller.displayMyProfile(this, MyProfileActivity.class, user.getId(), id);
-                //intent = new Intent(this, MyProfileActivity.class);
-                //intent.putExtra("MyUserID", user.getId());
-                //intent.putExtra("userID", id);
-                //startActivity(intent);
+
                 break;
 
             case 3:
                 controller.displayCommentPage(this, CommentActivity.class, id);
-                //intent = new Intent(this, CommentActivity.class);
-                //intent.putExtra("recipe_id", id);
-                //startActivity(intent);
+
                 break;
 
         }
@@ -456,6 +457,8 @@ public class HomeActivity extends Activity implements HomeListener {
         startActivity(intent);
 
     }
+
+
 
 
 }

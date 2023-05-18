@@ -476,4 +476,23 @@ public class UserDao {
 
         return result;
     }
+
+    /**
+     * Updates the data of the user
+     * @param path
+     * @param token
+     * @param username
+     * @param full_name
+     * @param email
+     * @param phone
+     * @param path_img
+     * @param file
+     * @return
+     */
+    public DataResult editUserData(String path, String token, String username, String full_name, String email, String phone, String path_img, File file) {
+        DataResult result = null;
+
+
+        return result;
+    }
 }

@@ -459,6 +459,10 @@ public class RecipeDao {
                 String path_img = recipeObject.get("path_img").getAsString();
                 double rating = recipeObject.get("rating").getAsDouble();
                 int likes = recipeObject.get("likes").getAsInt();
+                String username = "";
+                if (recipeObject.has("user_name")){
+                    username = recipeObject.get("user_name").getAsString();
+                }
 
                 // Check if "liked" key exists in the JSON object
                 boolean liked = recipeObject.has("liked") && recipeObject.get("liked").getAsBoolean();
@@ -466,7 +470,7 @@ public class RecipeDao {
                 boolean saved = recipeObject.has("saved") && recipeObject.get("saved").getAsBoolean();
 
                 // Creates a new Recipe object with the extracted data
-                Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes);
+                Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes,username);
 
                 // Set liked and saved properties of the recipe
                 recipe.setLiked(liked);

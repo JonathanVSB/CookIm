@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Looper;
 
 import com.example.cookim.model.Model;
+import com.example.cookim.model.user.UserModel;
 
 import java.util.logging.Handler;
 
@@ -94,6 +95,24 @@ public class Controller extends Activity {
     public void displayRecipeDetails(Context context, Class<?> Class, int id){
         Intent intent = new Intent(context, Class);
         intent.putExtra("recipe_id", id);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    /**
+     * display Edit profile Page
+     * @param context
+     * @param Class
+     * @param user
+     */
+    public void displayEditProfile(Context context, Class<?> Class, UserModel user){
+        Intent intent = new Intent(context, Class);
+        intent.putExtra("id", user.getId());
+        intent.putExtra("username", user.getUsername());
+        intent.putExtra("fullname", user.getFull_name());
+        intent.putExtra("phone", user.getPhone());
+        intent.putExtra("email", user.getEmail());
+        intent.putExtra("path_img", user.getPath_img());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }

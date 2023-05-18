@@ -1,10 +1,13 @@
 package com.example.cookim.model.user;
 
+import android.os.Parcelable;
+
 import com.example.cookim.model.recipe.Recipe;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UserModel implements Serializable {
 
@@ -65,6 +68,15 @@ public class UserModel implements Serializable {
         this.token = token;
     }
 
+    public UserModel (long id, String username, String full_name, String email, String tel, String Path){
+        this.id = id;
+        this.username = username;
+        this.full_name = full_name;
+        this.email = email;
+        this.phone = tel;
+        this.path_img = Path;
+    }
+
     //FULL CONSTRUCTOR
     public UserModel(long id, String username, String pass, String full_name, String description, String email, String tel, String path, List<UserModel> followers, List<UserModel> followed, List<Recipe> favorites_recipes, long rol, String token) {
         this.id = id;
@@ -117,8 +129,16 @@ public class UserModel implements Serializable {
         this.favorites_recipes = new ArrayList<>();
     }
 
-    public UserModel() {
+    public UserModel (long id, String username, String full_name, String email, String tel){
+        this.id = id;
+        this.username = username;
+        this.full_name = full_name;
+        this.email = email;
+        this.phone = tel;
 
+    }
+
+    public UserModel() {
     }
 
     //GETTERS AND SETTERS
@@ -242,6 +262,19 @@ public class UserModel implements Serializable {
 
     public void setFollow(Boolean follow) {
         this.follow = follow;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserModel userModel = (UserModel) o;
+        return id == userModel.id && id_rol == userModel.id_rol && Objects.equals(username, userModel.username) && Objects.equals(password, userModel.password) && Objects.equals(full_name, userModel.full_name) && Objects.equals(email, userModel.email) && Objects.equals(phone, userModel.phone) && Objects.equals(path_img, userModel.path_img) && Objects.equals(description, userModel.description) && Objects.equals(token, userModel.token) && Objects.equals(followers, userModel.followers) && Objects.equals(followed, userModel.followed) && Objects.equals(recipe_likes, userModel.recipe_likes) && Objects.equals(favorites_recipes, userModel.favorites_recipes) && Objects.equals(follow, userModel.follow);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, password, full_name, email, phone, path_img, description, id_rol, token, followers, followed, recipe_likes, favorites_recipes, follow);
     }
 }
 

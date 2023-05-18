@@ -134,6 +134,19 @@ public class Model {
         return result;
 
     }
+    public DataResult editData(String token, UserModel user, File file){
+        DataResult result = userDao.editUserData(path.EDITDATA ,token,
+                user.getUsername(),
+                user.getFull_name(),
+                user.getEmail(),user.getPhone(),
+                user.getPath_img(), file);
+
+        return result;
+
+
+    }
+
+
 
     /**
      * returns the details of the recipe found by his id
