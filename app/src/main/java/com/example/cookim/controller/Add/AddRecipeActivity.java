@@ -68,11 +68,14 @@ import java.util.concurrent.Executors;
 public class AddRecipeActivity extends AppCompatActivity {
 
     private ActivityAddRecipeBinding binding;
-    private static final int RESULT_LOAD_IMAGE = 1;
+    private static final int REQUEST_LOAD_IMAGE_PORTRAIT = 1;
+    private static final int REQUEST_LOAD_IMAGE_OTHER = 2;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private Intent data;
     private File file;
+    private File portraitFile;
     private View currentView;
+    private View portraitView;
     ExecutorService executor;
 
 
@@ -108,7 +111,7 @@ public class AddRecipeActivity extends AppCompatActivity {
      * build the structure of all the elements
      */
     private void prepareElements() {
-        binding.stepPic.setOnClickListener(new View.OnClickListener() {
+        binding.portraitPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -158,14 +161,14 @@ public class AddRecipeActivity extends AppCompatActivity {
         if (v.getId() == binding.ivcancel.getId()) {
             finish();
 
-        } else if (v.getId() == binding.stepPic.getId()) {
-            currentView = v;
+        } else if (v.getId() == binding.portraitPic.getId()) {
+            portraitView = v;
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(intent, RESULT_LOAD_IMAGE);
+            intent.putExtra("portraitView", v.getId());
+            startActivityForResult(intent, REQUEST_LOAD_IMAGE_PORTRAIT);
+
 
         } else if (v.getId() == binding.ivaccept.getId()) {
-
-
 
             //Fulfill ingredients list
             for (int i = 0; i < binding.tlIngredients.getChildCount(); i++) {
@@ -221,19 +224,19 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
 
 
-            if (file != null && steps.size() != 0 && ingredients.size() != 0) {
+            if (portraitFile != null && steps.size() != 0 && ingredients.size() != 0) {
                 //Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
                 //binding.etdescription.getText().toString(), steps, ingredients)
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
 
-                        Recipe recipe = createRecipe(file, binding.etname.getText().toString(), binding.etdescription.getText().toString()
+                        Recipe recipe = createRecipe(portraitFile, binding.etname.getText().toString(), binding.etdescription.getText().toString()
                                 , steps, ingredients);
 
                         if (recipe != null) {
 
-                            DataResult res = model.createRecipe(recipe, token, file);
+                            DataResult res = model.createRecipe(recipe, token, portraitFile);
 
                             if (res.getResult().equals("1")) {
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
@@ -368,7 +371,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     currentView = view; // Agrega esta línea para guardar la referencia al 'View' actual
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(intent, RESULT_LOAD_IMAGE);
+                    startActivityForResult(intent, REQUEST_LOAD_IMAGE_OTHER);
                 }
             });
             row.addView(stepContentBinding.getRoot());
@@ -468,21 +471,37 @@ public class AddRecipeActivity extends AppCompatActivity {
      * @param data        An Intent, which can return result data to the caller
      *                    (various data can be attached to Intent "extras").
      */
-    @Override
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        this.data = data;
+//
+//        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+//            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                    != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+//            } else {
+//                file = loadImage(data, currentView); // Agrega 'currentView' como argumento
+//            }
+//        }
+//    }
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         this.data = data;
 
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+        if (resultCode == RESULT_OK && null != data) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
             } else {
-                file = loadImage(data, currentView); // Agrega 'currentView' como argumento
+                if (requestCode == REQUEST_LOAD_IMAGE_PORTRAIT) {
+                    portraitFile = loadImage(data, portraitView); // Realiza acciones específicas para portraitView
+                } else if (requestCode == REQUEST_LOAD_IMAGE_OTHER) {
+                    file = loadImage(data, currentView); // Realiza acciones específicas para otherView
+                }
             }
         }
     }
-
     /**
      * @param requestCode  The request code passed in
      * @param permissions  The requested permissions. Never null.
@@ -519,14 +538,27 @@ public class AddRecipeActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
 
         // Establecer la imagen en función del 'View' que se le pase
-        if (view == binding.stepPic) {
-            binding.stepPic.setImageBitmap(bitmap);
+        if (view == binding.portraitPic) {
+            binding.portraitPic.setImageBitmap(bitmap);
         } else {
             ImageView stepPic = (ImageView) view;
             stepPic.setImageBitmap(bitmap);
         }
 
         return new File(picturePath);
+    }
+
+    /**
+     * check the
+     * @param recipe
+     * @return
+     */
+    private boolean checkFields(Recipe recipe){
+        boolean correct = false;
+
+
+
+        return correct;
     }
 
 }

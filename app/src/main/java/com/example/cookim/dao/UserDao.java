@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -62,6 +63,9 @@ public class UserDao {
             String authHeader = "Bearer " + parameters;
             connection.setRequestProperty("Authorization", authHeader);
 
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
+
 
             // Write parameters to the request
             String requestBody = "";
@@ -83,10 +87,17 @@ public class UserDao {
                 inputStream.close();
 
             }
-
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            result = new DataResult();
+            result.setResult("0002");
+            result.setData("Request timed out");
         } catch (Exception e) {
-            //Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-            System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
+            //Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+            result = new DataResult();
+            result.setResult("0001");
+            result.setData("Error during HTTPS request");
         }
 
 //        return DataResult;
@@ -385,7 +396,7 @@ public class UserDao {
             String requestBody = "";
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
                 wr.write(requestBody.getBytes(StandardCharsets.UTF_8));
-            }catch (Exception e) {
+            } catch (Exception e) {
                 // Debugging statement
                 result = new DataResult();
                 result.setResult("2");
@@ -479,6 +490,7 @@ public class UserDao {
 
     /**
      * Updates the data of the user
+     *
      * @param path
      * @param token
      * @param username
@@ -491,8 +503,81 @@ public class UserDao {
      */
     public DataResult editUserData(String path, String token, String username, String full_name, String email, String phone, String path_img, File file) {
         DataResult result = null;
+        String param = token + ":" + String.valueOf(username) + ":" + String.valueOf(full_name) + ":" + String.valueOf(email) + ":" + String.valueOf(phone) + ":" + String.valueOf(path_img) + ":" + String.valueOf(file);
 
+        try {
+            // HTTPS request
+            System.out.println("ENTRA  " + path);
+            URL url = new URL(path);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Set authorization header with token
+            String authHeader = "Bearer " + param;
+            connection.setRequestProperty("Authorization", authHeader);
+
+            String boundary = "*****";
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+            // Write parameters to the request body
+            String requestBody = "";
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"username\"\r\n\r\n");
+                wr.writeBytes(username + "\r\n");
+
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"full_name\"\r\n\r\n");
+                wr.writeBytes(full_name + "\r\n");
+
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"email\"\r\n\r\n");
+                wr.writeBytes(email + "\r\n");
+
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"phone\"\r\n\r\n");
+                wr.writeBytes(phone + "\r\n");
+
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"path_img\"\r\n\r\n");
+                wr.writeBytes(path_img + "\r\n");
+
+                if (file != null) {
+                    wr.writeBytes("--" + boundary + "\r\n");
+                    wr.writeBytes("Content-Disposition: form-data; name=\"img\"; filename=\"" + file.getName() + "\"\r\n");
+                    wr.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + "\r\n\r\n");
+                    FileInputStream inputStream = new FileInputStream(file);
+                    byte[] buffer = new byte[4096];
+                    int bytesRead = -1;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        wr.write(buffer, 0, bytesRead);
+                    }
+                    wr.writeBytes("\r\n");
+                    inputStream.close();
+                }
+
+                wr.writeBytes("--" + boundary + "--\r\n");
+            }
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into DataResult object
+                result = parseResponse(inputStream);
+
+                inputStream.close();
+            }
+        } catch (Exception e) {
+            // Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
+            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+        }
 
         return result;
     }
+
 }

@@ -75,7 +75,6 @@
         android:fontFamily="@font/ubuntumedium"
         android:text="Username or password are wrong"
         android:textAlignment="center"
-
         android:textColor="@color/Red"
         android:textSize="15dp"
         android:visibility="invisible"

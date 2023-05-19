@@ -79,7 +79,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/stepPic"
+                        android:id="@+id/portraitPic"
                         android:layout_width="366dp"
                         android:layout_height="199dp"
                         android:background="@drawable/rounded_corners"

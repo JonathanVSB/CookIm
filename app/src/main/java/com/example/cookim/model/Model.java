@@ -44,12 +44,33 @@ public class Model {
 
     }
 
-    public DataResult login(String parametros) {
+    /**
+     * validates the user credentials
+     * @param parametros
+     * @param context
+     * @return
+     */
+    public DataResult login(String parametros, Context context) {
+        DataResult result = new DataResult();
 
-        DataResult result = userDao.readResponse(path.LOGIN, parametros);
+        //check the connection
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            // try the petition
+            result = userDao.readResponse(path.LOGIN, parametros);
+        } catch (Exception e) {
+            //
+            //Log.e("Login error", "Error during login request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during login request");
+        }
+
         return result;
-
-
     }
 
     /**
@@ -135,6 +156,7 @@ public class Model {
 
     }
     public DataResult editData(String token, UserModel user, File file){
+
         DataResult result = userDao.editUserData(path.EDITDATA ,token,
                 user.getUsername(),
                 user.getFull_name(),
@@ -326,6 +348,13 @@ public class Model {
         return result;
     }
 
+    /**
+     * Send new follow to user
+     * @param token
+     * @param userId
+     * @param num
+     * @return
+     */
     public DataResult followUser(String token, int userId, int num) {
         String param = token + ":" + String.valueOf(num) + ":" + String.valueOf(userId);
         DataResult result = userDao.readResponse(path.FOLLOW, param);
@@ -333,9 +362,22 @@ public class Model {
 
     }
 
+    /**
+     * Gets list of the favoritesrecipes saved by the use
+     * @param token
+     * @return
+     */
     public List<Recipe> getFavorites(String token) {
         List<Recipe> recipes = recipeDao.loadMyRecipes(path.FAVORITES, token);
         return recipes;
+
+    }
+
+    public DataResult changePass(String token, String pass, String newpass){
+        String param = token + ":" + pass + ":" + newpass;
+        DataResult result = userDao.readResponse(path.CHANGEPASS, param);
+        return result;
+
 
     }
 }

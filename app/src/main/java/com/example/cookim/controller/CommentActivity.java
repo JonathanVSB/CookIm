@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,6 +16,9 @@ import android.widget.TableRow;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.provider.FontRequest;
+import androidx.emoji.text.EmojiCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -79,6 +83,7 @@ public class CommentActivity extends Activity {
 
 
             loadComments(recipeId);
+//            setupEmojiCompat();
 
         } else {
             controller.displayLogInPage(this, LoginActivity.class);
@@ -274,7 +279,7 @@ public class CommentActivity extends Activity {
 
 
                         } else {
-                            controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
+                            //controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
                         }
                     } else {
                         controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
@@ -299,4 +304,25 @@ public class CommentActivity extends Activity {
         startActivity(intent);
         finish();
     }
+
+    /**
+     *
+     */
+//    private void setupEmojiCompat() {
+//
+//        // Crea una solicitud de fuente usando Google Play Services como proveedor
+//        FontRequest fontRequest = new FontRequest(
+//                "com.google.android.gms.fonts", // Google Play Services font provider authority
+//                "com.google.android.gms", // Google Play Services font provider package
+//                "Noto Color Emoji Compat", // Query String
+//                R.array.com_google_android_gms_fonts_certs); // Certificates set
+//
+//        // Crea la configuración con la solicitud de fuente
+//        EmojiCompat.Config config = new FontRequestEmojiCompatConfig(getApplicationContext(), fontRequest)
+//                .setReplaceAll(true)
+//                .setEmojiSpanIndicatorEnabled(true)
+//                .setEmojiSpanIndicatorColor(ContextCompat.getColor(getApplicationContext(), R.color.emoji_span_indicator_color));
+//
+//        EmojiCompat.init(config);
+//    }
 }

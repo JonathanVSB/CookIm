@@ -82,14 +82,14 @@
         <FrameLayout
             android:id="@+id/etUsername"
             android:layout_width="360dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="@drawable/edittext_background"
             app:layout_constraintTop_toBottomOf="@id/Space1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             >
 
-            <TextView
+            <EditText
                 android:id="@+id/tvUsername"
                 android:layout_width="386dp"
                 android:layout_height="wrap_content"
@@ -97,6 +97,8 @@
                 android:textSize="20dp"
                 android:hint="Username"
                 android:text=""
+                android:fontFamily="@font/ubunturegular"
+                android:background="@null"
                 android:textColor="@color/black" />
 
         </FrameLayout>
@@ -104,13 +106,13 @@
         <FrameLayout
             android:id="@+id/etFullname"
             android:layout_width="360dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="@drawable/edittext_background"
             app:layout_constraintTop_toBottomOf="@id/etUsername"
             app:layout_constraintStart_toStartOf="@id/etUsername"
             android:layout_marginTop="30dp">
 
-            <TextView
+            <EditText
                 android:id="@+id/tvFullname"
                 android:layout_width="386dp"
                 android:layout_height="wrap_content"
@@ -118,6 +120,8 @@
                 android:hint="Full name"
                 android:textSize="20dp"
                 android:text=""
+                android:fontFamily="@font/ubunturegular"
+                android:background="@null"
                 android:textColor="@color/black" />
 
         </FrameLayout>
@@ -125,13 +129,13 @@
         <FrameLayout
             android:id="@+id/etEmail"
             android:layout_width="360dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="@drawable/edittext_background"
             app:layout_constraintTop_toBottomOf="@id/etFullname"
             app:layout_constraintStart_toStartOf="@id/etUsername"
             android:layout_marginTop="30dp">
 
-            <TextView
+            <EditText
                 android:id="@+id/tvEmail"
                 android:layout_width="386dp"
                 android:layout_height="wrap_content"
@@ -139,6 +143,8 @@
                 android:textSize="20dp"
                 android:hint="Email"
                 android:text=""
+                android:fontFamily="@font/ubunturegular"
+                android:background="@null"
                 android:textColor="@color/black" />
 
         </FrameLayout>
@@ -146,14 +152,14 @@
         <FrameLayout
             android:id="@+id/etTel"
             android:layout_width="360dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="@drawable/edittext_background"
             app:layout_constraintTop_toBottomOf="@id/etEmail"
             app:layout_constraintStart_toStartOf="@id/etFullname"
             app:layout_constraintEnd_toEndOf="@id/etFullname"
             android:layout_marginTop="30dp">
 
-            <TextView
+            <EditText
                 android:id="@+id/tvPhone"
                 android:layout_width="386dp"
                 android:layout_height="wrap_content"
@@ -161,6 +167,8 @@
                 android:textSize="20dp"
                 android:hint="Telefono"
                 android:text=""
+                android:fontFamily="@font/ubunturegular"
+                android:background="@null"
                 android:textColor="@color/black" />
 
         </FrameLayout>

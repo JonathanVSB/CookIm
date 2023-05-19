@@ -21,7 +21,7 @@ public class Controller extends Activity {
 
     }
 
-    public static void displayErrorMessage(Context context, String mensaje) {
+    public void displayErrorMessage(Context context, String mensaje) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("ERROR")
                 .setMessage(mensaje)

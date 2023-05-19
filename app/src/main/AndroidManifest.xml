@@ -99,6 +99,16 @@
             android:theme="@style/Theme.CookIm.NoActionBar"
             android:exported="true" />
 
+        <activity
+            android:name=".controller.NoConnectionActivity"
+            android:theme="@style/Theme.CookIm.NoActionBar"
+            android:exported="true" />
+
+        <activity
+            android:name=".controller.EditPasswordActivity"
+            android:theme="@style/Theme.CookIm.NoActionBar"
+            android:exported="true" />
+
 
     </application>
 

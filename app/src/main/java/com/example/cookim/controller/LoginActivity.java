@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     Handler handler;
 
     Model model;
-
+    Controller controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
         model = new Model();
+        controller = new Controller();
 
         String username = binding.etUsername.getText().toString();
         binding.tvSignin.setOnClickListener(listener);
@@ -143,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void run() {
 
-                    DataResult result = model.login(parametros);
+                    DataResult result = model.login(parametros, getApplicationContext());
                     if (result.getResult().equals("1")) {
                         String token = result.getData().toString();
                         saveToken(result.getData().toString());
@@ -155,6 +156,8 @@ public class LoginActivity extends AppCompatActivity {
 
                             }
                         });
+                    } else if (result.getResult().equals("0000")) {
+                        controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                     } else {
                         //Toast.makeText(this, "credential incorrect", Toast.LENGTH_LONG).show();
                         handler.post(new Runnable() {

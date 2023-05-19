@@ -31,6 +31,7 @@ import com.example.cookim.R;
 import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.controller.CommentActivity;
 import com.example.cookim.controller.Controller;
+import com.example.cookim.controller.EditPasswordActivity;
 import com.example.cookim.controller.EditProfileActivity;
 import com.example.cookim.controller.FavoritesActivity;
 import com.example.cookim.controller.LoginActivity;
@@ -265,8 +266,13 @@ public class HomeActivity extends Activity implements HomeListener {
                 case R.id.edit_profile:
                     closeNavMenu();
                     controller.displayEditProfile(this, EditProfileActivity.class, user);
-
                     break;
+
+                case R.id.change_password:
+                    closeNavMenu();
+                    controller.displayActivity(this, EditPasswordActivity.class);
+                    break;
+
                 case R.id.logout:
                     closeNavMenu();
                     logout();
