@@ -83,7 +83,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                         user = model.myProfile(token);
 
                     } else {
-                        user = model.userProfile(token, id);
+                        user = model.userProfile(token, id,getApplicationContext());
 
                     }
                     //if user is not null
@@ -97,7 +97,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
 
                         }
                         //search all recipes of the user
-                        List<Recipe> recipes = model.userRecipes(token, user.getId());
+                        List<Recipe> recipes = model.userRecipes(token, user.getId(),getApplicationContext());
 
 
                         handler.post(new Runnable() {
@@ -137,6 +137,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
     private void loadMyPage(UserModel user, List<Recipe> recipes) {
         binding.tvUsername.setText(user.getUsername());
         binding.tvName.setText(user.getFull_name());
+        binding.tvnumfollowers.setText(String.valueOf(user.getNumFollowers()));
         binding.tvDescription.setText(user.getDescription());
         binding.tvposts.setText(String.valueOf(recipes.size()));
 
@@ -150,7 +151,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            DataResult res = model.followUser(token, id, 0);
+                            DataResult res = model.followUser(token, id, 0,getApplicationContext());
                             if (res.getResult().equals("1")) {
                                 Drawable gradientDrawable = getResources().getDrawable(R.drawable.bg_button_background);
                                 binding.btfollow.setBackground(gradientDrawable);
@@ -168,7 +169,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                         @Override
                         public void run() {
 
-                            DataResult res = model.followUser(token, id, 1);
+                            DataResult res = model.followUser(token, id, 1,getApplicationContext());
                             if (res.getResult().equals("1")) {
                                 int colorLightGray = Color.parseColor("#D3D3D3");
                                 binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
@@ -181,6 +182,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
 
                 }
             }
+
         });
 
         String img = model.downloadImg(user.getPath_img());
@@ -291,7 +293,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                DataResult result = model.removeRecipe(token, id);
+                DataResult result = model.removeRecipe(token, id, getApplicationContext());
 
                 if (result != null) {
                     if (result.getResult().equals("1")) {
@@ -344,7 +346,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                     controller.displayActivity(this, AddRecipeActivity.class);
                     return true;
                 case R.id.searchrecipe:
-                    // TODO: Implement settings screen
+                    controller.displayActivity(this, SearchRecipeActivity.class);
                     return true;
                 default:
                     return false;

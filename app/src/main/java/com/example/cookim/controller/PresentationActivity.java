@@ -59,7 +59,7 @@ public class PresentationActivity extends Activity {
                 @Override
                 public void run() {
                     //validates the token
-                    DataResult result = model.autologin(token);
+                    DataResult result = model.autologin(token,getApplicationContext());
 
                     //if resuls is not null
                     if (result != null) {

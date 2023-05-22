@@ -70,7 +70,8 @@ public class CommentActivity extends Activity {
             binding.ivcancel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    showHomePage();
+
+                    finish();
                 }
             });
 
@@ -106,7 +107,7 @@ public class CommentActivity extends Activity {
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            result = model.createNewComment(token, comment);
+                            result = model.createNewComment(token, comment,getApplicationContext());
 
                         }
                     });
@@ -217,7 +218,7 @@ public class CommentActivity extends Activity {
 
                 @Override
                 public void run() {
-                    comments = model.getCommentsOfRecipe(token, id);
+                    comments = model.getCommentsOfRecipe(token, id,getApplicationContext());
 
                     if (comments != null) {
 
@@ -294,15 +295,6 @@ public class CommentActivity extends Activity {
         }
 
 
-    }
-
-    /**
-     * Displays the home page of the app and senda the user object to next activity
-     */
-    private void showHomePage() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     /**

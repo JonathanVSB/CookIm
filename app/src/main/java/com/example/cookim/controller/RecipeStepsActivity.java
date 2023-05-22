@@ -33,13 +33,18 @@ import com.example.cookim.model.recipe.Step;
 
 import java.io.FileInputStream;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class RecipeStepsActivity extends Activity {
 
     Model model;
-    Executor executor = Executors.newSingleThreadExecutor();
+    Controller controller;
+    ExecutorService executor;
     Handler handler;
+    long myId;
+    String token;
+
     private ActivityStepsBinding binding;
     //    TextView tv;
     private ItemStepContentBinding bind;
@@ -49,21 +54,25 @@ public class RecipeStepsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_steps);
         handler = new Handler(Looper.getMainLooper());
+        executor = Executors.newSingleThreadExecutor();
         model = new Model();
+        controller = new Controller();
         binding = ActivityStepsBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-
+        setContentView(binding.getRoot());
+        token = model.readToken(getApplicationContext());
         bind = ItemStepContentBinding.inflate(getLayoutInflater());
         String token = model.readToken(getApplicationContext());
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("recipe_id", -1);
+
+        myId = intent.getLongExtra("MyUserID", -1);
         System.out.println(id);
         executor.execute(new Runnable() {
             @Override
             public void run() {
 
-                Recipe recipe = model.loadRecipeSteps(id, token);
+                Recipe recipe = model.loadRecipeSteps(id, token, getApplicationContext());
                 System.out.println("Funciona");
 
                 if (recipe != null) {
@@ -98,6 +107,8 @@ public class RecipeStepsActivity extends Activity {
             binding.tvnameRecipe.setText(recipe.getName());
             binding.tvDescription.setText(recipe.getDescription());
             binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
+            binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
+            binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
 
             if (recipe != null && recipe.getSteps() != null) {
                 binding.tvnumSteps.setText(String.valueOf(recipe.getSteps().size()));
@@ -234,16 +245,68 @@ public class RecipeStepsActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-                displayCommentPage(recipe.getId());
+                controller.displayCommentPage(getApplicationContext(), CommentActivity.class, recipe.getId());
+
 
             }
         });
-    }
 
-    private void displayCommentPage(int id) {
-        Intent intent = new Intent(this, CommentActivity.class);
-        intent.putExtra("recipe_id", id);
-        startActivity(intent);
+        binding.userimg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controller.displayMyProfile(getApplicationContext(), MyProfileActivity.class, myId, recipe.getId_user());
+            }
+        });
+
+        binding.btLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean pressLike = !recipe.isLiked();
+                recipe.setLiked(pressLike);
+
+                recipe.setLikes(pressLike ? recipe.getLikes() + 1 : recipe.getLikes() - 1);
+                binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
+                binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
+
+                //send 1 if user likes the recipe, 0 if unlikes
+                int likeValue = pressLike ? 1 : 0;
+
+                DataResult result = sendLike(likeValue, String.valueOf(recipe.getId()));
+                if (result.getResult().equals("1")) {
+                    try {
+                        binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
+                    } catch (Exception e) {
+                        System.out.println(e.toString());
+                    }
+                } else {
+
+//                            pressLike = false;
+                }
+            }
+        });
+
+        binding.btSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean pressSave = !recipe.isSaved();
+                recipe.setSaved(pressSave);
+
+                int saveValue = recipe.isSaved() ? 1 : 0;
+                DataResult result = saveRecipe(saveValue, String.valueOf(recipe.getId()));
+
+                if (result.getResult().equals("1")) {
+                    try {
+                       binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
+                    } catch (Exception e) {
+                        System.out.println(e.toString());
+                    }
+                } else {
+                    recipe.setSaved(!recipe.isSaved());
+                }
+            }
+
+
+        });
     }
 
     /**
@@ -252,6 +315,52 @@ public class RecipeStepsActivity extends Activity {
     private void displayLogInPage() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * Likes the recipe
+     * @param num
+     * @param id
+     * @return
+     */
+    private DataResult sendLike(int num, String id) {
+        String numero = String.valueOf(num);
+        String parametros = token + ":" + numero + ":" + id;
+        DataResult result = null;
+
+        try {
+
+            result = executor.submit(() -> {
+                return model.likeRecipe(parametros, controller.getApplicationContext());
+            }).get();
+        } catch (Exception e) {
+            System.out.println("Error al enviar like: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     * saves the Recipe
+     * @param num
+     * @param id
+     * @return
+     */
+    private DataResult saveRecipe(int num, String id) {
+        String numero = String.valueOf(num);
+        String parametros = token + ":" + numero + ":" + id;
+        DataResult result = null;
+
+        try {
+
+            result = executor.submit(() -> {
+                return model.saveRecipe(parametros, controller.getApplicationContext());
+            }).get();
+        } catch (Exception e) {
+            System.out.println("Error al enviar like: " + e.getMessage());
+        }
+
+        return result;
     }
 
 }

@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
@@ -112,7 +113,6 @@ public class EditProfileActivity extends Activity {
             }
 
 
-
         } else {
             controller.displayLogInPage(this, LoginActivity.class);
         }
@@ -197,67 +197,78 @@ public class EditProfileActivity extends Activity {
             controller.displayActivity(getApplicationContext(), HomeActivity.class);
         } else if (view.getId() == binding.ivaccept.getId()) {
             //TODO
+            if (areFieldsEmpty()) {
+                binding.errormsg.setText("*Debes rellenar todos los campos*");
+                binding.errormsg.setVisibility(View.VISIBLE);
+            } else if (!isEmailValid()) {
+                binding.errormsg.setText("*El correo debe ser válido*");
+                binding.errormsg.setVisibility(View.VISIBLE);
+            } else if (!isPhoneNumberValid()) {
+                binding.errormsg.setText("*El número de teléfono debe ser válido*");
+                binding.errormsg.setVisibility(View.VISIBLE);
+            } else {
 
-            // Get the image from the ImageView and save it to a temporary file
-            Drawable drawable = binding.profileImage.getDrawable();
-            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            File imageFile = null;
-            try {
-                imageFile = File.createTempFile("stepImage", ".jpg", getCacheDir());
-                FileOutputStream fos = new FileOutputStream(imageFile);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                fos.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            UserModel newData = new UserModel(user.getId(),
-                    binding.tvUsername.getText().toString(),
-                    binding.tvFullname.getText().toString(),
-                    binding.tvEmail.getText().toString(),
-                    binding.tvPhone.getText().toString());
+                // Get the image from the ImageView and save it to a temporary file
+                Drawable drawable = binding.profileImage.getDrawable();
+                Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                File imageFile = null;
+                try {
+                    imageFile = File.createTempFile("stepImage", ".jpg", getCacheDir());
+                    FileOutputStream fos = new FileOutputStream(imageFile);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                    fos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                UserModel newData = new UserModel(user.getId(),
+                        binding.tvUsername.getText().toString(),
+                        binding.tvFullname.getText().toString(),
+                        binding.tvEmail.getText().toString(),
+                        binding.tvPhone.getText().toString());
 
-            if (!user.equals(newData) && currentFile == newfile) {
+                if (!user.equals(newData) && currentFile == newfile) {
 
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        DataResult result = model.editData(token, newData, newfile);
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            DataResult result = model.editData(token, newData, newfile, getApplicationContext());
 
-                        if (result.getResult().equals("1")) {
+                            if (result.getResult().equals("1")) {
 
-                            controller.displayActivity(getApplicationContext(), HomeActivity.class);
+                                controller.displayActivity(getApplicationContext(), HomeActivity.class);
 
-                        } else {
-                            controller.displayErrorMessage(getApplicationContext(), "No se ha podido editar la información");
+                            } else {
+                                controller.displayErrorMessage(getApplicationContext(), "No se ha podido editar la información");
+                            }
                         }
-                    }
-                });
+                    });
 
 
-            } else if (!user.equals(newData) && currentFile != newfile) {
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        DataResult result = model.editData(token, newData, newfile);
+                } else if (!user.equals(newData) && currentFile != newfile) {
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            DataResult result = model.editData(token, newData, newfile, getApplicationContext());
 
-                        if (result.getResult().equals("1")) {
+                            if (result.getResult().equals("1")) {
 
-                            controller.displayActivity(getApplicationContext(), HomeActivity.class);
+                                controller.displayActivity(getApplicationContext(), HomeActivity.class);
 
-                        } else {
-                            controller.displayErrorMessage(getApplicationContext(), "No se ha podido editar la información");
+                            } else {
+                                controller.displayErrorMessage(getApplicationContext(), "No se ha podido editar la información");
+                            }
                         }
-                    }
-                });
+                    });
 
-            } else if (user.equals(newData) && currentFile == newfile){
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        controller.displayErrorMessage(getApplicationContext(), "No has editado ningún dato");
-                    }
-                });
+                } else if (user.equals(newData) && currentFile == newfile) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            controller.displayErrorMessage(getApplicationContext(), "No has editado ningún dato");
+                        }
+                    });
 
+                }
             }
 
 
@@ -332,5 +343,81 @@ public class EditProfileActivity extends Activity {
 
         return new File(picturePath);
     }
+
+    /**
+     * Check the fields of the view to check if any of them is empty
+     *
+     * @return
+     */
+    private boolean areFieldsEmpty() {
+        return binding.tvUsername.getText().toString().equals("") ||
+                binding.tvFullname.getText().toString().equals("") ||
+                binding.tvEmail.getText().toString().equals("") ||
+                binding.tvPhone.getText().toString().equals("");
+
+    }
+
+
+    /**
+     * Checks if the email has the correct structure
+     * Email shall contain this characters: "@", "."
+     * Also email can't be empty
+     *
+     * @return
+     */
+    private boolean isEmailValid() {
+        String email = binding.tvEmail.getText().toString().trim();
+        if (email.isEmpty()) {
+            return false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            return false;
+        } else if (!email.contains(".")) {
+            return false;
+        } else if (!email.contains("@")) {
+            return false;
+        }
+        String[] parts = email.split("@");
+        if (parts.length != 2) {
+            return false;
+        }
+        String beforeAt = parts[0];
+        String afterAt = parts[1];
+        if (beforeAt.isEmpty()) {
+            return false;
+        } else if (afterAt.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * checks the number to prevents empty fields and wrong format
+     *
+     * @return
+     */
+    private boolean isPhoneNumberValid() {
+        String phoneNumber = binding.tvPhone.getText().toString().trim();
+        if (phoneNumber.isEmpty()) {
+            return false;
+        }
+        return isNumeric(phoneNumber);
+    }
+
+    /**
+     * Checks if the phone number have any alphabetic character
+     * if the number contains any, returns false
+     *
+     * @param str
+     * @return
+     */
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 
 }

@@ -236,7 +236,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
                         if (recipe != null) {
 
-                            DataResult res = model.createRecipe(recipe, token, portraitFile);
+                            DataResult res = model.createRecipe(recipe, token, portraitFile,getApplicationContext());
 
                             if (res.getResult().equals("1")) {
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
@@ -471,20 +471,7 @@ public class AddRecipeActivity extends AppCompatActivity {
      * @param data        An Intent, which can return result data to the caller
      *                    (various data can be attached to Intent "extras").
      */
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        this.data = data;
-//
-//        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-//            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-//                    != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-//            } else {
-//                file = loadImage(data, currentView); // Agrega 'currentView' como argumento
-//            }
-//        }
-//    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         this.data = data;

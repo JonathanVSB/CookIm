@@ -4,8 +4,10 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +17,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.FitCenter;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.cookim.R;
+import com.example.cookim.controller.Controller;
+import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.databinding.ItemRecipeContentBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
@@ -33,6 +37,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     ExecutorService executor;
     Handler handler;
     Model model;
+    Controller controller;
     String token;
     long rol;
 
@@ -46,6 +51,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         this.recipesLiked = recipesLiked;
         this.rol = userRol;
         model = new Model();
+        controller = new Controller();
         executor = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
 
@@ -72,6 +78,33 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         if (rol != 1) {
             holder.binding.ivoptions.setVisibility(View.GONE);
         }
+
+        holder.binding.ivoptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                PopupMenu popup = new PopupMenu(view.getContext(), view);
+                popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        // Manejar la selección de los elementos del menú
+                        switch (item.getItemId()) {
+                            case R.id.itemRemove:
+
+                                homeListener.onItemClicked(recipe.getId(), 4);
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+
+                popup.show();
+            }
+
+
+        });
 
         holder.binding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
         holder.binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
@@ -136,6 +169,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         holder.binding.btSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 boolean pressSave = !recipe.isSaved();
                 recipe.setSaved(pressSave);
 
@@ -179,7 +214,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         try {
 
             result = executor.submit(() -> {
-                return model.saveRecipe(parametros);
+                return model.saveRecipe(parametros, controller.getApplicationContext());
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());
@@ -213,7 +248,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         try {
 
             result = executor.submit(() -> {
-                return model.likeRecipe(parametros);
+                return model.likeRecipe(parametros, controller.getApplicationContext());
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());
@@ -226,6 +261,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public void setHomeListener(HomeListener listener) {
         this.homeListener = listener;
     }
+
 
 }
 

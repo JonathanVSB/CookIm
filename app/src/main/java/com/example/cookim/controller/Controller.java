@@ -47,6 +47,13 @@ public class Controller extends Activity {
         context.startActivity(intent);
     }
 
+    public void displayActivityWithId(Context context, Class<?> Class, long id) {
+        Intent intent = new Intent(context, Class);
+        intent.putExtra("MyUserID", id);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
     /**
      * Display the login page
      * @param context The context from which the method is called
@@ -92,9 +99,10 @@ public class Controller extends Activity {
      * @param Class
      * @param id
      */
-    public void displayRecipeDetails(Context context, Class<?> Class, int id){
+    public void displayRecipeDetails(Context context, Class<?> Class, int id, long myId){
         Intent intent = new Intent(context, Class);
         intent.putExtra("recipe_id", id);
+        intent.putExtra("MyUserID", myId);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }

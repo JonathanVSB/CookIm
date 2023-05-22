@@ -37,6 +37,7 @@ import com.example.cookim.controller.FavoritesActivity;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
+import com.example.cookim.controller.SearchRecipeActivity;
 import com.example.cookim.dao.BBDDIngredients;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.databinding.ComponentNavHeaderBinding;
@@ -150,7 +151,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     int maxId = model.getMaxIdIngredient(ingredients);
 
                     if (maxId != -1) {
-                        List<Ingredient> ingredientList = model.getNewIngredients(token, maxId);
+                        List<Ingredient> ingredientList = model.getNewIngredients(token, maxId, getApplicationContext());
 
                         if (ingredientList != null) {
 
@@ -260,7 +261,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     break;
                 case R.id.favorites:
                     closeNavMenu();
-                    controller.displayActivity(this, FavoritesActivity.class);
+                    controller.displayActivityWithId(this, FavoritesActivity.class, user.getId());
 
                     break;
                 case R.id.edit_profile:
@@ -287,7 +288,7 @@ public class HomeActivity extends Activity implements HomeListener {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                DataResult result = model.logout(token);
+                DataResult result = model.logout(token,getApplicationContext());
                 if (result != null) {
                     controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
 
@@ -310,7 +311,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     user = model.myProfile(token);
                     if (user != null) {
 
-                        recipes = model.loadRecipes(token);
+                        recipes = model.loadRecipes(token, getApplicationContext());
                         List<RecipeAdapter> adapters = new ArrayList<>();
 
                         handler.post(new Runnable() {
@@ -402,9 +403,9 @@ public class HomeActivity extends Activity implements HomeListener {
         Intent intent = null;
         switch (action) {
             case 1:
-                intent = new Intent(this, RecipeStepsActivity.class);
-                intent.putExtra("recipe_id", id);
-                startActivity(intent);
+
+                controller.displayRecipeDetails(this, RecipeStepsActivity.class, id, user.getId());
+
                 break;
 
             case 2:
@@ -416,6 +417,11 @@ public class HomeActivity extends Activity implements HomeListener {
             case 3:
                 controller.displayCommentPage(this, CommentActivity.class, id);
 
+                break;
+
+            case 4:
+                removeRecipe(token, id);
+                loadHomePage(token);
                 break;
 
         }
@@ -447,6 +453,7 @@ public class HomeActivity extends Activity implements HomeListener {
                     return true;
                 case R.id.searchrecipe:
                     // TODO: Implement settings screen
+                    controller.displayActivityWithId(this, SearchRecipeActivity.class, user.getId());
                     return true;
                 default:
                     return false;
@@ -462,6 +469,27 @@ public class HomeActivity extends Activity implements HomeListener {
 
         startActivity(intent);
 
+    }
+
+    private void removeRecipe(String token, int id) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                DataResult result = model.removeRecipe(token, id,getApplicationContext());
+
+                if (result != null) {
+                    if (result.getResult().equals("1")) {
+
+                    } else {
+
+//                        controller.displayErrorMessage(getApplicationContext(), "La receta no ha podido ser borrada");
+//
+                    }
+                } else {
+//                    controller.displayErrorMessage(getApplicationContext(), "La conexión ha fallado");
+                }
+            }
+        });
     }
 
 

@@ -262,6 +262,10 @@ public class UserDao {
                         result.setRecipe_likes(recipeLikes);
                     }
 
+                    if (dataObject.has("nFollowers")) {
+                        result.setNumFollowers(dataObject.get("nFollowers").getAsInt());
+                    }
+
                     if (dataObject.has("follow")) {
                         result.setFollow(dataObject.get("follow").getAsBoolean());
                     }

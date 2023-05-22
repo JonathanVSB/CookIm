@@ -21,6 +21,8 @@ public class UserModel implements Serializable {
     String description;
     long id_rol;
 
+    int numFollowers;
+
     String token;
     List<UserModel> followers;
     List<UserModel> followed;
@@ -78,7 +80,7 @@ public class UserModel implements Serializable {
     }
 
     //FULL CONSTRUCTOR
-    public UserModel(long id, String username, String pass, String full_name, String description, String email, String tel, String path, List<UserModel> followers, List<UserModel> followed, List<Recipe> favorites_recipes, long rol, String token) {
+    public UserModel(long id, String username, String pass, String full_name, String description, String email, String tel, String path, List<UserModel> followers, List<UserModel> followed, List<Recipe> favorites_recipes, long rol, int numFollowers, String token) {
         this.id = id;
         this.username = username;
         this.password = pass;
@@ -88,6 +90,7 @@ public class UserModel implements Serializable {
         this.phone = tel;
         this.path_img = path_img;
         this.id_rol = id_rol;
+        this.numFollowers = numFollowers;
         this.token = token;
         this.followers = new ArrayList<>();
         this.followed = new ArrayList<>();
@@ -262,6 +265,14 @@ public class UserModel implements Serializable {
 
     public void setFollow(Boolean follow) {
         this.follow = follow;
+    }
+
+    public int getNumFollowers() {
+        return numFollowers;
+    }
+
+    public void setNumFollowers(int numFollowers) {
+        this.numFollowers = numFollowers;
     }
 
     @Override

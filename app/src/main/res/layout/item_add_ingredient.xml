@@ -13,12 +13,18 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/idSearch"
-            android:layout_width="370dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-             />
+            android:layout_marginHorizontal="16dp"
+            app:queryHint="Introduce ingrediente"
+            app:iconifiedByDefault="false"
+            android:background="@drawable/searchview_background"
+
+            />
 
         <ListView
             android:id="@+id/lvResults"

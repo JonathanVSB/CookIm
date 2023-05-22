@@ -161,7 +161,7 @@ public class SignActivity extends AppCompatActivity {
                     user.getFull_name(),
                     user.getEmail(),
                     user.getPhone(),
-                    user.getId_rol(), file);
+                    user.getId_rol(), file, getApplicationContext());
             if (res != null) {
                 if (res.getResult().equals("1")) {
                     //
@@ -184,7 +184,7 @@ public class SignActivity extends AppCompatActivity {
                     user.getFull_name(),
                     user.getEmail(),
                     user.getPhone(),
-                    user.getId_rol(), null);
+                    user.getId_rol(), null, getApplicationContext());
             if (res != null) {
                 if (res.getResult().equals("1")) {
                     //

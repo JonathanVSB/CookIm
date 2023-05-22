@@ -1,6 +1,7 @@
 package com.example.cookim.controller;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +40,7 @@ public class FavoritesActivity extends Activity {
     String token;
     Handler handler;
     List<Recipe> recipes;
+    long myId;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +54,9 @@ public class FavoritesActivity extends Activity {
         handler = new Handler(Looper.getMainLooper());
         token = model.readToken(getApplicationContext());
         executor = Executors.newSingleThreadExecutor();
+        Intent intent = getIntent();
+
+        myId = intent.getLongExtra("MyUserID", -1);
 
         binding.ivcancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +85,7 @@ public class FavoritesActivity extends Activity {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                recipes = model.getFavorites(token);
+                recipes = model.getFavorites(token,getApplicationContext());
 
                 if (recipes != null){
                     handler.post(new Runnable() {
@@ -145,7 +150,7 @@ public class FavoritesActivity extends Activity {
             recipeBinding.imageContentCv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    controller.displayRecipeDetails(getApplicationContext(), RecipeStepsActivity.class, recipe.getId());
+                    controller.displayRecipeDetails(getApplicationContext(), RecipeStepsActivity.class, recipe.getId(), myId);
                 }
             });
 
@@ -236,7 +241,7 @@ public class FavoritesActivity extends Activity {
         try {
 
             result = executor.submit(() -> {
-                return model.saveRecipe(parametros);
+                return model.saveRecipe(parametros,this);
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());
@@ -259,7 +264,7 @@ public class FavoritesActivity extends Activity {
         try {
 
             result = executor.submit(() -> {
-                return model.likeRecipe(parametros);
+                return model.likeRecipe(parametros, this);
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());

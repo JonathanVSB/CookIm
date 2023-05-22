@@ -27,6 +27,7 @@ public class EditPasswordActivity extends Activity {
     String token;
     DataResult result;
     Handler handler;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,62 +58,80 @@ public class EditPasswordActivity extends Activity {
 
     /**
      * Process the actions of the view
+     *
      * @param v
      */
     private void gestionateActions(View v) {
-        if (v.getId() == binding.ivcancel.getId()){
+        if (v.getId() == binding.ivcancel.getId()) {
             controller.displayActivity(this, HomeActivity.class);
-        }
-        else if (v.getId() == binding.btsend.getId()){
-           //if (binding.tvPass.getText().toString().equals(binding.tvnewPass.getText().toString())){
-                //TODO
-                //The passsword is the same
-            /*}else*/ if (!binding.tvnewPass.getText().toString().equals(binding.tvnewPass2.getText().toString())){
-                //TODO
-                //the camps of new pass are not the same
-            }else if (binding.tvnewPass.getText().toString().equals(binding.tvnewPass2.getText().toString()) ){
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        result = model.changePass(token, binding.tvPass.getText().toString(), binding.tvnewPass.getText().toString());
+        } else if (v.getId() == binding.btsend.getId()) {
 
-                        if (result.getResult().equals("1")){
-                            controller.displayActivity(getApplicationContext(),HomeActivity.class);
-                        }else if (result.getResult().equals("2")){
-                            //TODO
-                            //wrong current pass
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    binding.erroMsg.setText(result.getData().toString());
-                                }
-                            });
+            if (!toWeakPass()) {
+                binding.erroMsg.setText("*La contraseña es demasiado debil*");
+                binding.erroMsg.setVisibility(View.VISIBLE);
+            } else {
+                if (!binding.tvnewPass.getText().toString().equals(binding.tvnewPass2.getText().toString())) {
+                    //TODO
+                    //the camps of new pass are not the same
+                } else if (binding.tvnewPass.getText().toString().equals(binding.tvnewPass2.getText().toString())) {
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            result = model.changePass(token, binding.tvPass.getText().toString(), binding.tvnewPass.getText().toString(), getApplicationContext());
 
-                        }else if (result.getResult().equals("3")){
-                            //TODO
-                            //The pass its the same
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    binding.erroMsg.setText(result.getData().toString());
-                                }
-                            });
+                            if (result.getResult().equals("1")) {
+                                controller.displayActivity(getApplicationContext(), HomeActivity.class);
+                            } else if (result.getResult().equals("2")) {
+                                //TODO
+                                //wrong current pass
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        binding.erroMsg.setText(result.getData().toString());
+                                    }
+                                });
 
-                        }else{
-                            //TODO
-                            //token error or others
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    binding.erroMsg.setText(result.getData().toString());
-                                }
-                            });
+                            } else if (result.getResult().equals("3")) {
+                                //TODO
+                                //The pass its the same
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        binding.erroMsg.setText(result.getData().toString());
+                                    }
+                                });
 
+                            } else {
+                                //TODO
+                                //token error or others
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        binding.erroMsg.setText(result.getData().toString());
+                                    }
+                                });
+
+                            }
                         }
-                    }
-                });
+                    });
 
+                }
             }
+
+
         }
+    }
+
+    /**
+     * prevents the user to introduce very short password
+     *
+     * @return
+     */
+    private boolean toWeakPass() {
+        String pass = binding.tvnewPass.getText().toString();
+        if (pass.length() < 6) {
+            return false;
+        }
+        return true;
     }
 }

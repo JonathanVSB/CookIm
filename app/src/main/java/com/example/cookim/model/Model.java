@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Model {
@@ -80,7 +81,14 @@ public class Model {
      * @return
      */
     public UserModel myProfile(String token) {
-        UserModel userModel = userDao.readUserResponse(path.MYPROFILE, token);
+        UserModel userModel = null;
+
+        try {
+            userModel = userDao.readUserResponse(path.MYPROFILE, token);
+        } catch (Exception e) {
+
+        }
+
         return userModel;
     }
 
@@ -89,10 +97,23 @@ public class Model {
      *
      * @return
      */
-    public List<Recipe> loadRecipes(String token) {
-        List<Recipe> recipes = recipeDao.loadMyRecipes(path.HOMEPAGE, token);
-        return recipes;
+    public List<Recipe> loadRecipes(String token, Context context) {
+        List<Recipe> recipes = new ArrayList<>();
 
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar una lista vacía
+            return recipes;
+        }
+
+        try {
+            recipes = recipeDao.loadMyRecipes(path.HOMEPAGE, token);
+        } catch (Exception e) {
+            //
+            // Log.e("Load recipes error", "Error loading recipes: " + e.toString());
+        }
+
+        return recipes;
     }
 
     /**
@@ -101,12 +122,28 @@ public class Model {
      * @param parametros
      * @return
      */
-    public DataResult likeRecipe(String parametros) {
-        DataResult result = recipeDao.readResponse(path.LIKE, parametros);
+    public DataResult likeRecipe(String parametros, Context context) {
+        DataResult result = new DataResult();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = recipeDao.readResponse(path.LIKE, parametros);
+        } catch (Exception e) {
+            //
+            // Log.e("Like recipe error", "Error during like recipe request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during like recipe request");
+        }
+
         return result;
-
-
     }
+
 
     /**
      * Sends to server petition to update the recipes saved
@@ -114,10 +151,28 @@ public class Model {
      * @param parametros
      * @return
      */
-    public DataResult saveRecipe(String parametros) {
-        DataResult result = recipeDao.readResponse(path.SAVE, parametros);
+    public DataResult saveRecipe(String parametros, Context context) {
+        DataResult result = new DataResult();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = recipeDao.readResponse(path.SAVE, parametros);
+        } catch (Exception e) {
+            //
+            // Log.e("Save recipe error", "Error during save recipe request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during save recipe request");
+        }
+
         return result;
     }
+
 
     /**
      * Sends petition to server to end session
@@ -125,11 +180,28 @@ public class Model {
      * @param token
      * @return
      */
-    public DataResult logout(String token) {
-        DataResult result = userDao.readResponse(path.LOGOUT, token);
-        return result;
+    public DataResult logout(String token, Context context) {
+        DataResult result = new DataResult();
 
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = userDao.readResponse(path.LOGOUT, token);
+        } catch (Exception e) {
+            //
+            // Log.e("Logout error", "Error during logout request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during logout request");
+        }
+
+        return result;
     }
+
 
     /**
      * Send petition to server to create a new user using the next params
@@ -143,30 +215,50 @@ public class Model {
      * @param file
      * @return
      */
-    public DataResult signIn(String username, String password, String full_name, String email, String phone, long id_rol, File file) {
-        DataResult result = userDao.validationNewUser(username,
-                password,
-                full_name,
-                email,
-                phone,
-                id_rol,
-                file, path.SIGN);
+    public DataResult signIn(String username, String password, String full_name, String email, String phone, long id_rol, File file, Context context) {
+        DataResult result = new DataResult();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = userDao.validationNewUser(username, password, full_name, email, phone, id_rol, file, path.SIGN);
+        } catch (Exception e) {
+            //
+            // Log.e("Sign-in error", "Error during sign-in request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during sign-in request");
+        }
 
         return result;
-
     }
-    public DataResult editData(String token, UserModel user, File file){
 
-        DataResult result = userDao.editUserData(path.EDITDATA ,token,
-                user.getUsername(),
-                user.getFull_name(),
-                user.getEmail(),user.getPhone(),
-                user.getPath_img(), file);
+    public DataResult editData(String token, UserModel user, File file, Context context) {
+        DataResult result = new DataResult();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = userDao.editUserData(path.EDITDATA, token, user.getUsername(), user.getFull_name(), user.getEmail(), user.getPhone(), user.getPath_img(), file);
+        } catch (Exception e) {
+            //
+            // Log.e("Edit data error", "Error during edit data request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during edit data request");
+        }
 
         return result;
-
-
     }
+
 
 
 
@@ -177,12 +269,25 @@ public class Model {
      * @param token
      * @return
      */
-    public Recipe loadRecipeSteps(int id, String token) {
-        Recipe recipe = recipeDao.loadRecipeSteps(path.STEPS, id, token);
+    public Recipe loadRecipeSteps(int id, String token, Context context) {
+        Recipe recipe = new Recipe();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar un objeto Recipe vacío
+            return recipe;
+        }
+
+        try {
+            recipe = recipeDao.loadRecipeSteps(path.STEPS, id, token);
+        } catch (Exception e) {
+            //
+            // Log.e("Load recipe steps error", "Error loading recipe steps: " + e.toString());
+        }
 
         return recipe;
-
     }
+
 
     /**
      * creates a path to select where search the images neededs
@@ -204,12 +309,26 @@ public class Model {
      * @param token
      * @return
      */
-    public List<Recipe> userRecipes(String token, long id) {
+    public List<Recipe> userRecipes(String token, long id, Context context) {
         String param = token + ":" + String.valueOf(id);
-        List<Recipe> recipes = recipeDao.loadMyRecipes(path.OTHERPROFILES, param);
-        return recipes;
+        List<Recipe> recipes = new ArrayList<>();
 
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar una lista vacía
+            return recipes;
+        }
+
+        try {
+            recipes = recipeDao.loadMyRecipes(path.OTHERPROFILES, param);
+        } catch (Exception e) {
+            //
+            // Log.e("User recipes error", "Error loading user recipes: " + e.toString());
+        }
+
+        return recipes;
     }
+
 
     /**
      * Request to server for the new ingredients available in database
@@ -218,19 +337,55 @@ public class Model {
      * @param id
      * @return
      */
-    public List<Ingredient> getNewIngredients(String token, int id) {
+    public List<Ingredient> getNewIngredients(String token, int id, Context context) {
+        List<Ingredient> ingredients = new ArrayList<>();
 
-        List<Ingredient> ingredients = ingredientDao.getAll(path.INGREDIENTS, token, id);
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar una lista vacía
+            return ingredients;
+        }
+
+        try {
+            ingredients = ingredientDao.getAll(path.INGREDIENTS, token, id);
+        } catch (Exception e) {
+            //
+            // Log.e("Get new ingredients error", "Error getting new ingredients: " + e.toString());
+        }
+
         return ingredients;
-
     }
 
-    public DataResult removeRecipe(String token, int id) {
+
+    /**
+     * removes recipe from database
+     * @param token
+     * @param id
+     * @return
+     */
+    public DataResult removeRecipe(String token, int id, Context context) {
         String param = token + ":" + String.valueOf(id);
-        DataResult result = recipeDao.readResponse(path.REMOVERECIPE, param);
-        return result;
+        DataResult result = new DataResult();
 
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = recipeDao.readResponse(path.REMOVERECIPE, param);
+        } catch (Exception e) {
+            //
+            // Log.e("Remove recipe error", "Error during remove recipe request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during remove recipe request");
+        }
+
+        return result;
     }
+
 
     /**
      * Ask to local database the max Id of the ingredients table
@@ -250,11 +405,28 @@ public class Model {
      * @param token
      * @return
      */
-    public DataResult autologin(String token) {
+    public DataResult autologin(String token, Context context) {
+        DataResult result = new DataResult();
 
-        DataResult result = userDao.validateToken(path.AUTOLOGIN, token);
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = userDao.validateToken(path.AUTOLOGIN, token);
+        } catch (Exception e) {
+            //
+            // Log.e("Autologin error", "Error during autologin request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during autologin request");
+        }
+
         return result;
     }
+
 
     /**
      * sends petition to create a new recipe
@@ -264,11 +436,28 @@ public class Model {
      * @param file
      * @return
      */
-    public DataResult createRecipe(Recipe recipe, String token, File file) {
+    public DataResult createRecipe(Recipe recipe, String token, File file, Context context) {
+        DataResult result = new DataResult();
 
-        DataResult result = recipeDao.addRecipe(path.ADDRECIPE, token, recipe, file);
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = recipeDao.addRecipe(path.ADDRECIPE, token, recipe, file);
+        } catch (Exception e) {
+            //
+            // Log.e("Create recipe error", "Error during create recipe request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during create recipe request");
+        }
+
         return result;
     }
+
 
     /**
      * Sends petition to recover the data of the profile of users
@@ -277,10 +466,25 @@ public class Model {
      * @param id
      * @return
      */
-    public UserModel userProfile(String token, long id) {
-        UserModel userModel = userDao.readOtherUserResponse(path.OTHERPROFILES, token, id);
+    public UserModel userProfile(String token, long id, Context context) {
+        UserModel userModel = new UserModel();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar un objeto UserModel vacío
+            return userModel;
+        }
+
+        try {
+            userModel = userDao.readOtherUserResponse(path.OTHERPROFILES, token, id);
+        } catch (Exception e) {
+            //
+            // Log.e("User profile error", "Error loading user profile: " + e.toString());
+        }
+
         return userModel;
     }
+
 
     /**
      * Request all comments of the recipe
@@ -289,12 +493,25 @@ public class Model {
      * @param id
      * @return
      */
-    public List<Comment> getCommentsOfRecipe(String token, long id) {
-        List<Comment> result = commentDao.getAllComments(path.COMMENTS, token, id);
+    public List<Comment> getCommentsOfRecipe(String token, long id, Context context) {
+        List<Comment> result = new ArrayList<>();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar una lista vacía
+            return result;
+        }
+
+        try {
+            result = commentDao.getAllComments(path.COMMENTS, token, id);
+        } catch (Exception e) {
+            //
+            // Log.e("Get comments error", "Error getting comments of recipe: " + e.toString());
+        }
+
         return result;
-
-
     }
+
 
     /**
      * Read an internal file and retrieve the token stored there
@@ -343,10 +560,28 @@ public class Model {
      * @param comment
      * @return
      */
-    public DataResult createNewComment(String token, Comment comment) {
-        DataResult result = commentDao.addNewComment(path.NEWCOMMENT, token, comment);
+    public DataResult createNewComment(String token, Comment comment, Context context) {
+        DataResult result = new DataResult();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = commentDao.addNewComment(path.NEWCOMMENT, token, comment);
+        } catch (Exception e) {
+            //
+            // Log.e("Create new comment error", "Error during create new comment request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during create new comment request");
+        }
+
         return result;
     }
+
 
     /**
      * Send new follow to user
@@ -355,29 +590,110 @@ public class Model {
      * @param num
      * @return
      */
-    public DataResult followUser(String token, int userId, int num) {
+    public DataResult followUser(String token, int userId, int num, Context context) {
         String param = token + ":" + String.valueOf(num) + ":" + String.valueOf(userId);
-        DataResult result = userDao.readResponse(path.FOLLOW, param);
-        return result;
+        DataResult result = new DataResult();
 
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = userDao.readResponse(path.FOLLOW, param);
+        } catch (Exception e) {
+            //
+            // Log.e("Follow user error", "Error during follow user request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during follow user request");
+        }
+
+        return result;
     }
+
 
     /**
      * Gets list of the favoritesrecipes saved by the use
      * @param token
      * @return
      */
-    public List<Recipe> getFavorites(String token) {
-        List<Recipe> recipes = recipeDao.loadMyRecipes(path.FAVORITES, token);
+    public List<Recipe> getFavorites(String token, Context context) {
+        List<Recipe> recipes = new ArrayList<>();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar una lista vacía
+            return recipes;
+        }
+
+        try {
+            recipes = recipeDao.loadMyRecipes(path.FAVORITES, token);
+        } catch (Exception e) {
+            //
+            // Log.e("Get favorites error", "Error getting favorites: " + e.toString());
+        }
+
         return recipes;
-
     }
 
-    public DataResult changePass(String token, String pass, String newpass){
+
+    /**
+     * ask server to change the password of the user
+     * @param token
+     * @param pass
+     * @param newpass
+     * @return
+     */
+    public DataResult changePass(String token, String pass, String newpass, Context context) {
         String param = token + ":" + pass + ":" + newpass;
-        DataResult result = userDao.readResponse(path.CHANGEPASS, param);
+        DataResult result = new DataResult();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = userDao.readResponse(path.CHANGEPASS, param);
+        } catch (Exception e) {
+            //
+            // Log.e("Change password error", "Error during change password request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during change password request");
+        }
+
         return result;
-
-
     }
+
+
+    /**
+     * search the recipe by the searchQuery
+     * @param token
+     * @param searchQuery
+     * @return
+     */
+    public List<Recipe> searchRecipe(String token, String searchQuery, Context context) {
+        String param = token + ":" + searchQuery;
+        List<Recipe> recipes = new ArrayList<>();
+
+        // Verificar la conexión
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar una lista vacía
+            return recipes;
+        }
+
+        try {
+            recipes = recipeDao.loadMyRecipes(path.SEARCH, param);
+        } catch (Exception e) {
+            //
+            // Log.e("Search recipe error", "Error searching recipe: " + e.toString());
+        }
+
+        return recipes;
+    }
+
 }
