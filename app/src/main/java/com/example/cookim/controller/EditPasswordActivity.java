@@ -34,7 +34,6 @@ public class EditPasswordActivity extends Activity {
         setContentView(R.layout.activity_edit_password);
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        setContentView(binding.getRoot());
         model = new Model();
         controller = new Controller();
         token = model.readToken(this);

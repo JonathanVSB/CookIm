@@ -62,6 +62,8 @@ public class EditProfileActivity extends Activity {
         setContentView(R.layout.activity_edit_profile);
         binding = ActivityEditProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         model = new Model();
         newfile = null;
         currentFile = null;
