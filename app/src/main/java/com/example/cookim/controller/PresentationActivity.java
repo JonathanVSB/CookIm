@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -42,6 +43,9 @@ public class PresentationActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation);
         binding = ActivityPresentationBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
 
         executor = Executors.newSingleThreadExecutor();

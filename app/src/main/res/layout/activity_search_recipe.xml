@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".controller.SearchRecipeActivity">
 
     <RelativeLayout
         android:id="@+id/searcherCons"
@@ -32,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/searcherCons"
+        android:layout_above="@id/bottom_nav_view"
         >
 
         <androidx.core.widget.NestedScrollView
@@ -57,5 +60,17 @@
         </androidx.core.widget.NestedScrollView>
 
     </RelativeLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white_transparent"
+        app:labelVisibilityMode="unlabeled"
+        android:layout_alignParentBottom="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/nav_menu" />
 
 </RelativeLayout>

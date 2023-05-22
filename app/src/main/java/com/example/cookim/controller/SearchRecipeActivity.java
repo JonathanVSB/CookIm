@@ -19,6 +19,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
+import com.example.cookim.controller.Add.AddRecipeActivity;
+import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivitySearchRecipeBinding;
 import com.example.cookim.databinding.ItemRecipeResultBinding;
 import com.example.cookim.model.Model;
@@ -44,7 +46,10 @@ public class SearchRecipeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_recipe);
         binding = ActivitySearchRecipeBinding.inflate(getLayoutInflater());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
+        bottomNavigationViewClick();
         model = new Model();
         controller = new Controller();
         executor = Executors.newSingleThreadExecutor();
@@ -130,6 +135,25 @@ public class SearchRecipeActivity extends Activity {
                 return false;
             }
         });
+    }
+
+    private void bottomNavigationViewClick() {
+        binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.home:
+                    controller.displayActivity(this, HomeActivity.class);
+                    return true;
+                case R.id.addrecipe:
+                    controller.displayActivity(this, AddRecipeActivity.class);
+                    return true;
+                case R.id.searchrecipe:
+                    binding.tableView.removeAllViews();
+                    return true;
+                default:
+                    return false;
+            }
+        });
+
     }
 
 

@@ -22,6 +22,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
+import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.databinding.ActivityStepsBinding;
@@ -58,6 +59,9 @@ public class RecipeStepsActivity extends Activity {
         model = new Model();
         controller = new Controller();
         binding = ActivityStepsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
         token = model.readToken(getApplicationContext());
         bind = ItemStepContentBinding.inflate(getLayoutInflater());
@@ -362,6 +366,8 @@ public class RecipeStepsActivity extends Activity {
 
         return result;
     }
+
+
 
 }
 

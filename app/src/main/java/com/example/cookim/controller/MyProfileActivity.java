@@ -56,6 +56,9 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
         setContentView(R.layout.activity_my_profile);
         binding = ActivityMyProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        setContentView(binding.getRoot());
         bottomNavigationViewClick();
         handler = new Handler(Looper.getMainLooper());
         model = new Model();
@@ -83,7 +86,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                         user = model.myProfile(token);
 
                     } else {
-                        user = model.userProfile(token, id,getApplicationContext());
+                        user = model.userProfile(token, id, getApplicationContext());
 
                     }
                     //if user is not null
@@ -97,7 +100,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
 
                         }
                         //search all recipes of the user
-                        List<Recipe> recipes = model.userRecipes(token, user.getId(),getApplicationContext());
+                        List<Recipe> recipes = model.userRecipes(token, user.getId(), getApplicationContext());
 
 
                         handler.post(new Runnable() {
@@ -151,7 +154,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            DataResult res = model.followUser(token, id, 0,getApplicationContext());
+                            DataResult res = model.followUser(token, id, 0, getApplicationContext());
                             if (res.getResult().equals("1")) {
                                 Drawable gradientDrawable = getResources().getDrawable(R.drawable.bg_button_background);
                                 binding.btfollow.setBackground(gradientDrawable);
@@ -160,6 +163,8 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
 
                             }
 
+                            controller.displayMyProfile(getApplicationContext(), MyProfileActivity.class, myId, id);
+                            finish();
                         }
                     });
 
@@ -169,7 +174,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                         @Override
                         public void run() {
 
-                            DataResult res = model.followUser(token, id, 1,getApplicationContext());
+                            DataResult res = model.followUser(token, id, 1, getApplicationContext());
                             if (res.getResult().equals("1")) {
                                 int colorLightGray = Color.parseColor("#D3D3D3");
                                 binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
@@ -177,6 +182,9 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                                 user.setFollow(true);
 
                             }
+
+                            controller.displayMyProfile(getApplicationContext(), MyProfileActivity.class, myId, id);
+                            finish();
                         }
                     });
 

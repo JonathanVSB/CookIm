@@ -94,6 +94,9 @@ public class AddRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityAddRecipeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        setContentView(binding.getRoot());
         handler = new Handler(Looper.getMainLooper());
         ingredients = new ArrayList<>();
         steps = new ArrayList<>();

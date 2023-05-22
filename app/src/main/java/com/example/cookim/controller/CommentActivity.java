@@ -60,6 +60,9 @@ public class CommentActivity extends Activity {
         executor = Executors.newSingleThreadExecutor();
         binding = ActivityCommentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        setContentView(binding.getRoot());
         Intent intent = getIntent();
         int recipeId = intent.getIntExtra("recipe_id", -1);
         token = model.readToken(getApplicationContext());

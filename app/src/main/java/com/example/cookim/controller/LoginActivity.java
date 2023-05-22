@@ -45,6 +45,9 @@ public class LoginActivity extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper());
 
         setContentView(binding.getRoot());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        setContentView(binding.getRoot());
         model = new Model();
         controller = new Controller();
 
