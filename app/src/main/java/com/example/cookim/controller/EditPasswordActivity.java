@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import com.example.cookim.R;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityEditPasswordBinding;
-import com.example.cookim.model.Data;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 
@@ -34,9 +33,10 @@ public class EditPasswordActivity extends Activity {
         setContentView(R.layout.activity_edit_password);
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        model = new Model();
+        model  = new Model(this);
         controller = new Controller();
-        token = model.readToken(this);
+        token = model.readFile(getApplicationContext(), "token");
+
         result = null;
         handler = new Handler(Looper.getMainLooper());
         executor = Executors.newSingleThreadExecutor();
@@ -103,6 +103,8 @@ public class EditPasswordActivity extends Activity {
                                     }
                                 });
 
+                            }else if (result.getResult().equals("0000")) {
+                                controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                             } else {
                                 //TODO
                                 //token error or others

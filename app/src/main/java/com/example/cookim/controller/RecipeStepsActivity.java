@@ -1,19 +1,16 @@
 package com.example.cookim.controller;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
@@ -22,18 +19,14 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
-import com.example.cookim.controller.Add.AddRecipeActivity;
-import com.example.cookim.controller.Home.HomeActivity;
-import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.databinding.ActivityStepsBinding;
 import com.example.cookim.databinding.ItemStepContentBinding;
+import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.recipe.Step;
 
-import java.io.FileInputStream;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,6 +38,7 @@ public class RecipeStepsActivity extends Activity {
     Handler handler;
     long myId;
     String token;
+    Recipe recipe;
 
     private ActivityStepsBinding binding;
     //    TextView tv;
@@ -56,16 +50,16 @@ public class RecipeStepsActivity extends Activity {
         setContentView(R.layout.activity_steps);
         handler = new Handler(Looper.getMainLooper());
         executor = Executors.newSingleThreadExecutor();
-        model = new Model();
+        model  = new Model(this);
         controller = new Controller();
         binding = ActivityStepsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
-        token = model.readToken(getApplicationContext());
+        token = model.readFile(getApplicationContext(), "token");
         bind = ItemStepContentBinding.inflate(getLayoutInflater());
-        String token = model.readToken(getApplicationContext());
+
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("recipe_id", -1);
@@ -76,24 +70,32 @@ public class RecipeStepsActivity extends Activity {
             @Override
             public void run() {
 
-                Recipe recipe = model.loadRecipeSteps(id, token, getApplicationContext());
-                System.out.println("Funciona");
 
-                if (recipe != null) {
+                try {
+                    recipe = model.loadRecipeSteps(id, token, getApplicationContext());
+                    System.out.println("Funciona");
 
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadPage(recipe);
-                            setContentView(binding.getRoot());
-                        }
-                    });
+                    if (recipe != null) {
+
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadPage(recipe);
+                                setContentView(binding.getRoot());
+                            }
+                        });
 
 
-                } else {
-                    displayLogInPage();
+                    } else {
+                        displayLogInPage();
+
+                    }
+
+                } catch (PersistException e) {
+                    controller.displayErrorView(getApplicationContext(), e.getCode());
 
                 }
+
             }
 
         });
@@ -188,9 +190,10 @@ public class RecipeStepsActivity extends Activity {
             TextView tvIngrediente = new TextView(RecipeStepsActivity.this);
             tvIngrediente.setText(ingrediente);
 
-            tvIngrediente.setPadding(80, 0, 0, 0);
+            tvIngrediente.setPadding(80, 10, 0, 10);
             tvIngrediente.setTextSize(20);
             tvIngrediente.setTextColor(Color.BLACK);
+
 
 
             row.addView(tvIngrediente);
@@ -276,12 +279,14 @@ public class RecipeStepsActivity extends Activity {
                 int likeValue = pressLike ? 1 : 0;
 
                 DataResult result = sendLike(likeValue, String.valueOf(recipe.getId()));
-                if (result.getResult().equals("1")) {
+                if (result != null && result.getResult() != null && result.getResult().equals("1")) {
                     try {
                         binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
                     } catch (Exception e) {
                         System.out.println(e.toString());
                     }
+                }else if (result.getResult().equals("0000")) {
+                    controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                 } else {
 
 //                            pressLike = false;
@@ -298,12 +303,14 @@ public class RecipeStepsActivity extends Activity {
                 int saveValue = recipe.isSaved() ? 1 : 0;
                 DataResult result = saveRecipe(saveValue, String.valueOf(recipe.getId()));
 
-                if (result.getResult().equals("1")) {
+                if (result != null && result.getResult() != null && result.getResult().equals("1")) {
                     try {
                        binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
                     } catch (Exception e) {
                         System.out.println(e.toString());
                     }
+                }else if (result.getResult().equals("0000")) {
+                    controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                 } else {
                     recipe.setSaved(!recipe.isSaved());
                 }
@@ -335,7 +342,7 @@ public class RecipeStepsActivity extends Activity {
         try {
 
             result = executor.submit(() -> {
-                return model.likeRecipe(parametros, controller.getApplicationContext());
+                return model.likeRecipe(parametros, getApplicationContext());
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());
@@ -358,7 +365,7 @@ public class RecipeStepsActivity extends Activity {
         try {
 
             result = executor.submit(() -> {
-                return model.saveRecipe(parametros, controller.getApplicationContext());
+                return model.saveRecipe(parametros, getApplicationContext());
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());

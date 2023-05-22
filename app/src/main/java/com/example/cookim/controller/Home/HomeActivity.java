@@ -1,7 +1,5 @@
 package com.example.cookim.controller.Home;
 
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -12,13 +10,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -36,11 +31,13 @@ import com.example.cookim.controller.EditProfileActivity;
 import com.example.cookim.controller.FavoritesActivity;
 import com.example.cookim.controller.LoginActivity;
 import com.example.cookim.controller.MyProfileActivity;
+import com.example.cookim.controller.NoConnectionActivity;
 import com.example.cookim.controller.RecipeStepsActivity;
 import com.example.cookim.controller.SearchRecipeActivity;
 import com.example.cookim.dao.BBDDIngredients;
 import com.example.cookim.databinding.ActivityHomeBinding;
 import com.example.cookim.databinding.ComponentNavHeaderBinding;
+import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Ingredient;
@@ -85,14 +82,15 @@ public class HomeActivity extends Activity implements HomeListener {
 
 
         handler = new Handler(Looper.getMainLooper());
-        model = new Model();
+        model = new Model(this);
         controller = new Controller();
 
 
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        token = model.readToken(getApplicationContext());
+        token = model.readFile(getApplicationContext(), "token");
+
 
         if (token.isEmpty()) {
             displayLogInPage();
@@ -288,11 +286,13 @@ public class HomeActivity extends Activity implements HomeListener {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                DataResult result = model.logout(token,getApplicationContext());
+                DataResult result = model.logout(token, getApplicationContext());
                 if (result != null) {
                     controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
 
                     //displayLogInPage();
+                } else if (result.getResult().equals("0000")) {
+                    controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                 }
             }
         });
@@ -308,65 +308,71 @@ public class HomeActivity extends Activity implements HomeListener {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    user = model.myProfile(token);
-                    if (user != null) {
-
-                        recipes = model.loadRecipes(token, getApplicationContext());
-                        List<RecipeAdapter> adapters = new ArrayList<>();
-
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                displayRecipes(recipes, user.getId_rol());
-                            }
-                        });
+                    try {
+                        user = model.myProfile(token);
 
                         if (user != null) {
-                            //binding.tvUsername.setText(user.getUsername());
+
+                            recipes = model.loadRecipes(token, getApplicationContext());
+                            List<RecipeAdapter> adapters = new ArrayList<>();
+
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    // Post Execute
-                                    if (user != null) { // si hay un usuario
+                                    displayRecipes(recipes, user.getId_rol());
+                                }
+                            });
 
-                                        String img = model.downloadImg(user.getPath_img());
-                                        Glide.with(HomeActivity.this)
-                                                .load(img)
-                                                .listener(new RequestListener<Drawable>() {
-                                                    @Override
-                                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                                        // Manejar el fallo de carga de la imagen aquí
-                                                        binding.profileImage.setImageResource(R.drawable.guest_profile);
-                                                        return false;
-                                                    }
+                            if (user != null) {
+                                //binding.tvUsername.setText(user.getUsername());
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        // Post Execute
+                                        if (user != null) { // si hay un usuario
 
-                                                    @Override
-                                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                                        // La imagen se ha cargado correctamente
-                                                        return false;
-                                                    }
-                                                })
-                                                .into(binding.profileImage);
+                                            String img = model.downloadImg(user.getPath_img());
+                                            Glide.with(HomeActivity.this)
+                                                    .load(img)
+                                                    .listener(new RequestListener<Drawable>() {
+                                                        @Override
+                                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                                            // Manejar el fallo de carga de la imagen aquí
+                                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                                            return false;
+                                                        }
 
-                                        //uses
-                                        loadHeader(user);
+                                                        @Override
+                                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                                            // La imagen se ha cargado correctamente
+                                                            return false;
+                                                        }
+                                                    })
+                                                    .into(binding.profileImage);
+
+                                            //uses
+                                            loadHeader(user);
 
 
-                                    } else {
+                                        } else {
 //                                    // Si no hay un usuario, establece la imagen predeterminada en el ImageView "profileImage"
-                                        binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                            binding.profileImage.setImageResource(R.drawable.guest_profile);
+                                        }
+
                                     }
 
-                                }
+                                });
 
-                            });
+
+                            }
+                        } else {
+                            controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
 
 
                         }
-                    } else {
-                        controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
 
-
+                    } catch (PersistException e) {
+                        controller.displayErrorView(getApplicationContext(), e.getCode());
                     }
 
 
@@ -384,7 +390,7 @@ public class HomeActivity extends Activity implements HomeListener {
      * @param recipes
      */
     private void displayRecipes(List<Recipe> recipes, long rol) {
-        RecipeAdapter adapter = new RecipeAdapter(recipes, token, rol);
+        RecipeAdapter adapter = new RecipeAdapter(recipes, token, rol, this);
         adapter.setHomeListener(this);
         binding.recommendationsRv.setAdapter(adapter);
         binding.recommendationsRv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
@@ -403,20 +409,15 @@ public class HomeActivity extends Activity implements HomeListener {
         Intent intent = null;
         switch (action) {
             case 1:
-
                 controller.displayRecipeDetails(this, RecipeStepsActivity.class, id, user.getId());
-
                 break;
 
             case 2:
-
                 controller.displayMyProfile(this, MyProfileActivity.class, user.getId(), id);
-
                 break;
 
             case 3:
                 controller.displayCommentPage(this, CommentActivity.class, id);
-
                 break;
 
             case 4:
@@ -475,7 +476,7 @@ public class HomeActivity extends Activity implements HomeListener {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                DataResult result = model.removeRecipe(token, id,getApplicationContext());
+                DataResult result = model.removeRecipe(token, id, getApplicationContext());
 
                 if (result != null) {
                     if (result.getResult().equals("1")) {
@@ -485,14 +486,14 @@ public class HomeActivity extends Activity implements HomeListener {
 //                        controller.displayErrorMessage(getApplicationContext(), "La receta no ha podido ser borrada");
 //
                     }
+                } else if (result.getResult().equals("0000")) {
+                    controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                 } else {
 //                    controller.displayErrorMessage(getApplicationContext(), "La conexión ha fallado");
                 }
             }
         });
     }
-
-
 
 
 }

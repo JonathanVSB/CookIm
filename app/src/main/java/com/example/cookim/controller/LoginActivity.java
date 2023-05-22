@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
-        model = new Model();
+        model  = new Model(this);
         controller = new Controller();
 
         String username = binding.etUsername.getText().toString();

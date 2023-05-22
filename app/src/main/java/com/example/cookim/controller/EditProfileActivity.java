@@ -64,7 +64,7 @@ public class EditProfileActivity extends Activity {
         setContentView(binding.getRoot());
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        model = new Model();
+        model  = new Model(this);
         newfile = null;
         currentFile = null;
         controller = new Controller();
@@ -72,7 +72,8 @@ public class EditProfileActivity extends Activity {
         handler = new Handler(Looper.getMainLooper());
         Intent intent = getIntent();
 
-        token = model.readToken(getApplicationContext());
+        token = model.readFile(getApplicationContext(), "token");
+
 
         if (token != null && !token.isEmpty()) {
             long id = intent.getLongExtra("id", 0);
@@ -239,6 +240,8 @@ public class EditProfileActivity extends Activity {
 
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
 
+                            }else if (result.getResult().equals("0000")) {
+                                controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                             } else {
                                 controller.displayErrorMessage(getApplicationContext(), "No se ha podido editar la información");
                             }
@@ -256,6 +259,8 @@ public class EditProfileActivity extends Activity {
 
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
 
+                            }else if (result.getResult().equals("0000")) {
+                                controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                             } else {
                                 controller.displayErrorMessage(getApplicationContext(), "No se ha podido editar la información");
                             }

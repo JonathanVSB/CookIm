@@ -2,6 +2,8 @@ package com.example.cookim.dao;
 
 import android.widget.Toast;
 
+import com.example.cookim.exceptions.OpResult;
+import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
@@ -23,6 +25,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +43,7 @@ public class RecipeDao {
     /**
      * Creates HTTP petition, to get the data of all recipes
      */
-    public List<Recipe> loadRecipes(String path) {
+    public List<Recipe> loadRecipes(String path) throws PersistException {
         List<Recipe> recipes = new ArrayList<>();
         String petition = path;
         try {
@@ -52,7 +55,11 @@ public class RecipeDao {
 
             conn.setRequestMethod("GET");
 
-            //Connectem amb el servidor
+            conn.setConnectTimeout(15 * 1000);
+            conn.setReadTimeout(15 * 1000);
+
+            //Connect with server
+
             conn.connect();
 
             String response = getReponseBody(conn);
@@ -66,6 +73,11 @@ public class RecipeDao {
                     recipes.add(recipe);
                 }
             }
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            throw new PersistException(OpResult.DB_NORESPONSE.getCode());
+
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -148,6 +160,10 @@ public class RecipeDao {
 
             }
 
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+
         } catch (Exception e) {
             //Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
             System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
@@ -217,7 +233,7 @@ public class RecipeDao {
      * @param token
      * @return
      */
-    public Recipe loadRecipeSteps(String path, int id, String token) {
+    public Recipe loadRecipeSteps(String path, int id, String token) throws PersistException {
 
         Recipe result = null;
         String param = token + ":" + String.valueOf(id);
@@ -235,6 +251,9 @@ public class RecipeDao {
 
             String authHeader = "Bearer " + param;
             connection.setRequestProperty("Authorization", authHeader);
+
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
 
             // Write parameters to the request
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
@@ -255,6 +274,11 @@ public class RecipeDao {
 
             }
 
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            throw new PersistException(OpResult.DB_NORESPONSE.getCode());
+
         } catch (Exception e) {
             System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
         }
@@ -269,7 +293,7 @@ public class RecipeDao {
      * @param inputStream
      * @return
      */
-    public Recipe parseRecipe(InputStream inputStream) {
+    public Recipe parseRecipe(InputStream inputStream) throws PersistException {
         Recipe result = null;
 
         try {
@@ -313,6 +337,14 @@ public class RecipeDao {
                         int likes = dataObject.get("likes").getAsInt();
                         String user = dataObject.get("user_name").getAsString();
                         String path = dataObject.get("path").getAsString();
+                        boolean liked = false;
+                        boolean saved = false;
+                        if (dataObject.has("liked")){
+                            liked = dataObject.get("liked").getAsBoolean();
+                        }
+                        if (dataObject.has("saved")){
+                            saved = dataObject.get("saved").getAsBoolean();
+                        }
 
                         List<Ingredient> ingredients = new ArrayList<>();
                         JsonArray ingredientsArray = dataObject.getAsJsonArray("ingredients");
@@ -335,7 +367,7 @@ public class RecipeDao {
                             steps.add(new Step(stepId, recipe_id, step_number, stepDescription, stepImg));
                         }
 
-                        result = new Recipe(id, user_id, name, description, path_img, rating, likes, user, path, steps, ingredients);
+                        result = new Recipe(id, user_id, name, description, path_img, liked,saved, rating, likes, user, path, steps, ingredients);
                     } else {
                         // Debugging statement
                         result = null;
@@ -349,6 +381,10 @@ public class RecipeDao {
                 // Debugging statement
                 System.out.println("La respuesta no es un objeto JSON válido");
             }
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            throw new PersistException(OpResult.DB_NORESPONSE.getCode());
         } catch (IOException e) {
             // Debugging statement
             System.out.println("Error al leer la respuesta: " + e.toString());
@@ -368,7 +404,7 @@ public class RecipeDao {
      * @param param
      * @return
      */
-    public List<Recipe> loadMyRecipes(String path, String param) {
+    public List<Recipe> loadMyRecipes(String path, String param) throws PersistException {
         List<Recipe> recipes = new ArrayList<>();
 
         int i = 0;
@@ -385,6 +421,9 @@ public class RecipeDao {
 
             String authHeader = "Bearer " + param;
             connection.setRequestProperty("Authorization", authHeader);
+
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
 
             // Write parameters to the request
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
@@ -405,6 +444,11 @@ public class RecipeDao {
 
             }
 
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            throw new PersistException(OpResult.DB_NORESPONSE.getCode());
+
         } catch (Exception e) {
             System.out.println("PETA EN ESTA LINEA: " + i + e.toString());
         }
@@ -419,7 +463,7 @@ public class RecipeDao {
      * @param inputStream
      * @return
      */
-    public List<Recipe> parseRecipeList(InputStream inputStream) {
+    public List<Recipe> parseRecipeList(InputStream inputStream) throws PersistException {
         List<Recipe> result = new ArrayList<>();
 
         try {
@@ -484,6 +528,10 @@ public class RecipeDao {
             // Closes the BufferedReader
             bufferedReader.close();
 
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            throw new PersistException(OpResult.DB_NORESPONSE.getCode());
         } catch (IOException e) {
             // Debugging statement
             System.out.println("Error al leer la respuesta: " + e.toString());
@@ -581,6 +629,10 @@ public class RecipeDao {
             wr.flush();
             wr.close();
 
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
+
+
             connection.connect();
 
             if (connection != null) {
@@ -593,9 +645,17 @@ public class RecipeDao {
                 inputStream.close();
             }
 
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            result = new DataResult();
+            result.setResult("0002");
+            result.setData("Request timed out");
         } catch (Exception e) {
-            System.out.println(e.toString());
-            return null;
+            //Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+            result = new DataResult();
+            result.setResult("0001");
+            result.setData("Error during HTTPS request");
         }
         return result;
     }

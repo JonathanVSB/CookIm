@@ -1,5 +1,6 @@
 package com.example.cookim.controller.Home;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
@@ -40,20 +41,23 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     Controller controller;
     String token;
     long rol;
+    Context context;
 
     HomeListener homeListener;
 
 
-    public RecipeAdapter(List<Recipe> recipeList, String token, long userRol) {
+    public RecipeAdapter(List<Recipe> recipeList, String token, long userRol, Context context) {
 
         this.recipeList = recipeList;
         this.token = token;
         this.recipesLiked = recipesLiked;
         this.rol = userRol;
-        model = new Model();
+        model = new Model(context);
+        this.context = context;
         controller = new Controller();
         executor = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
+
 
 
 //        this.press = false;
@@ -143,7 +147,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 int likeValue = pressLike ? 1 : 0;
 
                 DataResult result = sendLike(likeValue, String.valueOf(recipe.getId()));
-                if (result.getResult().equals("1")) {
+                if (result != null && result.getResult() != null && result.getResult().equals("1")) {
                     try {
                         holder.binding.tvLikes.setText(String.valueOf(recipe.getLikes()));
                     } catch (Exception e) {
@@ -177,7 +181,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 int saveValue = recipe.isSaved() ? 1 : 0;
                 DataResult result = saveRecipe(saveValue, String.valueOf(recipe.getId()));
 
-                if (result.getResult().equals("1")) {
+                if (result != null && result.getResult() != null && result.getResult().equals("1")) {
                     try {
                         holder.binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
                     } catch (Exception e) {
@@ -214,7 +218,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         try {
 
             result = executor.submit(() -> {
-                return model.saveRecipe(parametros, controller.getApplicationContext());
+                return model.saveRecipe(parametros, context);
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());
@@ -248,7 +252,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         try {
 
             result = executor.submit(() -> {
-                return model.likeRecipe(parametros, controller.getApplicationContext());
+                return model.likeRecipe(parametros, context);
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());

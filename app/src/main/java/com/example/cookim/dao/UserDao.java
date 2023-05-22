@@ -1,5 +1,7 @@
 package com.example.cookim.dao;
 
+import com.example.cookim.exceptions.OpResult;
+import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.recipe.Step;
 import com.example.cookim.model.user.UserModel;
@@ -62,6 +64,7 @@ public class UserDao {
 
             String authHeader = "Bearer " + parameters;
             connection.setRequestProperty("Authorization", authHeader);
+
 
             connection.setConnectTimeout(15 * 1000);
             connection.setReadTimeout(15 * 1000);
@@ -162,7 +165,7 @@ public class UserDao {
      * @param token
      * @return
      */
-    public UserModel readUserResponse(String urlString, String token) {
+    public UserModel readUserResponse(String urlString, String token) throws PersistException {
         UserModel result = null;
         try {
             // HTTPS request
@@ -176,6 +179,10 @@ public class UserDao {
             // Set authorization header with token
             String authHeader = "Bearer " + token;
             connection.setRequestProperty("Authorization", authHeader);
+
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
+
 
             // Set content type to form url encoded
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
@@ -199,9 +206,14 @@ public class UserDao {
 
             }
 
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            throw new PersistException(OpResult.DB_NORESPONSE.getCode());
+
         } catch (Exception e) {
-            //  Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+            //Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+
         }
 
         return result;
@@ -349,6 +361,10 @@ public class UserDao {
             wr.flush();
             wr.close();
 
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
+
+
             connection.connect();
 
             if (connection != null) {
@@ -361,9 +377,17 @@ public class UserDao {
                 inputStream.close();
             }
 
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            result = new DataResult();
+            result.setResult("0002");
+            result.setData("Request timed out");
         } catch (Exception e) {
-            System.out.println(e.toString());
-            return null;
+            //Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+            result = new DataResult();
+            result.setResult("0001");
+            result.setData("Error during HTTPS request");
         }
 
         return result;
@@ -408,6 +432,9 @@ public class UserDao {
                 System.out.println("Error DataOutputStream: " + e.toString());
             }
 
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
+
 
             connection.connect();
 
@@ -429,11 +456,18 @@ public class UserDao {
 
             connection.disconnect();
 
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            result = new DataResult();
+            result.setResult("0002");
+            result.setData("Request timed out");
         } catch (Exception e) {
-            // Debugging statement
-            System.out.println("Error al conectar con el servidor: " + e.toString());
+            //Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+            result = new DataResult();
+            result.setResult("0001");
+            result.setData("Error during HTTPS request");
         }
-
         return result;
     }
 
@@ -445,7 +479,7 @@ public class UserDao {
      * @param id
      * @return
      */
-    public UserModel readOtherUserResponse(String path, String token, long id) {
+    public UserModel readOtherUserResponse(String path, String token, long id) throws PersistException {
         UserModel result = null;
         String param = token + ":" + String.valueOf(id);
         try {
@@ -460,6 +494,9 @@ public class UserDao {
             // Set authorization header with token
             String authHeader = "Bearer " + param;
             connection.setRequestProperty("Authorization", authHeader);
+
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
 
 
             // Set content type to form url encoded
@@ -483,6 +520,11 @@ public class UserDao {
                 inputStream.close();
 
             }
+
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            throw new PersistException(OpResult.DB_NORESPONSE.getCode());
 
         } catch (Exception e) {
             //  Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
@@ -521,6 +563,10 @@ public class UserDao {
             // Set authorization header with token
             String authHeader = "Bearer " + param;
             connection.setRequestProperty("Authorization", authHeader);
+
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
+
 
             String boundary = "*****";
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
@@ -576,9 +622,17 @@ public class UserDao {
 
                 inputStream.close();
             }
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            result = new DataResult();
+            result.setResult("0002");
+            result.setData("Request timed out");
         } catch (Exception e) {
-            // Toast.makeText(this, "Error connecting server", Toast.LENGTH_LONG).show();
-            System.out.println("PETA EN ESTA LINEA: " + e.toString());
+            //Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+            result = new DataResult();
+            result.setResult("0001");
+            result.setData("Error during HTTPS request");
         }
 
         return result;

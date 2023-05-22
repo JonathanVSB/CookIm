@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/ic_degraded_gray">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/viewCons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Space
+            android:id="@+id/space1"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvtitle"
+            android:layout_width="310dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ubuntumedium"
+            android:text="Añade Categoria"
+            android:textAlignment="center"
+            android:textSize="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/space1"/>
+
+        <Space
+            android:id="@id/space2"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:layout_constraintTop_toBottomOf="@id/tvtitle"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/viewCons">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:stretchColumns="*">
+
+                <TableRow>
+                    <Button
+                        android:id="@+id/button1"
+                        android:layout_width="0dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_dieta"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:text="fitness"
+                        android:textColor="@color/black"/>
+
+                    <Button
+                        android:id="@+id/button2"
+                        android:layout_width="0dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_vegano"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:text="vegan"
+                        android:textColor="@color/black"/>
+
+                    <Button
+                        android:id="@+id/button3"
+                        android:layout_width="0dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_hamburguesa"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:text="fastfood"
+                        android:textColor="@color/black"/>
+                </TableRow>
+
+                <TableRow android:layout_marginBottom="10dp">
+                    <Button
+                        android:id="@+id/button4"
+                        android:layout_marginTop="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_cocteles"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:text="coctel"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/black"/>
+
+                    <Button
+                        android:id="@+id/button5"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_india"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:text="India"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/black"/>
+
+                    <Button
+                        android:id="@+id/button6"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_italia"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:layout_marginBottom="10dp"
+                        android:text="italiana "
+                        android:textColor="@color/black"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button
+                        android:id="@+id/button7"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_pasta"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:text="china"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/black"
+                        />
+
+                    <Button
+                        android:id="@+id/button8"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_panna_cotta"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:text="postres"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/black"/>
+
+                    <Button
+                        android:id="@+id/button9"
+                        android:layout_width="0dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_height="130dp"
+                        android:layout_gravity="center"
+                        android:drawableTop="@drawable/ic_desayuno_ingles"
+                        android:background="@drawable/bg_fulloutlined"
+                        android:text="desayuno"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/black"/>
+                </TableRow>
+
+            </TableLayout>
+
+
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/erroMsg"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:text="show more..."
+        android:fontFamily="@font/ubunturegular"
+        android:layout_marginEnd="30dp"
+        android:textAlignment="textEnd"
+        android:textColor="@color/red_orange"
+        android:layout_below="@id/scroll"
+        />
+
+    <Button
+        android:id="@+id/btsend"
+        android:layout_width="272dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/bg_button_background"
+        android:text="Continuar"
+        android:textColor="@color/white"
+        android:textSize="25dp"
+        android:fontFamily="@font/ubuntumedium"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/erroMsg"/>
+
+</RelativeLayout>

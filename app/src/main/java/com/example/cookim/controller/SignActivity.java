@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivitySigninBinding;
+import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.user.UserModel;
@@ -54,19 +55,18 @@ public class SignActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private Intent data;
     Model model;
+    Controller controller;
 
     private File file;
 
-    private final String URL = "http://91.107.198.64:7070/Cookim/";
-    private final String URL2 = "http://192.168.127.102:7070/Cookim/";
-    private final String URL3 = "http://192.168.127.94:7070/Cookim/";
     ExecutorService executor;
     Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model  = new Model();
+        model  = new Model(this);
+        controller = new Controller();
         executor = Executors.newSingleThreadExecutor();
         binding = ActivitySigninBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -173,6 +173,8 @@ public class SignActivity extends AppCompatActivity {
                     showHomePage();
                     //TODO
                     //Display next page of signin
+                }else if (res.getResult().equals("0000")) {
+                    controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                 } else {
                     binding.errormsg.setText(res.getData().toString());
                     binding.errormsg.setVisibility(View.VISIBLE);
@@ -181,7 +183,6 @@ public class SignActivity extends AppCompatActivity {
             //T9odo send file
 
         } else {
-
             DataResult res = model.signIn(user.getUsername(),
                     user.getPassword(),
                     user.getFull_name(),
@@ -196,6 +197,8 @@ public class SignActivity extends AppCompatActivity {
                     showHomePage();
                     //TODO
                     //Display next page of signin
+                }else if (res.getResult().equals("0000")) {
+                    controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                 } else {
                     binding.errormsg.setText(res.getData().toString());
                     binding.errormsg.setVisibility(View.VISIBLE);

@@ -1,10 +1,15 @@
 package com.example.cookim.model.recipe;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Recipe {
+public class Recipe implements Parcelable {
 
     public int id;
     public int id_user;
@@ -42,6 +47,64 @@ public class Recipe {
     public Recipe() {
     }
 
+    protected Recipe(Parcel in) {
+        id = in.readInt();
+        id_user = in.readInt();
+        file = new File(in.readString());
+        name = in.readString();
+        description = in.readString();
+        path_img = in.readString();
+        rating = in.readDouble();
+        likes = in.readInt();
+        user_name = in.readString();
+        path = in.readString();
+        steps = new ArrayList<>();
+        in.readList(steps, Step.class.getClassLoader());
+        comments = new ArrayList<>();
+        in.readList(comments, Comment.class.getClassLoader());
+        ingredients = new ArrayList<>();
+        in.readList(ingredients, Ingredient.class.getClassLoader());
+        liked = in.readByte() != 0;
+        saved = in.readByte() != 0;
+    }
+
+    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
+        @Override
+        public Recipe createFromParcel(Parcel in) {
+            return new Recipe(in);
+        }
+
+        @Override
+        public Recipe[] newArray(int size) {
+            return new Recipe[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int flags) {
+        parcel.writeInt(id);
+        parcel.writeInt(id_user);
+        parcel.writeString(file.getAbsolutePath());
+        parcel.writeString(name);
+        parcel.writeString(description);
+        parcel.writeString(path_img);
+        parcel.writeDouble(rating);
+        parcel.writeInt(likes);
+        parcel.writeString(user_name);
+        parcel.writeString(path);
+        parcel.writeList(steps);
+        parcel.writeList(comments);
+        parcel.writeList(ingredients);
+        parcel.writeByte((byte) (liked ? 1 : 0));
+        parcel.writeByte((byte) (saved ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+
     public Recipe(File file, String name, String description, List<Step> steps, List<Ingredient> ingredients) {
         this.file = file;
         this.name = name;
@@ -72,12 +135,14 @@ public class Recipe {
 
     }
 
-    public Recipe(int id, int id_user, String name, String description, String path_img, double rating, int likes, String user_name, String path, List<Step> steps, List<Ingredient> ingredients) {
+    public Recipe(int id, int id_user, String name, String description, String path_img, boolean liked, boolean saved, double rating, int likes, String user_name, String path, List<Step> steps, List<Ingredient> ingredients) {
         this.id = id;
         this.id_user = id_user;
         this.name = name;
         this.description = description;
         this.path_img = path_img;
+        this.liked = liked;
+        this.saved = saved;
         this.rating = rating;
         this.likes = likes;
         this.user_name = user_name;
@@ -113,10 +178,6 @@ public class Recipe {
         this.comments = new ArrayList<>();
         this.ingredients = new ArrayList<>();
     }
-
-
-
-
 
     //GETTERS AND SETTERS
 
@@ -241,6 +302,8 @@ public class Recipe {
     public void setSaved(boolean saved) {
         this.saved = saved;
     }
+
+
     ///METHODS
 
 //    private String encodeFileToBase64(File file) {

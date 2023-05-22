@@ -1,7 +1,6 @@
 package com.example.cookim.controller.Add;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,7 +8,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,14 +16,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import androidx.appcompat.widget.SearchView;
 
@@ -37,13 +33,11 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
 
 import com.example.cookim.R;
-import com.example.cookim.controller.CommentActivity;
+import com.example.cookim.controller.AddCategoryActivity;
 import com.example.cookim.controller.Controller;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.dao.BBDDIngredients;
@@ -57,7 +51,6 @@ import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.recipe.Step;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,9 +93,9 @@ public class AddRecipeActivity extends AppCompatActivity {
         handler = new Handler(Looper.getMainLooper());
         ingredients = new ArrayList<>();
         steps = new ArrayList<>();
-        model = new Model();
+        model = new Model(this);
         controller = new Controller();
-        token = model.readToken(getApplicationContext());
+        token = model.readFile(getApplicationContext(), "token");
         executor = Executors.newSingleThreadExecutor();
         this.dataBase = new BBDDIngredients(this.getApplicationContext(), "Ingredientes", null, 1);
 
@@ -239,17 +232,10 @@ public class AddRecipeActivity extends AppCompatActivity {
 
                         if (recipe != null) {
 
-                            DataResult res = model.createRecipe(recipe, token, portraitFile,getApplicationContext());
+                            controller.displayCategoryActivity(getApplicationContext(), AddCategoryActivity.class, recipe);
 
-                            if (res.getResult().equals("1")) {
-                                controller.displayActivity(getApplicationContext(), HomeActivity.class);
-                            } else {
-
-                                controller.displayErrorMessage(getApplicationContext(),"Algo ha salido mal. La receta no ha sido creada");
-
-                            }
                         } else {
-                            controller.displayErrorMessage(getApplicationContext(),"La receta contiene datos no válidos");
+                            controller.displayErrorMessage(getApplicationContext(), "La receta contiene datos no válidos");
 
                         }
 
@@ -260,7 +246,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
             } else {
 
-                controller.displayErrorMessage(getApplicationContext(),"La receta debe tener foto de portada, ingredientes, y pasos");
+                controller.displayErrorMessage(getApplicationContext(), "La receta debe tener foto de portada, ingredientes, y pasos");
 
             }
 
@@ -492,6 +478,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         }
     }
+
     /**
      * @param requestCode  The request code passed in
      * @param permissions  The requested permissions. Never null.
@@ -540,12 +527,12 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     /**
      * check the
+     *
      * @param recipe
      * @return
      */
-    private boolean checkFields(Recipe recipe){
+    private boolean checkFields(Recipe recipe) {
         boolean correct = false;
-
 
 
         return correct;

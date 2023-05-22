@@ -25,6 +25,7 @@ import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityMyProfileBinding;
 import com.example.cookim.databinding.ItemMyRecipeContentBinding;
+import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
@@ -61,9 +62,9 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
         setContentView(binding.getRoot());
         bottomNavigationViewClick();
         handler = new Handler(Looper.getMainLooper());
-        model = new Model();
+        model = new Model(this);
         controller = new Controller();
-        token = model.readToken(getApplicationContext());
+        token = model.readFile(getApplicationContext(), "token");
         executor = Executors.newSingleThreadExecutor();
 
 
@@ -80,43 +81,49 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                 public void run() {
                     //find user by his token
 
-                    if (myId == id) {
-                        binding.btfollow.setVisibility(View.GONE);
+                    try {
+                        if (myId == id) {
+                            binding.btfollow.setVisibility(View.GONE);
 
-                        user = model.myProfile(token);
+                            user = model.myProfile(token);
 
-                    } else {
-                        user = model.userProfile(token, id, getApplicationContext());
-
-                    }
-                    //if user is not null
-                    if (user != null) {
-
-                        if (user.getFollow()) {
-                            binding.btfollow.setText("Dejar de seguir");
-                            int colorLightGray = Color.parseColor("#D3D3D3");
-                            binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
-
+                        } else {
+                            user = model.userProfile(token, id, getApplicationContext());
 
                         }
-                        //search all recipes of the user
-                        List<Recipe> recipes = model.userRecipes(token, user.getId(), getApplicationContext());
+                        //if user is not null
+                        if (user != null) {
+
+                            if (user.getFollow()) {
+                                binding.btfollow.setText("Dejar de seguir");
+                                int colorLightGray = Color.parseColor("#D3D3D3");
+                                binding.btfollow.getBackground().setColorFilter(colorLightGray, PorterDuff.Mode.SRC_ATOP);
 
 
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                loadMyPage(user, recipes);
                             }
-                        });
+                            //search all recipes of the user
+                            List<Recipe> recipes = model.userRecipes(token, user.getId(), getApplicationContext());
 
 
-                    } else {
-                        //if the server can't validate the token
-                        System.out.println("usuario nulo");
-                        displayLogInPage();
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadMyPage(user, recipes);
+                                }
+                            });
 
+
+                        } else {
+                            //if the server can't validate the token
+                            System.out.println("usuario nulo");
+                            displayLogInPage();
+
+                        }
+
+                    } catch (PersistException e) {
+                        controller.displayErrorView(getApplicationContext(), e.getCode());
                     }
+
                 }
 
             });
@@ -161,6 +168,8 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                                 binding.btfollow.setText("Seguir");
                                 user.setFollow(false);
 
+                            } else if (res.getResult().equals("0000")) {
+                                controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                             }
 
                             controller.displayMyProfile(getApplicationContext(), MyProfileActivity.class, myId, id);
@@ -181,6 +190,8 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                                 binding.btfollow.setText("Dejar de seguir");
                                 user.setFollow(true);
 
+                            } else if (res.getResult().equals("0000")) {
+                                controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                             }
 
                             controller.displayMyProfile(getApplicationContext(), MyProfileActivity.class, myId, id);
@@ -314,6 +325,8 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
 //                        controller.displayErrorMessage(getApplicationContext(), "La receta no ha podido ser borrada");
 //
                     }
+                } else if (result.getResult().equals("0000")) {
+                    controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                 } else {
 
 

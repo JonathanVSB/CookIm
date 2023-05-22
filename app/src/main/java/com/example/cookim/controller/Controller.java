@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Looper;
 
 import com.example.cookim.model.Model;
+import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
 
 import java.util.logging.Handler;
@@ -38,8 +39,9 @@ public class Controller extends Activity {
 
     /**
      * Display the add recipe page
+     *
      * @param context The context from which the method is called
-     * @param Class The class of the AddRecipeActivity
+     * @param Class   The class of the AddRecipeActivity
      */
     public void displayActivity(Context context, Class<?> Class) {
         Intent intent = new Intent(context, Class);
@@ -56,8 +58,9 @@ public class Controller extends Activity {
 
     /**
      * Display the login page
+     *
      * @param context The context from which the method is called
-     * @param Class The class of the LoginActivity
+     * @param Class   The class of the LoginActivity
      */
     public void displayLogInPage(Context context, Class<?> Class) {
         Intent intent = new Intent(context, Class);
@@ -67,6 +70,7 @@ public class Controller extends Activity {
 
     /**
      * Display my profile Page
+     *
      * @param context
      * @param Class
      * @param id
@@ -82,11 +86,12 @@ public class Controller extends Activity {
 
     /**
      * Display comment activity
+     *
      * @param context
      * @param Class
      * @param id
      */
-    public void displayCommentPage(Context context, Class<?> Class,int id) {
+    public void displayCommentPage(Context context, Class<?> Class, int id) {
         Intent intent = new Intent(context, Class);
         intent.putExtra("recipe_id", id);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -95,11 +100,12 @@ public class Controller extends Activity {
 
     /**
      * display Recipe Steps page
+     *
      * @param context
      * @param Class
      * @param id
      */
-    public void displayRecipeDetails(Context context, Class<?> Class, int id, long myId){
+    public void displayRecipeDetails(Context context, Class<?> Class, int id, long myId) {
         Intent intent = new Intent(context, Class);
         intent.putExtra("recipe_id", id);
         intent.putExtra("MyUserID", myId);
@@ -109,11 +115,12 @@ public class Controller extends Activity {
 
     /**
      * display Edit profile Page
+     *
      * @param context
      * @param Class
      * @param user
      */
-    public void displayEditProfile(Context context, Class<?> Class, UserModel user){
+    public void displayEditProfile(Context context, Class<?> Class, UserModel user) {
         Intent intent = new Intent(context, Class);
         intent.putExtra("id", user.getId());
         intent.putExtra("username", user.getUsername());
@@ -125,4 +132,34 @@ public class Controller extends Activity {
         context.startActivity(intent);
     }
 
+    public void displayCategoryActivity(Context context, Class<?> Class, Recipe recipe) {
+        Intent intent = new Intent(context, Class);
+        intent.putExtra("recipe", recipe);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    public void displayErrorView(Context context, int id) {
+        Intent intent = null;
+
+        switch (id) {
+            case 101:
+                intent = new Intent(context, NoConnectionActivity.class);
+                intent.putExtra("ErrorCode", id);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                break;
+
+            case 102:
+                intent = new Intent(context, NoConnectionActivity.class);
+                intent.putExtra("ErrorCode", id);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                break;
+
+
+        }
+
+
+    }
 }

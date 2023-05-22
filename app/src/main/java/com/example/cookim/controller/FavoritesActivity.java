@@ -21,12 +21,12 @@ import com.example.cookim.R;
 import com.example.cookim.controller.Add.AddRecipeActivity;
 import com.example.cookim.databinding.ActivityFavoritesBinding;
 import com.example.cookim.databinding.ItemRecipeContentBinding;
+import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,6 +41,7 @@ public class FavoritesActivity extends Activity {
     Handler handler;
     List<Recipe> recipes;
     long myId;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +52,11 @@ public class FavoritesActivity extends Activity {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
-        model = new Model();
+        model = new Model(this);
         controller = new Controller();
         bottomNavigationViewClick();
         handler = new Handler(Looper.getMainLooper());
-        token = model.readToken(getApplicationContext());
+        token = model.readFile(getApplicationContext(), "token");
         executor = Executors.newSingleThreadExecutor();
         Intent intent = getIntent();
 
@@ -68,10 +69,10 @@ public class FavoritesActivity extends Activity {
             }
         });
 
-        if (token != null){
+        if (token != null) {
             loadData();
 
-        }else{
+        } else {
 
             controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
         }
@@ -88,18 +89,25 @@ public class FavoritesActivity extends Activity {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                recipes = model.getFavorites(token,getApplicationContext());
+                try {
+                    recipes = model.getFavorites(token, getApplicationContext());
 
-                if (recipes != null){
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadView(recipes);
-                        }
-                    });
-                }else{
+                    if (recipes != null) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadView(recipes);
+                            }
+                        });
+                    } else {
+
+                    }
+                } catch (PersistException e) {
+                    controller.displayErrorView(getApplicationContext(), e.getCode());
 
                 }
+
+
             }
         });
 
@@ -108,6 +116,7 @@ public class FavoritesActivity extends Activity {
 
     /**
      * displays the data in the view
+     *
      * @param recipes
      */
     private void loadView(List<Recipe> recipes) {
@@ -126,7 +135,7 @@ public class FavoritesActivity extends Activity {
             recipeBinding.btLike.setImageResource(recipe.isLiked() ? R.drawable.selectedheart : R.drawable.nonselectedheart);
             recipeBinding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
 
-            if (recipe.getPath_img()!= null){
+            if (recipe.getPath_img() != null) {
                 String portrait = model.downloadImg(recipe.getPath_img());
                 Glide.with(this)
                         .load(portrait)
@@ -145,7 +154,6 @@ public class FavoritesActivity extends Activity {
                             }
                         })
                         .into(recipeBinding.img01);
-
 
 
             }
@@ -179,6 +187,8 @@ public class FavoritesActivity extends Activity {
                         } catch (Exception e) {
                             System.out.println(e.toString());
                         }
+                    } else if (result.getResult().equals("0000")) {
+                        controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                     } else {
                         recipe.setSaved(!recipe.isSaved());
                     }
@@ -206,6 +216,8 @@ public class FavoritesActivity extends Activity {
                         } catch (Exception e) {
                             System.out.println(e.toString());
                         }
+                    } else if (result.getResult().equals("0000")) {
+                        controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                     } else {
 
 //                            pressLike = false;
@@ -231,7 +243,6 @@ public class FavoritesActivity extends Activity {
     }
 
     /**
-     *
      * @param num
      * @param id
      * @return
@@ -244,7 +255,7 @@ public class FavoritesActivity extends Activity {
         try {
 
             result = executor.submit(() -> {
-                return model.saveRecipe(parametros,this);
+                return model.saveRecipe(parametros, this);
             }).get();
         } catch (Exception e) {
             System.out.println("Error al enviar like: " + e.getMessage());
@@ -254,7 +265,6 @@ public class FavoritesActivity extends Activity {
     }
 
     /**
-     *
      * @param num
      * @param id
      * @return

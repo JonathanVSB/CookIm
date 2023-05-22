@@ -13,17 +13,8 @@ import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityPresentationBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
-import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.io.FileOutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +25,7 @@ public class PresentationActivity extends Activity {
 
     String token;
     Model model;
+    Controller controller;
 
     ExecutorService executor;
 
@@ -49,9 +41,12 @@ public class PresentationActivity extends Activity {
         setContentView(binding.getRoot());
 
         executor = Executors.newSingleThreadExecutor();
-        model = new Model();
-//        token = readToken();
-        token = model.readToken(getApplicationContext());
+        model  = new Model(this);
+        controller = new Controller();
+
+
+        token = model.readFile(getApplicationContext(), "token");
+
 
 
         if (token == null) {
@@ -78,6 +73,8 @@ public class PresentationActivity extends Activity {
                             displayLogInPage();
                             finish();
                         }
+                    }else if (result.getResult().equals("0000")) {
+                        controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                     } else {
                         displayLogInPage();
                         finish();
@@ -107,4 +104,7 @@ public class PresentationActivity extends Activity {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
+
+
+
 }

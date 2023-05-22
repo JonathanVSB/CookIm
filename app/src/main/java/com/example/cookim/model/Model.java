@@ -9,6 +9,8 @@ import com.example.cookim.dao.NetworkUtils;
 import com.example.cookim.dao.Path;
 import com.example.cookim.dao.RecipeDao;
 import com.example.cookim.dao.UserDao;
+import com.example.cookim.exceptions.OpResult;
+import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.recipe.Comment;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
@@ -16,8 +18,6 @@ import com.example.cookim.model.user.UserModel;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,17 +29,20 @@ public class Model {
     private Path path;
     private IngredientDao ingredientDao;
     private NetworkUtils networkUtils;
+    Context context;
 //    private Context context ;
 
 
-    public Model(/*Context appContext*/) {
+    public Model(Context appContext) {
 
-        path = new Path();
         userDao = new UserDao();
+        this.context = appContext;
         recipeDao = new RecipeDao();
         commentDao = new CommentDao();
         networkUtils = new NetworkUtils();
         ingredientDao = new IngredientDao();
+        path = new Path(appContext);
+
 //        this.context = appContext;
 
 
@@ -47,6 +50,7 @@ public class Model {
 
     /**
      * validates the user credentials
+     *
      * @param parametros
      * @param context
      * @return
@@ -80,13 +84,18 @@ public class Model {
      * @param token
      * @return
      */
-    public UserModel myProfile(String token) {
+    public UserModel myProfile(String token) throws PersistException {
         UserModel userModel = null;
+
+        if (!networkUtils.isNetworkAvailable(context)) {
+            //No connection
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
+        }
 
         try {
             userModel = userDao.readUserResponse(path.MYPROFILE, token);
         } catch (Exception e) {
-
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         return userModel;
@@ -97,20 +106,20 @@ public class Model {
      *
      * @return
      */
-    public List<Recipe> loadRecipes(String token, Context context) {
+    public List<Recipe> loadRecipes(String token, Context context) throws PersistException {
         List<Recipe> recipes = new ArrayList<>();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
-            // No hay conexión, retornar una lista vacía
-            return recipes;
+            //No connection
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         try {
             recipes = recipeDao.loadMyRecipes(path.HOMEPAGE, token);
         } catch (Exception e) {
             //
-            // Log.e("Load recipes error", "Error loading recipes: " + e.toString());
+
         }
 
         return recipes;
@@ -125,7 +134,6 @@ public class Model {
     public DataResult likeRecipe(String parametros, Context context) {
         DataResult result = new DataResult();
 
-        // Verificar la conexión
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -154,7 +162,7 @@ public class Model {
     public DataResult saveRecipe(String parametros, Context context) {
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -183,7 +191,7 @@ public class Model {
     public DataResult logout(String token, Context context) {
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -218,7 +226,7 @@ public class Model {
     public DataResult signIn(String username, String password, String full_name, String email, String phone, long id_rol, File file, Context context) {
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -240,7 +248,7 @@ public class Model {
     public DataResult editData(String token, UserModel user, File file, Context context) {
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -260,8 +268,6 @@ public class Model {
     }
 
 
-
-
     /**
      * returns the details of the recipe found by his id
      *
@@ -269,20 +275,19 @@ public class Model {
      * @param token
      * @return
      */
-    public Recipe loadRecipeSteps(int id, String token, Context context) {
+    public Recipe loadRecipeSteps(int id, String token, Context context) throws PersistException {
         Recipe recipe = new Recipe();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             // No hay conexión, retornar un objeto Recipe vacío
-            return recipe;
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         try {
             recipe = recipeDao.loadRecipeSteps(path.STEPS, id, token);
         } catch (Exception e) {
-            //
-            // Log.e("Load recipe steps error", "Error loading recipe steps: " + e.toString());
+
         }
 
         return recipe;
@@ -309,21 +314,20 @@ public class Model {
      * @param token
      * @return
      */
-    public List<Recipe> userRecipes(String token, long id, Context context) {
+    public List<Recipe> userRecipes(String token, long id, Context context) throws PersistException {
         String param = token + ":" + String.valueOf(id);
         List<Recipe> recipes = new ArrayList<>();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             // No hay conexión, retornar una lista vacía
-            return recipes;
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         try {
             recipes = recipeDao.loadMyRecipes(path.OTHERPROFILES, param);
         } catch (Exception e) {
-            //
-            // Log.e("User recipes error", "Error loading user recipes: " + e.toString());
+
         }
 
         return recipes;
@@ -337,20 +341,19 @@ public class Model {
      * @param id
      * @return
      */
-    public List<Ingredient> getNewIngredients(String token, int id, Context context) {
+    public List<Ingredient> getNewIngredients(String token, int id, Context context) throws PersistException {
         List<Ingredient> ingredients = new ArrayList<>();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             // No hay conexión, retornar una lista vacía
-            return ingredients;
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         try {
             ingredients = ingredientDao.getAll(path.INGREDIENTS, token, id);
         } catch (Exception e) {
-            //
-            // Log.e("Get new ingredients error", "Error getting new ingredients: " + e.toString());
+
         }
 
         return ingredients;
@@ -359,6 +362,7 @@ public class Model {
 
     /**
      * removes recipe from database
+     *
      * @param token
      * @param id
      * @return
@@ -367,7 +371,7 @@ public class Model {
         String param = token + ":" + String.valueOf(id);
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -408,7 +412,7 @@ public class Model {
     public DataResult autologin(String token, Context context) {
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -439,7 +443,7 @@ public class Model {
     public DataResult createRecipe(Recipe recipe, String token, File file, Context context) {
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -466,10 +470,10 @@ public class Model {
      * @param id
      * @return
      */
-    public UserModel userProfile(String token, long id, Context context) {
+    public UserModel userProfile(String token, long id, Context context) throws PersistException {
         UserModel userModel = new UserModel();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             // No hay conexión, retornar un objeto UserModel vacío
             return userModel;
@@ -478,8 +482,7 @@ public class Model {
         try {
             userModel = userDao.readOtherUserResponse(path.OTHERPROFILES, token, id);
         } catch (Exception e) {
-            //
-            // Log.e("User profile error", "Error loading user profile: " + e.toString());
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         return userModel;
@@ -493,13 +496,13 @@ public class Model {
      * @param id
      * @return
      */
-    public List<Comment> getCommentsOfRecipe(String token, long id, Context context) {
+    public List<Comment> getCommentsOfRecipe(String token, long id, Context context) throws PersistException {
         List<Comment> result = new ArrayList<>();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             // No hay conexión, retornar una lista vacía
-            return result;
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         try {
@@ -518,14 +521,14 @@ public class Model {
      *
      * @return the token or null
      */
-    public String readToken(Context cont) {
+    public String readFile(Context cont, String filename) {
         // Gets an instance of the application context
         Context context = cont;
 
         // Open the file in write mode and create the FileOutputStream object
         FileInputStream inputStream;
         try {
-            inputStream = context.openFileInput("token.txt");
+            inputStream = context.openFileInput(filename + ".txt");
 
 
             //Reads the token data from file
@@ -563,7 +566,7 @@ public class Model {
     public DataResult createNewComment(String token, Comment comment, Context context) {
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -585,6 +588,7 @@ public class Model {
 
     /**
      * Send new follow to user
+     *
      * @param token
      * @param userId
      * @param num
@@ -594,7 +598,7 @@ public class Model {
         String param = token + ":" + String.valueOf(num) + ":" + String.valueOf(userId);
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -616,16 +620,17 @@ public class Model {
 
     /**
      * Gets list of the favoritesrecipes saved by the use
+     *
      * @param token
      * @return
      */
-    public List<Recipe> getFavorites(String token, Context context) {
+    public List<Recipe> getFavorites(String token, Context context) throws PersistException {
         List<Recipe> recipes = new ArrayList<>();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             // No hay conexión, retornar una lista vacía
-            return recipes;
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         try {
@@ -641,6 +646,7 @@ public class Model {
 
     /**
      * ask server to change the password of the user
+     *
      * @param token
      * @param pass
      * @param newpass
@@ -650,7 +656,7 @@ public class Model {
         String param = token + ":" + pass + ":" + newpass;
         DataResult result = new DataResult();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             result.setResult("0000");
             result.setData("No connection");
@@ -672,18 +678,19 @@ public class Model {
 
     /**
      * search the recipe by the searchQuery
+     *
      * @param token
      * @param searchQuery
      * @return
      */
-    public List<Recipe> searchRecipe(String token, String searchQuery, Context context) {
+    public List<Recipe> searchRecipe(String token, String searchQuery, Context context) throws PersistException {
         String param = token + ":" + searchQuery;
         List<Recipe> recipes = new ArrayList<>();
 
-        // Verificar la conexión
+        // check network conn
         if (!networkUtils.isNetworkAvailable(context)) {
             // No hay conexión, retornar una lista vacía
-            return recipes;
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
         }
 
         try {
