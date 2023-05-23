@@ -7,7 +7,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".controller.SearchRecipeActivity">
 
-    <RelativeLayout
+ <RelativeLayout
         android:id="@+id/searcherCons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,19 +16,30 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_bar"
-            android:layout_width="match_parent"
+            android:layout_width="260dp"
             android:layout_height="wrap_content"
-            app:queryHint="Introduce el nombre e la receta"
+            android:minHeight="60dp"
+            app:queryHint="Buscar"
             app:iconifiedByDefault="false"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/searchview_background"
+            style="@style/SearchViewStyle"
             />
 
-
+     <Spinner
+         android:id="@+id/filter_spinner"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_toEndOf="@id/search_bar"
+         android:layout_centerVertical="true"
+         android:layout_marginTop="40dp"
+         android:layout_marginEnd="16dp"
+         />
     </RelativeLayout>
-    
+
+
     <RelativeLayout
         android:id="@+id/consbar"
         android:layout_width="match_parent"
@@ -37,13 +48,23 @@
         android:layout_above="@id/bottom_nav_view"
         >
 
+        <TextView
+            android:id="@+id/msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/consbar"
+            android:text="No hay coincidencias"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            />
         <androidx.core.widget.NestedScrollView
             android:id="@+id/viewScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_below="@id/msg"
             app:layout_constraintTop_toTopOf="parent">
-
 
 
             <TableLayout

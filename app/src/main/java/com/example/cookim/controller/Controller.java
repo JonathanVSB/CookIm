@@ -32,12 +32,13 @@ public class Controller extends Activity {
      */
     public void displayErrorMessage(Context context, String mensaje) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Seguro que quieres continuar?")
+        builder.setTitle("ERROR")
                 .setMessage(mensaje)
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //
+
                     }
                 });
 

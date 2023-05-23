@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TableRow;
 
 import androidx.annotation.Nullable;
@@ -58,6 +60,7 @@ public class SearchRecipeActivity extends Activity {
         if (token != null && !token.isEmpty()) {
 
             loadPage();
+            loadSpinner();
         } else {
 
             controller.displayLogInPage(this, LoginActivity.class);
@@ -68,9 +71,23 @@ public class SearchRecipeActivity extends Activity {
     }
 
     /**
+     * loads the spinner with items from String XML
+     */
+    private void loadSpinner() {
+        Spinner spin = binding.filterSpinner;
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.spinner_options, android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spin.setAdapter(adapter);
+    }
+
+
+    /**
      * creates the elements to make the view work
      */
     private void loadPage() {
+        binding.msg.setVisibility(View.GONE);
         binding.searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -79,37 +96,63 @@ public class SearchRecipeActivity extends Activity {
                         @Override
                         public void run() {
                             try {
-                                recipeList = model.searchRecipe(token, query, getApplicationContext());
+
+                                String selectedFilter = binding.filterSpinner.getSelectedItem().toString();
+
+
+                                if (selectedFilter.equals("Recetas")){
+                                    recipeList = model.searchRecipe(token, query, getApplicationContext());
+                                }else if (selectedFilter.equals("Categoria")){
+                                    String query = binding.searchBar.getQuery().toString();
+                                    String firstLetter = query.substring(0, 1).toUpperCase();
+                                    String modifiedQuery = firstLetter + query.substring(1);
+
+                                    recipeList = model.searchRecipeByCategory(token, modifiedQuery, getApplicationContext());
+
+                                }
+
 
                                 if (recipeList != null) {
+
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
+                                            binding.msg.setVisibility(View.GONE);
                                             binding.tableView.removeAllViews();
 
-                                            for (Recipe recipe : recipeList) {
-                                                TableRow row = new TableRow(SearchRecipeActivity.this);
-                                                ItemRecipeResultBinding resultBinding = ItemRecipeResultBinding.inflate(getLayoutInflater());
+                                            if (recipeList.size()!=0){
+                                                for (Recipe recipe : recipeList) {
+                                                    TableRow row = new TableRow(SearchRecipeActivity.this);
+                                                    ItemRecipeResultBinding resultBinding = ItemRecipeResultBinding.inflate(getLayoutInflater());
 
-                                                resultBinding.steptitle.setText(recipe.getName());
+                                                    resultBinding.steptitle.setText(recipe.getName());
 
-                                                if (!recipe.getPath_img().isEmpty()) {
-                                                    String img = model.downloadImg(recipe.getPath_img());
-                                                    Glide.with(SearchRecipeActivity.this)
-                                                            .load(img)
-                                                            .into(resultBinding.img01);
-                                                }
-
-                                                resultBinding.recipeCard.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        controller.displayRecipeDetails(getApplicationContext(), RecipeStepsActivity.class, recipe.getId(), myId);
+                                                    if (!recipe.getPath_img().isEmpty()) {
+                                                        String img = model.downloadImg(recipe.getPath_img());
+                                                        Glide.with(SearchRecipeActivity.this)
+                                                                .load(img)
+                                                                .into(resultBinding.img01);
                                                     }
-                                                });
 
-                                                row.addView(resultBinding.getRoot());
-                                                binding.tableView.addView(row);
+                                                    resultBinding.recipeCard.setOnClickListener(new View.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(View v) {
+                                                            controller.displayRecipeDetails(getApplicationContext(), RecipeStepsActivity.class, recipe.getId(), myId);
+                                                        }
+                                                    });
+
+                                                    row.addView(resultBinding.getRoot());
+                                                    binding.tableView.addView(row);
+                                                }
+                                            }else{
+                                                binding.tableView.removeAllViews();
+                                                binding.msg.setVisibility(View.VISIBLE);
+
+
                                             }
+
+
+
                                         }
                                     });
 

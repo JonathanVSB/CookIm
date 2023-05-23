@@ -15,6 +15,9 @@ import android.widget.TableRow;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.provider.FontRequest;
+import androidx.emoji.text.EmojiCompat;
+import androidx.emoji.text.FontRequestEmojiCompatConfig;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -61,6 +64,9 @@ public class CommentActivity extends Activity {
         Intent intent = getIntent();
         int recipeId = intent.getIntExtra("recipe_id", -1);
         token = model.readFile(getApplicationContext(), "token");
+
+
+
 
         setupEditTextListener();
         binding.message.setVisibility(View.VISIBLE);

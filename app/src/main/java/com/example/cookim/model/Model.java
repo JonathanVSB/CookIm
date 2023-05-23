@@ -704,4 +704,31 @@ public class Model {
         return recipes;
     }
 
+    /**
+     * search the recipe by the searchQuery
+     *
+     * @param token
+     * @param searchQuery
+     * @return
+     */
+    public List<Recipe> searchRecipeByCategory(String token, String searchQuery, Context context) throws PersistException {
+        String param = token + ":" + searchQuery;
+        List<Recipe> recipes = new ArrayList<>();
+
+        // check network conn
+        if (!networkUtils.isNetworkAvailable(context)) {
+            // No hay conexión, retornar una lista vacía
+            throw new PersistException(OpResult.DB_NOCONN.getCode());
+        }
+
+        try {
+            recipes = recipeDao.loadMyRecipes(path.SEARCHCATEGORY, param);
+        } catch (Exception e) {
+            //
+            // Log.e("Search recipe error", "Error searching recipe: " + e.toString());
+        }
+
+        return recipes;
+    }
+
 }

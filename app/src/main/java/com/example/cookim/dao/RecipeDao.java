@@ -615,7 +615,23 @@ public class RecipeDao {
             for (int i = 0; i < ingredients.size(); i++) {
                 wr.writeBytes("--" + boundary + "\r\n");
                 wr.writeBytes("Content-Disposition: form-data; name=\"ingredients[" + i + "]\"\r\n\r\n" + gson.toJson(ingredients.get(i)) + "\r\n");
+
+                System.out.println("Ingredients [" + i + "]: " + ingredients.get(i));
             }
+
+            List<Category> cat = recipe.getCategoryList();
+            if(cat != null) {
+                for (int i = 0; i < cat.size(); i++) {
+                    wr.writeBytes("--" + boundary + "\r\n");
+                    wr.writeBytes("Content-Disposition: form-data; name=\"categories[" + i + "]\"\r\n\r\n" + gson.toJson(cat.get(i)) + "\r\n");
+
+                    System.out.println("Categoría [" + i + "]: " + cat.get(i));
+                }
+            } else {
+
+            }
+
+
 
             // Send steps as JSON and images
             List<Step> steps = recipe.getSteps();
@@ -642,14 +658,6 @@ public class RecipeDao {
                     inputStream.close();
                 }
             }
-
-            List<Category> cat = recipe.getCategoryList();
-            for (int i = 0; i < cat.size(); i++) {
-                wr.writeBytes("--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"categories[" + i + "]\"\r\n\r\n" + gson.toJson(cat.get(i)) + "\r\n");
-            }
-
-
 
             wr.writeBytes("--" + boundary + "--\r\n");
             wr.flush();

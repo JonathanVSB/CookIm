@@ -48,6 +48,8 @@ public class AddCategoryActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_category);
         binding = ActivityAddCategoryBinding.inflate(getLayoutInflater());
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(binding.getRoot());
         handler = new Handler(Looper.getMainLooper());
         executor = Executors.newSingleThreadExecutor();
@@ -102,6 +104,7 @@ public class AddCategoryActivity extends Activity {
      * loads the actions of buttons
      */
     private void loadPage() {
+
 
         binding.button1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -351,7 +354,7 @@ public class AddCategoryActivity extends Activity {
                             if (result.getResult().equals("1")) {
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
                             } else if (result.getResult().equals("0001")) {
-                                controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
+                                controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
 
                             } else {
 

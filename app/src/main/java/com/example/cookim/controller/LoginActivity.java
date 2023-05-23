@@ -18,6 +18,9 @@ import com.example.cookim.model.Model;
 import com.example.cookim.model.user.LoginModel;
 
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -99,7 +102,9 @@ public class LoginActivity extends AppCompatActivity {
         if (v.getId() == binding.btLogin.getId()) {
             if (!TextUtils.isEmpty(binding.etUsername.getText()) && !TextUtils.isEmpty(binding.etPass.getText())) {
                 String name = binding.etUsername.getText().toString();
-                String password = binding.etPass.getText().toString();
+                String pass = binding.etPass.getText().toString();
+                String password = getSHA256(pass);
+                System.out.println("Pass: "+password);
                 LoginModel userData = new LoginModel(name, password);
                 binding.errormsg.setVisibility(View.INVISIBLE);
                 validation(userData);
@@ -204,6 +209,30 @@ public class LoginActivity extends AppCompatActivity {
             outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Encrypt String received
+     * @param input
+     * @return
+     */
+    public static String getSHA256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error al generar hash SHA-256: " + e.getMessage());
+            return null;
         }
     }
 

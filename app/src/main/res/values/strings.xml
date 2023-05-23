@@ -9,4 +9,11 @@
     <string name="favorites">Favorites</string>
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
+
+    <string-array name="spinner_options">
+        <item>Recetas </item>
+        <item>Categoria</item>
+        <item>Ingredientes</item>
+    </string-array>
+
 </resources>

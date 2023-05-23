@@ -16,5 +16,20 @@
         <item name="submitBackground">@null</item>
     </style>
 
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
 
+    <!-- Spinner Style -->
+    <style name="SpinnerTheme" parent="Base.Widget.AppCompat.Spinner">
+        <item name="android:textSize">20sp</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="android:maxWidth">400dp</item> <!-- Establece el ancho máximo deseado -->
+        <item name="android:queryBackground">@drawable/searchview_background</item> <!-- Personaliza el fondo de la consulta según tus necesidades -->
+    </style>
 </resources>

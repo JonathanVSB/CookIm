@@ -312,27 +312,40 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                DataResult result = model.removeRecipe(token, id, getApplicationContext());
 
-                if (result != null) {
-                    if (result.getResult().equals("1")) {
-                        int ownId = (int) user.getId();
+                try {
+                    DataResult result = model.removeRecipe(token, id, getApplicationContext());
 
-                        controller.displayMyProfile(getApplicationContext(), MyProfileActivity.class, user.getId(), ownId);
+                    if (result != null) {
+                        if (result.getResult().equals("1")) {
+                            int ownId = (int) user.getId();
+
+                            controller.displayMyProfile(getApplicationContext(), MyProfileActivity.class, user.getId(), ownId);
 //
+                        } else {
+
+                            controller.displayErrorMessage(MyProfileActivity.this, "La receta no ha podido ser borrada");
+//
+                        }
+                    } else if (result.getResult().equals("0000")) {
+                        controller.displayActivity(MyProfileActivity.this, NoConnectionActivity.class);
                     } else {
 
-                        controller.displayErrorMessage(MyProfileActivity.this, "La receta no ha podido ser borrada");
-//
+
+                        controller.displayErrorMessage(MyProfileActivity.this, "La conexión ha fallado");
+
                     }
-                } else if (result.getResult().equals("0000")) {
-                    controller.displayActivity(MyProfileActivity.this, NoConnectionActivity.class);
-                } else {
 
-
-                   controller.displayErrorMessage(MyProfileActivity.this, "La conexión ha fallado");
+                } catch (Exception e) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            controller.displayErrorMessage(MyProfileActivity.this, "La receta no ha podido ser borrada");
+                        }
+                    });
 
                 }
+
             }
         });
     }

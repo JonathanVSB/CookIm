@@ -46,6 +46,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -183,8 +185,9 @@ public class SignActivity extends AppCompatActivity {
             //T9odo send file
 
         } else {
+            String password = getSHA256(user.getPassword());
             DataResult res = model.signIn(user.getUsername(),
-                    user.getPassword(),
+                    password,
                     user.getFull_name(),
                     user.getEmail(),
                     user.getPhone(),
@@ -391,6 +394,30 @@ public class SignActivity extends AppCompatActivity {
             outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Encrypt String received
+     * @param input
+     * @return
+     */
+    public static String getSHA256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error al generar hash SHA-256: " + e.getMessage());
+            return null;
         }
     }
 
