@@ -6,11 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Looper;
+import android.os.Parcelable;
 
+import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.user.UserModel;
 
+import java.io.Serializable;
 import java.util.logging.Handler;
 
 public class Controller extends Activity {
@@ -22,14 +25,53 @@ public class Controller extends Activity {
 
     }
 
+    /**
+     * Displays and error pop-up message
+     * @param context
+     * @param mensaje
+     */
     public void displayErrorMessage(Context context, String mensaje) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("ERROR")
+        builder.setTitle("Seguro que quieres continuar?")
                 .setMessage(mensaje)
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * Displays and error pop-up message to confirm the process the user selected
+     * @param context
+     * @param mensaje
+     */
+    public void displayConfirmEnd(Context context, String mensaje) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("ERROR")
+                .setMessage(mensaje)
+
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        displayActivity(context, HomeActivity.class);
+
+                        // Finalizar el Activity actual
+                        if (context instanceof Activity) {
+                            ((Activity) context).finish();
+                        }
+
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //close the dialog
+                        dialog.cancel();
                     }
                 });
 
@@ -132,33 +174,24 @@ public class Controller extends Activity {
         context.startActivity(intent);
     }
 
-    public void displayCategoryActivity(Context context, Class<?> Class, Recipe recipe) {
+    /**
+     * @param context
+     * @param Class
+     * @param recipeJson
+     */
+    public void displayCategoryActivity(Context context, Class<?> Class, String recipeJson) {
         Intent intent = new Intent(context, Class);
-        intent.putExtra("recipe", recipe);
+        intent.putExtra("recipeJson", recipeJson);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
     public void displayErrorView(Context context, int id) {
         Intent intent = null;
-
-        switch (id) {
-            case 101:
-                intent = new Intent(context, NoConnectionActivity.class);
-                intent.putExtra("ErrorCode", id);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-                break;
-
-            case 102:
-                intent = new Intent(context, NoConnectionActivity.class);
-                intent.putExtra("ErrorCode", id);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-                break;
-
-
-        }
+        intent = new Intent(context, NoConnectionActivity.class);
+        intent.putExtra("ErrorCode", id);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
 
 
     }

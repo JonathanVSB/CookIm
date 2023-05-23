@@ -372,7 +372,7 @@ public class HomeActivity extends Activity implements HomeListener {
                         }
 
                     } catch (PersistException e) {
-                        controller.displayErrorView(getApplicationContext(), e.getCode());
+                        controller.displayErrorView(HomeActivity.this, e.getCode());
                     }
 
 
@@ -483,13 +483,13 @@ public class HomeActivity extends Activity implements HomeListener {
 
                     } else {
 
-//                        controller.displayErrorMessage(getApplicationContext(), "La receta no ha podido ser borrada");
+                        controller.displayErrorMessage(HomeActivity.this, "La receta no ha podido ser borrada");
 //
                     }
                 } else if (result.getResult().equals("0000")) {
                     controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                 } else {
-//                    controller.displayErrorMessage(getApplicationContext(), "La conexión ha fallado");
+                    controller.displayErrorMessage(HomeActivity.this, "La conexión ha fallado");
                 }
             }
         });

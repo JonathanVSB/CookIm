@@ -121,7 +121,7 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
                         }
 
                     } catch (PersistException e) {
-                        controller.displayErrorView(getApplicationContext(), e.getCode());
+                        controller.displayErrorView(MyProfileActivity.this, e.getCode());
                     }
 
                 }
@@ -322,15 +322,15 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
 //
                     } else {
 
-//                        controller.displayErrorMessage(getApplicationContext(), "La receta no ha podido ser borrada");
+                        controller.displayErrorMessage(MyProfileActivity.this, "La receta no ha podido ser borrada");
 //
                     }
                 } else if (result.getResult().equals("0000")) {
-                    controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
+                    controller.displayActivity(MyProfileActivity.this, NoConnectionActivity.class);
                 } else {
 
 
-//                    controller.displayErrorMessage(getApplicationContext(), "La conexión ha fallado");
+                   controller.displayErrorMessage(MyProfileActivity.this, "La conexión ha fallado");
 
                 }
             }

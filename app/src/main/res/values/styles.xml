@@ -15,4 +15,6 @@
         <item name="queryBackground">@drawable/rounded_search_view</item>
         <item name="submitBackground">@null</item>
     </style>
+
+
 </resources>

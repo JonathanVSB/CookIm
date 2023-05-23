@@ -97,13 +97,15 @@
         <EditText
             android:id="@+id/etComment"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
             android:layout_weight="1"
             android:layout_marginStart="15dp"
             android:background="@drawable/rounded_search_view"
             android:hint="Enter your comment..."
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
+            android:gravity="center_vertical"
             />
 
         <com.google.android.material.imageview.ShapeableImageView

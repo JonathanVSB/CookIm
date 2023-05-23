@@ -68,13 +68,18 @@ public class EditPasswordActivity extends Activity {
             controller.displayActivity(this, HomeActivity.class);
         } else if (v.getId() == binding.btsend.getId()) {
 
-            if (!toWeakPass()) {
+            if (areFieldsEmpty()) {
+                binding.erroMsg.setText("*Debes rellenar todos los campos*");
+                binding.erroMsg.setVisibility(View.VISIBLE);
+            }else if (!toWeakPass()) {
                 binding.erroMsg.setText("*La contraseña es demasiado debil*");
                 binding.erroMsg.setVisibility(View.VISIBLE);
+
             } else {
                 if (!binding.tvnewPass.getText().toString().equals(binding.tvnewPass2.getText().toString())) {
                     //TODO
-                    //the camps of new pass are not the same
+                    binding.erroMsg.setText("*Las nuevas contraseñas no coinciden*");
+                    binding.erroMsg.setVisibility(View.VISIBLE);
                 } else if (binding.tvnewPass.getText().toString().equals(binding.tvnewPass2.getText().toString())) {
                     executor.execute(new Runnable() {
                         @Override
@@ -137,5 +142,17 @@ public class EditPasswordActivity extends Activity {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Check the fields of the view to check if any of them is empty
+     *
+     * @return
+     */
+    private boolean areFieldsEmpty() {
+        return binding.tvnewPass.getText().toString().isEmpty()||
+                binding.tvPass.getText().toString().isEmpty() ||
+                binding.tvnewPass2.getText().toString().isEmpty();
+
     }
 }

@@ -107,6 +107,10 @@
             android:name=".controller.SearchRecipeActivity"
             android:theme="@style/Theme.CookIm.NoActionBar"
             android:exported="true" />
+        <activity
+            android:name=".controller.AddCategoryActivity"
+            android:theme="@style/Theme.CookIm.NoActionBar"
+            android:exported="true" />
 
     </application>
 

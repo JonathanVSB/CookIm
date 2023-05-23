@@ -49,6 +49,7 @@ import com.example.cookim.model.Model;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.recipe.Step;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -232,10 +233,14 @@ public class AddRecipeActivity extends AppCompatActivity {
 
                         if (recipe != null) {
 
-                            controller.displayCategoryActivity(getApplicationContext(), AddCategoryActivity.class, recipe);
+                            Gson gson = new Gson();
+
+                            String recipeJson = gson.toJson(recipe);
+
+                            controller.displayCategoryActivity(getApplicationContext(), AddCategoryActivity.class, recipeJson);
 
                         } else {
-                            controller.displayErrorMessage(getApplicationContext(), "La receta contiene datos no válidos");
+                            controller.displayErrorMessage(AddRecipeActivity.this, "La receta contiene datos no válidos");
 
                         }
 
@@ -246,7 +251,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
             } else {
 
-                controller.displayErrorMessage(getApplicationContext(), "La receta debe tener foto de portada, ingredientes, y pasos");
+                controller.displayErrorMessage(AddRecipeActivity.this, "La receta debe tener foto de portada, ingredientes, y pasos");
 
             }
 
@@ -401,26 +406,30 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     /**
      * Create a new Recipe with data of the view or return null
-     *
      * @param file
-     * @param toString
-     * @param toString1
+     * @param name
+     * @param description
      * @param steps
      * @param ingredients
      * @return
      */
-    private Recipe createRecipe(File file, String toString, String toString1, List<Step> steps, List<Ingredient> ingredients) {
+    private Recipe createRecipe(File file, String name, String description, List<Step> steps, List<Ingredient> ingredients) {
         Recipe recipe = null;
 
         // Check if all parameters are not null and not empty
         if (file != null &&
-                toString != null && !toString.trim().isEmpty() &&
-                toString1 != null && !toString1.trim().isEmpty() &&
+                name != null && !name.trim().isEmpty() &&
+                description != null && !description.trim().isEmpty() &&
                 steps != null && !steps.isEmpty() &&
                 ingredients != null && !ingredients.isEmpty()) {
 
             // Create the Recipe object
-            recipe = new Recipe(file, toString, toString1, steps, ingredients);
+            recipe = new Recipe();
+            recipe.setFile(file);
+            recipe.name = name;
+            recipe.description = description;
+            recipe.steps = steps;
+            recipe.ingredients = ingredients;
         }
 
         return recipe;

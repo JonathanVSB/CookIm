@@ -4,12 +4,12 @@ import java.io.File;
 
 public class Step {
 
-    File file;
+    public File file;
     long id;
     long recipe_id;
     long step_number;
     String description;
-    String path;
+    public String path;
 
     public Step(long id, long recipe_id, long step_number, String description) {
         this.id = id;
@@ -18,10 +18,10 @@ public class Step {
         this.description = description;
     }
 
-    public Step(File file, long step_number, String description) {
-        this.file = file;
-        this.step_number = step_number;
+    public Step(File file, long stepnum, String description) {
+        this.step_number = stepnum;
         this.description = description;
+        setFile(file);
     }
 
 
@@ -81,7 +81,7 @@ public class Step {
     }
 
     public void setFile(File file) {
-        this.file = file;
+        this.path = file.getPath();
     }
 }
 

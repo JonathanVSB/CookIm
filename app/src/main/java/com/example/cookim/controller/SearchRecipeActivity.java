@@ -118,7 +118,7 @@ public class SearchRecipeActivity extends Activity {
                                 }
 
                             } catch (PersistException e) {
-                                controller.displayErrorView(getApplicationContext(),e.getCode());
+                                controller.displayErrorView(SearchRecipeActivity.this,e.getCode());
                             }
 
 

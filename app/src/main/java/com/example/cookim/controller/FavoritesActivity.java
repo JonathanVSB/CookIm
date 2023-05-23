@@ -103,7 +103,7 @@ public class FavoritesActivity extends Activity {
 
                     }
                 } catch (PersistException e) {
-                    controller.displayErrorView(getApplicationContext(), e.getCode());
+                    controller.displayErrorView(FavoritesActivity.this, e.getCode());
 
                 }
 

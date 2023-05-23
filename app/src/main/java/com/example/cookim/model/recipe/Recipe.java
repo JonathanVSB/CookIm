@@ -5,15 +5,20 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Recipe implements Parcelable {
+public class Recipe {
 
     public int id;
     public int id_user;
-    public File file;
+
+    @Expose(serialize = false, deserialize = false)
+    public transient File file;
+
     public String name;
     public String description;
     public String path_img;
@@ -22,6 +27,8 @@ public class Recipe implements Parcelable {
     public String user_name;
     public String path;
     public List<Step> steps;
+
+    public List<Category> categoryList;
     public List<Comment> comments;
     public List<Ingredient> ingredients;
 //    private String base64Image;
@@ -47,62 +54,7 @@ public class Recipe implements Parcelable {
     public Recipe() {
     }
 
-    protected Recipe(Parcel in) {
-        id = in.readInt();
-        id_user = in.readInt();
-        file = new File(in.readString());
-        name = in.readString();
-        description = in.readString();
-        path_img = in.readString();
-        rating = in.readDouble();
-        likes = in.readInt();
-        user_name = in.readString();
-        path = in.readString();
-        steps = new ArrayList<>();
-        in.readList(steps, Step.class.getClassLoader());
-        comments = new ArrayList<>();
-        in.readList(comments, Comment.class.getClassLoader());
-        ingredients = new ArrayList<>();
-        in.readList(ingredients, Ingredient.class.getClassLoader());
-        liked = in.readByte() != 0;
-        saved = in.readByte() != 0;
-    }
 
-    public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
-        @Override
-        public Recipe createFromParcel(Parcel in) {
-            return new Recipe(in);
-        }
-
-        @Override
-        public Recipe[] newArray(int size) {
-            return new Recipe[size];
-        }
-    };
-
-    @Override
-    public void writeToParcel(@NonNull Parcel parcel, int flags) {
-        parcel.writeInt(id);
-        parcel.writeInt(id_user);
-        parcel.writeString(file.getAbsolutePath());
-        parcel.writeString(name);
-        parcel.writeString(description);
-        parcel.writeString(path_img);
-        parcel.writeDouble(rating);
-        parcel.writeInt(likes);
-        parcel.writeString(user_name);
-        parcel.writeString(path);
-        parcel.writeList(steps);
-        parcel.writeList(comments);
-        parcel.writeList(ingredients);
-        parcel.writeByte((byte) (liked ? 1 : 0));
-        parcel.writeByte((byte) (saved ? 1 : 0));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
 
     public Recipe(File file, String name, String description, List<Step> steps, List<Ingredient> ingredients) {
@@ -178,6 +130,8 @@ public class Recipe implements Parcelable {
         this.comments = new ArrayList<>();
         this.ingredients = new ArrayList<>();
     }
+
+
 
     //GETTERS AND SETTERS
 
@@ -288,13 +242,15 @@ public class Recipe implements Parcelable {
     }
 
     public File getFile() {
-        return file;
+        if (this.file == null && this.path_img != null) {
+            this.file = new File(this.path_img);
+        }
+        return this.file;
     }
 
     public void setFile(File file) {
-        this.file = file;
+        this.path_img = file.getPath();
     }
-
     public boolean isSaved() {
         return saved;
     }
@@ -303,8 +259,15 @@ public class Recipe implements Parcelable {
         this.saved = saved;
     }
 
+    public List<Category> getCategoryList() {
+        return categoryList;
+    }
 
-    ///METHODS
+    public void setCategoryList(List<Category> categoryList) {
+        this.categoryList = categoryList;
+    }
+
+///METHODS
 
 //    private String encodeFileToBase64(File file) {
 //        String code= "";

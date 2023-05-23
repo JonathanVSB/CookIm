@@ -35,13 +35,14 @@ public class Model {
 
     public Model(Context appContext) {
 
+        path = new Path();
         userDao = new UserDao();
         this.context = appContext;
         recipeDao = new RecipeDao();
         commentDao = new CommentDao();
         networkUtils = new NetworkUtils();
         ingredientDao = new IngredientDao();
-        path = new Path(appContext);
+
 
 //        this.context = appContext;
 

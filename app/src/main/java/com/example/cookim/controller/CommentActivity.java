@@ -118,7 +118,7 @@ public class CommentActivity extends Activity {
                     } else if (result.getResult().equals("0000")) {
                         controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
                     } else {
-                        controller.displayErrorMessage(getApplicationContext(), "El comentario no ha podido ser subido");
+                        controller.displayErrorMessage(CommentActivity.this, "El comentario no ha podido ser subido");
 
                     }
 
@@ -129,36 +129,15 @@ public class CommentActivity extends Activity {
 
 
             } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this);
 
-                builder.setTitle("ERROR")
-                        .setMessage("El comentario no ha podido crearse")
-                        .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                controller.displayErrorMessage(CommentActivity.this, "El comentario no ha podido crearse");
 
             }
             loadPage(id);
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(CommentActivity.this);
 
-            builder.setTitle("ERROR")
-                    .setMessage("El comentario no ha puede estar vacio ni superar los 280 caracteres")
-                    .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+            controller.displayErrorMessage(CommentActivity.this, "El comentario no ha puede estar vacio ni superar los 280 caracteres");
 
-                        }
-                    });
-
-            AlertDialog dialog = builder.create();
-            dialog.show();
 
         }
 

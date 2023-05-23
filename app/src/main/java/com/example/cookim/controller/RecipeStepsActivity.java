@@ -92,7 +92,7 @@ public class RecipeStepsActivity extends Activity {
                     }
 
                 } catch (PersistException e) {
-                    controller.displayErrorView(getApplicationContext(), e.getCode());
+                    controller.displayErrorView(RecipeStepsActivity.this, e.getCode());
 
                 }
 

@@ -1,10 +1,12 @@
 package com.example.cookim.dao;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.cookim.exceptions.OpResult;
 import com.example.cookim.exceptions.PersistException;
 import com.example.cookim.model.DataResult;
+import com.example.cookim.model.recipe.Category;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
 import com.example.cookim.model.recipe.Step;
@@ -332,7 +334,11 @@ public class RecipeDao {
                         int user_id = dataObject.get("id_user").getAsInt();
                         String name = dataObject.get("name").getAsString();
                         String description = dataObject.get("description").getAsString();
-                        String path_img = dataObject.get("path_img").getAsString();
+                        String path_img = "";
+                        if (dataObject.has("path_img")){
+                            path_img = dataObject.get("path_img").getAsString();
+                        }
+
                         double rating = dataObject.get("rating").getAsDouble();
                         int likes = dataObject.get("likes").getAsInt();
                         String user = dataObject.get("user_name").getAsString();
@@ -355,6 +361,8 @@ public class RecipeDao {
                             ingredients.add(new Ingredient(ingredientId, ingredientName));
                         }
 
+
+
                         List<Step> steps = new ArrayList<>();
                         JsonArray stepsArray = dataObject.getAsJsonArray("steps");
                         for (JsonElement stepElement : stepsArray) {
@@ -366,6 +374,14 @@ public class RecipeDao {
                             String stepImg = stepObject.get("path").getAsString();
                             steps.add(new Step(stepId, recipe_id, step_number, stepDescription, stepImg));
                         }
+
+                       // List<Category> categoryList = new ArrayList<>();
+                        //JsonArray categoryArray = dataObject.getAsJsonArray("ingredients");
+                        //for (JsonElement categoryElement : categoryArray) {
+                          //  JsonObject categoryObject = categoryElement.getAsJsonObject();
+                            //String categoryName = categoryObject.get("name").getAsString();
+                            //categoryList.add(new Category(categoryName));
+                        //}
 
                         result = new Recipe(id, user_id, name, description, path_img, liked,saved, rating, likes, user, path, steps, ingredients);
                     } else {
@@ -500,7 +516,10 @@ public class RecipeDao {
                 int user_id = recipeObject.get("id_user").getAsInt();
                 String name = recipeObject.get("name").getAsString();
                 String description = recipeObject.get("description").getAsString();
-                String path_img = recipeObject.get("path_img").getAsString();
+                String path_img ="";
+                if (recipeObject.has("path_img")){
+                    path_img = recipeObject.get("path_img").getAsString();
+                }
                 double rating = recipeObject.get("rating").getAsDouble();
                 int likes = recipeObject.get("likes").getAsInt();
                 String username = "";
@@ -624,6 +643,13 @@ public class RecipeDao {
                 }
             }
 
+            List<Category> cat = recipe.getCategoryList();
+            for (int i = 0; i < cat.size(); i++) {
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"categories[" + i + "]\"\r\n\r\n" + gson.toJson(cat.get(i)) + "\r\n");
+            }
+
+
 
             wr.writeBytes("--" + boundary + "--\r\n");
             wr.flush();
@@ -652,7 +678,8 @@ public class RecipeDao {
             result.setResult("0002");
             result.setData("Request timed out");
         } catch (Exception e) {
-            //Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+            Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+
             result = new DataResult();
             result.setResult("0001");
             result.setData("Error during HTTPS request");

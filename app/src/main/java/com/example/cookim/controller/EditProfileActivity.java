@@ -243,7 +243,7 @@ public class EditProfileActivity extends Activity {
                             }else if (result.getResult().equals("0000")) {
                                 controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                             } else {
-                                controller.displayErrorMessage(getApplicationContext(), "No se ha podido editar la información");
+                                controller.displayErrorMessage(EditProfileActivity.this, "No se ha podido editar la información");
                             }
                         }
                     });
@@ -262,7 +262,7 @@ public class EditProfileActivity extends Activity {
                             }else if (result.getResult().equals("0000")) {
                                 controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                             } else {
-                                controller.displayErrorMessage(getApplicationContext(), "No se ha podido editar la información");
+                                controller.displayErrorMessage(EditProfileActivity.this, "No se ha podido editar la información");
                             }
                         }
                     });
@@ -271,7 +271,7 @@ public class EditProfileActivity extends Activity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            controller.displayErrorMessage(getApplicationContext(), "No has editado ningún dato");
+                            controller.displayErrorMessage(EditProfileActivity.this, "No has editado ningún dato");
                         }
                     });
 
