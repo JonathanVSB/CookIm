@@ -71,6 +71,7 @@ public class EditPasswordActivity extends Activity {
     private void gestionateActions(View v) {
         if (v.getId() == binding.ivcancel.getId()) {
             controller.displayActivity(this, HomeActivity.class);
+            finish();
         } else if (v.getId() == binding.btsend.getId()) {
 
             if (areFieldsEmpty()) {
@@ -93,6 +94,7 @@ public class EditPasswordActivity extends Activity {
 
                             if (result.getResult().equals("1")) {
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
+                                finish();
                             } else if (result.getResult().equals("2")) {
                                 //TODO
                                 //wrong current pass

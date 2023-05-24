@@ -25,16 +25,19 @@
         android:layout_height="60dp"
         app:layout_constraintTop_toBottomOf="@id/profileImage"/>
 
-   <androidx.appcompat.widget.AppCompatEditText
-       android:id="@+id/etUsername"
-       android:layout_width="360dp"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       android:layout_height="50dp"
-       app:layout_constraintTop_toBottomOf="@id/Space1"
-       android:backgroundTint="@color/black"
-       android:hint="Username"
-       android:text="Jojos"/>
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etUsername"
+        android:layout_width="360dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toBottomOf="@id/Space1"
+        android:backgroundTint="@color/black"
+        android:hint="Username"
+        android:singleLine="true"
+        android:text="Jojos"
+        android:imeOptions="actionNext"/>
+
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etPassword"
@@ -58,6 +61,7 @@
         app:layout_constraintTop_toBottomOf="@id/etPassword"
         android:backgroundTint="@color/black"
         android:hint="Full name"
+        android:singleLine="true"
         android:layout_marginTop="18dp"
         android:text="Jonathan Segura"/>
 
@@ -70,6 +74,7 @@
         app:layout_constraintTop_toBottomOf="@id/etFullname"
         android:backgroundTint="@color/black"
         android:hint="Email"
+        android:singleLine="true"
         android:layout_marginTop="15dp"
         android:text="Jojos@gmail.com"/>
 
@@ -82,6 +87,7 @@
         app:layout_constraintTop_toBottomOf="@id/etEmail"
         android:backgroundTint="@color/black"
         android:hint="Telefono"
+        android:singleLine="true"
         android:layout_marginTop="15dp"
         android:text="777747744"/>
 

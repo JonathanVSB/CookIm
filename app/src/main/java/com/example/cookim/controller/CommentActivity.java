@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TableRow;
 
@@ -25,6 +26,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.cookim.R;
+import com.example.cookim.controller.Home.HomeActivity;
 import com.example.cookim.databinding.ActivityCommentBinding;
 import com.example.cookim.databinding.ItemCommentBinding;
 import com.example.cookim.exceptions.PersistException;
@@ -90,7 +92,7 @@ public class CommentActivity extends Activity {
                 @Override
                 public void onClick(View view) {
 
-                    finish();
+                    controller.displayActivity(getApplicationContext(), HomeActivity.class);
                 }
             });
 
@@ -134,10 +136,12 @@ public class CommentActivity extends Activity {
 
                     if (result.getResult().equals("1")) {
                         System.out.println("new comment successfully created");
-
+                        controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
+                        finish();
 
                     } else if (result.getResult().equals("0000")) {
                         controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
+                        finish();
                     } else {
                         controller.displayErrorMessage(CommentActivity.this, "El comentario no ha podido ser subido");
 
@@ -264,20 +268,20 @@ public class CommentActivity extends Activity {
 
                                             }
                                             TableRow row = new TableRow(CommentActivity.this);
-
-                                            TableRow.LayoutParams params = new TableRow.LayoutParams();
-                                            params.setMargins(100, 0, 0, 0); // Replace -50 with the number of pixels you want to move to the left
-                                            row.setLayoutParams(params);
+                                            TableRow.LayoutParams rowParams = new TableRow.LayoutParams(
+                                                    TableRow.LayoutParams.MATCH_PARENT,
+                                                    TableRow.LayoutParams.WRAP_CONTENT
+                                            );
+                                            rowParams.setMargins(0, 0, 0, 20);
+                                            rowParams.gravity = Gravity.CENTER;
+                                            row.setLayoutParams(rowParams);
 
                                             row.addView(commentBinding.getRoot());
 
                                             binding.tlComments.addView(row);
                                         }
                                     });
-
                                 }
-
-
                             } else {
                                 //controller.displayLogInPage(getApplicationContext(), LoginActivity.class);
                             }

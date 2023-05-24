@@ -35,6 +35,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 import com.example.cookim.R;
 import com.example.cookim.controller.AddCategoryActivity;
@@ -87,8 +88,8 @@ public class AddRecipeActivity extends AppCompatActivity {
      * Initializes the user interface and performs other setup tasks.
      *
      * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *                           previously being shut down then this Bundle contains the data it most
+     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -158,7 +159,8 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     /**
-     *Handles the different processes when clicking on various UI elements.
+     * Handles the different processes when clicking on various UI elements.
+     *
      * @param v The View that was clicked.
      */
     private void gestionateProcess(View v) {
@@ -232,29 +234,39 @@ public class AddRecipeActivity extends AppCompatActivity {
             if (portraitFile != null && steps.size() != 0 && ingredients.size() != 0) {
                 //Recipe recipe = new Recipe(file, binding.etname.getText().toString(),
                 //binding.etdescription.getText().toString(), steps, ingredients)
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
 
-                        Recipe recipe = createRecipe(portraitFile, binding.etname.getText().toString(), binding.etdescription.getText().toString()
-                                , steps, ingredients);
+                if (!binding.etname.getText().toString().isEmpty() && !binding.etdescription.getText().toString().isEmpty()) {
 
-                        if (recipe != null) {
+                    binding.ivaccept.setEnabled(false);
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
 
-                            Gson gson = new Gson();
+                            Recipe recipe = createRecipe(portraitFile, binding.etname.getText().toString(), binding.etdescription.getText().toString()
+                                    , steps, ingredients);
 
-                            String recipeJson = gson.toJson(recipe);
+                            if (recipe != null) {
 
-                            controller.displayCategoryActivity(getApplicationContext(), AddCategoryActivity.class, recipeJson);
+                                Gson gson = new Gson();
 
-                        } else {
-                            controller.displayErrorMessage(AddRecipeActivity.this, "La receta contiene datos no válidos");
+                                String recipeJson = gson.toJson(recipe);
+
+                                controller.displayCategoryActivity(getApplicationContext(), AddCategoryActivity.class, recipeJson);
+
+                            } else {
+                                controller.displayErrorMessage(AddRecipeActivity.this, "La receta contiene datos no válidos");
+
+                            }
+
 
                         }
+                    });
+
+                } else {
+                    controller.displayErrorMessage(AddRecipeActivity.this, "La receta debe tener un nombre y una descripción");
 
 
-                    }
-                });
+                }
 
 
             } else {
@@ -355,15 +367,23 @@ public class AddRecipeActivity extends AppCompatActivity {
 
             AlertDialog dialog = builder.create();
             dialog.show();
-        } else if (v.getId() == binding.addbutton.getId()) {
-            //TODO
-            //add New step empty item
+        }else if (v.getId() == binding.addbutton.getId()) {
+            int lastIndex = binding.tlsteps.getChildCount() - 1;
+
+            if (lastIndex >= 0) {
+                TableRow lastRow = (TableRow) binding.tlsteps.getChildAt(lastIndex);
+                ItemNewStepContentBinding lastStepContentBinding = ItemNewStepContentBinding.bind(lastRow.getChildAt(0));
+
+                if (lastStepContentBinding.etElavoration.getText().toString().isEmpty()) {
+                    controller.displayErrorMessage(AddRecipeActivity.this, "El paso anterior aún está vacío");
+                    return;
+                }
+            }
 
             ItemNewStepContentBinding stepContentBinding = ItemNewStepContentBinding.inflate(getLayoutInflater());
-
             TableRow row = new TableRow(this);
             TableRow.LayoutParams params = new TableRow.LayoutParams();
-            params.setMargins(0, 0, 0, 20); // Replace -50 with the number of pixels you want to move to the left
+            params.setMargins(0, 0, 0, 20);
             row.setLayoutParams(params);
 
             stepContentBinding.stepnum.setText(String.valueOf(binding.tlsteps.getChildCount() + 1));
@@ -371,55 +391,45 @@ public class AddRecipeActivity extends AppCompatActivity {
             stepContentBinding.stepPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    currentView = view; // Agrega esta línea para guardar la referencia al 'View' actual
+                    currentView = view;
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(intent, REQUEST_LOAD_IMAGE_OTHER);
                 }
             });
             row.addView(stepContentBinding.getRoot());
 
-
-            // Agregar el botón de eliminación a la fila
             ImageView btremove = new ImageView(this);
             btremove.setId(View.generateViewId());
             btremove.setImageResource(R.drawable.ic_remove);
-            TableRow.LayoutParams btremoveParams = new TableRow.LayoutParams(90, 90); // Nuevo tamaño
+            TableRow.LayoutParams btremoveParams = new TableRow.LayoutParams(90, 90);
             btremoveParams.gravity = Gravity.END | Gravity.TOP;
             btremove.setLayoutParams(btremoveParams);
             row.addView(btremove);
 
-
-            // Add row to table
             binding.tlsteps.addView(row);
 
-            // Asignar el listener al botón de eliminación
             btremove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // Obtener la referencia a la fila que contiene el botón
                     TableRow parentRow = (TableRow) view.getParent();
-                    // Eliminar la fila de la tabla
                     binding.tlsteps.removeView(parentRow);
                     refactorSteps(binding.tlsteps);
-
-
                 }
-
             });
-
-
         }
+
 
     }
 
     /**
-     *Creates a Recipe object with the given parameters.
-     *@param file The file associated with the recipe.
-     *@param name The name of the recipe.
-     *@param description The description of the recipe.
-     *@param steps The list of steps for the recipe.
-     *@param ingredients The list of ingredients for the recipe.
-     *@return The created Recipe object, or null if any of the parameters are null or empty.
+     * Creates a Recipe object with the given parameters.
+     *
+     * @param file        The file associated with the recipe.
+     * @param name        The name of the recipe.
+     * @param description The description of the recipe.
+     * @param steps       The list of steps for the recipe.
+     * @param ingredients The list of ingredients for the recipe.
+     * @return The created Recipe object, or null if any of the parameters are null or empty.
      */
     private Recipe createRecipe(File file, String name, String description, List<Step> steps, List<Ingredient> ingredients) {
         Recipe recipe = null;
@@ -446,6 +456,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     /**
      * Refactors the step numbers in the table layout after deleting a step.
+     *
      * @param tlsteps The TableLayout containing the steps.
      */
     private void refactorSteps(TableLayout tlsteps) {
@@ -466,9 +477,10 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     /**
      * Handles the results of activities launched for selecting images from the gallery.
+     *
      * @param requestCode The request code passed to startActivityForResult().
-     * @param resultCode The result code returned by the child activity through its setResult().
-     * @param data An Intent that carries the result data.
+     * @param resultCode  The result code returned by the child activity through its setResult().
+     * @param data        An Intent that carries the result data.
      */
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -491,8 +503,9 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     /**
      * Handles the user's response to the permission request.
-     * @param requestCode The code originally provided to requestPermissions().
-     * @param permissions The requested permissions.
+     *
+     * @param requestCode  The code originally provided to requestPermissions().
+     * @param permissions  The requested permissions.
      * @param grantResults The grant results for the corresponding permissions.
      */
     @Override
@@ -509,6 +522,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     /**
      * Loads the selected image from the gallery.
+     *
      * @param data The intent containing the selected image data.
      * @param view The view to set the image on.
      * @return The File object representing the selected image.

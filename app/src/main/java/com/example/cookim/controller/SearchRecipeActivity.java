@@ -196,9 +196,11 @@ public class SearchRecipeActivity extends Activity {
             switch (item.getItemId()) {
                 case R.id.home:
                     controller.displayActivity(this, HomeActivity.class);
+                    finish();
                     return true;
                 case R.id.addrecipe:
                     controller.displayActivity(this, AddRecipeActivity.class);
+                    finish();
                     return true;
                 case R.id.searchrecipe:
                     binding.tableView.removeAllViews();

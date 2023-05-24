@@ -214,6 +214,7 @@ public class EditProfileActivity extends Activity {
 
         if (view.getId() == binding.ivcancel.getId()) {
             controller.displayActivity(getApplicationContext(), HomeActivity.class);
+            finish();
         } else if (view.getId() == binding.ivaccept.getId()) {
             //TODO
             if (areFieldsEmpty()) {
@@ -255,6 +256,7 @@ public class EditProfileActivity extends Activity {
                             if (result.getResult().equals("1")) {
 
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
+                                finish();
 
                             }else if (result.getResult().equals("0000")) {
                                 controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);

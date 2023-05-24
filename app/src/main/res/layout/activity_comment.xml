@@ -11,7 +11,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"
         >
 
@@ -68,12 +68,14 @@
             android:id="@+id/screen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
             app:layout_constraintTop_toTopOf="parent">
 
             <TableLayout
                 android:id="@+id/tlComments"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                >
 
 
             </TableLayout>

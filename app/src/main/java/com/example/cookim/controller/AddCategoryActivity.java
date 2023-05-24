@@ -349,7 +349,7 @@ public class AddCategoryActivity extends Activity {
             public void onClick(View v) {
                 if (categoryList.size() != 0) {
 
-                    recipe.setCategoryList(categoryList);
+                    binding.btsend.setEnabled(false);
 
                     executor.execute(new Runnable() {
                         @Override

@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import com.example.cookim.controller.Home.HomeActivity;
@@ -102,6 +103,7 @@ public class SignActivity extends AppCompatActivity {
                 signinActions(v);
             }
         });
+
     }
 
     /**
@@ -125,7 +127,11 @@ public class SignActivity extends AppCompatActivity {
             } else if (!toWeakPass()) {
                 binding.errormsg.setText("*La contraseña es demasiado debil*");
                 binding.errormsg.setVisibility(View.VISIBLE);
-            } else {
+            }else if (fullNameContainsNumeric(binding.etFullname.getText().toString())){
+                binding.errormsg.setText("*El nombre no debe contener números*");
+                binding.errormsg.setVisibility(View.VISIBLE);
+            }
+            else {
                 binding.errormsg.setVisibility(View.INVISIBLE);
                 UserModel user = new UserModel(binding.etUsername.getText().toString(),
                         binding.etPassword.getText().toString(),
@@ -182,7 +188,8 @@ public class SignActivity extends AppCompatActivity {
                     //
                     String token = res.getData().toString();
                     saveToken(token);
-                    showHomePage();
+                    controller.displayActivity(getApplicationContext(), HomeActivity.class);
+
                     //TODO
                     //Display next page of signin
                 }else if (res.getResult().equals("0000")) {
@@ -207,12 +214,12 @@ public class SignActivity extends AppCompatActivity {
                     //
                     String token = res.getData().toString();
                     saveToken(token);
-                    showHomePage();
+                    controller.displayActivity(getApplicationContext(), HomeActivity.class);
                     //TODO
                     //Display next page of signin
                 }else if (res.getResult().equals("0000")) {
                     controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
-                } else {
+                }else {
                     binding.errormsg.setText(res.getData().toString());
                     binding.errormsg.setVisibility(View.VISIBLE);
                 }
@@ -306,6 +313,21 @@ public class SignActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks if a given string is numeric.
+     *
+     * @param str the string to be checked
+     * @return true if the string is numeric, false otherwise
+     */
+    private boolean fullNameContainsNumeric(String str) {
+        for (char c : str.toCharArray()) {
+            if (Character.isDigit(c)) {
+                return true; // Si se encuentra un número, devuelve true
+            }
+        }
+        return false; // Si no se encuentra ningún número, devuelve false
+    }
+
 
     /**
      * Handles the result of an activity that was started for a result.
@@ -368,14 +390,6 @@ public class SignActivity extends AppCompatActivity {
         binding.profileImage.setImageBitmap(bitmap);
 
         return new File(picturePath);
-    }
-
-    /**
-     * Display the home page by starting the HomeActivity.
-     */
-    private void showHomePage() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        startActivity(intent);
     }
 
     /**
