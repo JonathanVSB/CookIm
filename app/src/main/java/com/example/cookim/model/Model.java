@@ -50,11 +50,11 @@ public class Model {
     }
 
     /**
-     * validates the user credentials
+     * Performs a login request with the specified parameters.
      *
-     * @param parametros
-     * @param context
-     * @return
+     * @param parametros the login parameters
+     * @param context    the application context
+     * @return the result of the login request
      */
     public DataResult login(String parametros, Context context) {
         DataResult result = new DataResult();
@@ -80,10 +80,11 @@ public class Model {
     }
 
     /**
-     * returns the data of the user by his token
+     * Retrieves the user's profile information.
      *
-     * @param token
-     * @return
+     * @param token the user's authentication token
+     * @return the user's profile information
+     * @throws PersistException if there is an error during the retrieval of the profile information
      */
     public UserModel myProfile(String token) throws PersistException {
         UserModel userModel = null;
@@ -103,9 +104,12 @@ public class Model {
     }
 
     /**
-     * ask for all recipes to database
+     * Loads the recipes for the user.
      *
-     * @return
+     * @param token   the user's authentication token
+     * @param context the application context
+     * @return a list of recipes
+     * @throws PersistException if there is an error during the loading of recipes
      */
     public List<Recipe> loadRecipes(String token, Context context) throws PersistException {
         List<Recipe> recipes = new ArrayList<>();
@@ -127,10 +131,11 @@ public class Model {
     }
 
     /**
-     * Sends to server petition to update likes of the recipe
+     * Likes a recipe.
      *
-     * @param parametros
-     * @return
+     * @param parametros the parameters for the request
+     * @param context    the application context
+     * @return the result of the like operation
      */
     public DataResult likeRecipe(String parametros, Context context) {
         DataResult result = new DataResult();
@@ -155,10 +160,11 @@ public class Model {
 
 
     /**
-     * Sends to server petition to update the recipes saved
+     * Saves a recipe.
      *
-     * @param parametros
-     * @return
+     * @param parametros the parameters for the request
+     * @param context    the application context
+     * @return the result of the save operation
      */
     public DataResult saveRecipe(String parametros, Context context) {
         DataResult result = new DataResult();
@@ -184,10 +190,11 @@ public class Model {
 
 
     /**
-     * Sends petition to server to end session
+     * Logs out the user.
      *
-     * @param token
-     * @return
+     * @param token   the user token
+     * @param context the application context
+     * @return the result of the logout operation
      */
     public DataResult logout(String token, Context context) {
         DataResult result = new DataResult();
@@ -213,16 +220,17 @@ public class Model {
 
 
     /**
-     * Send petition to server to create a new user using the next params
+     * Signs in a new user.
      *
-     * @param username
-     * @param password
-     * @param full_name
-     * @param email
-     * @param phone
-     * @param id_rol
-     * @param file
-     * @return
+     * @param username  the username
+     * @param password  the password
+     * @param full_name the full name
+     * @param email     the email
+     * @param phone     the phone number
+     * @param id_rol    the role ID
+     * @param file      the user's profile image file
+     * @param context   the application context
+     * @return the result of the sign-in operation
      */
     public DataResult signIn(String username, String password, String full_name, String email, String phone, long id_rol, File file, Context context) {
         DataResult result = new DataResult();
@@ -246,6 +254,15 @@ public class Model {
         return result;
     }
 
+    /**
+     * Edits user data.
+     *
+     * @param token    the user's authentication token
+     * @param user     the user object containing updated data
+     * @param file     the updated profile image file
+     * @param context  the application context
+     * @return the result of the edit data operation
+     */
     public DataResult editData(String token, UserModel user, File file, Context context) {
         DataResult result = new DataResult();
 
@@ -270,11 +287,13 @@ public class Model {
 
 
     /**
-     * returns the details of the recipe found by his id
+     * Loads the steps of a recipe.
      *
-     * @param id
-     * @param token
-     * @return
+     * @param id       the ID of the recipe
+     * @param token    the user's authentication token
+     * @param context  the application context
+     * @return the recipe object with loaded steps
+     * @throws PersistException if there is an error during the operation
      */
     public Recipe loadRecipeSteps(int id, String token, Context context) throws PersistException {
         Recipe recipe = new Recipe();
@@ -296,10 +315,10 @@ public class Model {
 
 
     /**
-     * creates a path to select where search the images neededs
+     * Downloads an image from the specified path.
      *
-     * @param pathImg
-     * @return
+     * @param pathImg the path of the image to download
+     * @return the URL of the downloaded image
      */
     public String downloadImg(String pathImg) {
 
@@ -310,10 +329,13 @@ public class Model {
     }
 
     /**
-     * returns the recipes of the user identified by his token
+     * Retrieves the recipes associated with a user.
      *
-     * @param token
-     * @return
+     * @param token   the authentication token
+     * @param id      the ID of the user
+     * @param context the context of the application
+     * @return a list of recipes associated with the user
+     * @throws PersistException if there is a problem retrieving the recipes
      */
     public List<Recipe> userRecipes(String token, long id, Context context) throws PersistException {
         String param = token + ":" + String.valueOf(id);
@@ -336,11 +358,13 @@ public class Model {
 
 
     /**
-     * Request to server for the new ingredients available in database
+     * Retrieves new ingredients for a recipe.
      *
-     * @param token
-     * @param id
-     * @return
+     * @param token   the authentication token
+     * @param id      the ID of the recipe
+     * @param context the context of the application
+     * @return a list of new ingredients for the recipe
+     * @throws PersistException if there is a problem retrieving the ingredients
      */
     public List<Ingredient> getNewIngredients(String token, int id, Context context) throws PersistException {
         List<Ingredient> ingredients = new ArrayList<>();
@@ -362,11 +386,12 @@ public class Model {
 
 
     /**
-     * removes recipe from database
+     * Removes a recipe.
      *
-     * @param token
-     * @param id
-     * @return
+     * @param token   the authentication token
+     * @param id      the ID of the recipe to be removed
+     * @param context the context of the application
+     * @return the result of the removal operation
      */
     public DataResult removeRecipe(String token, int id, Context context) {
         String param = token + ":" + String.valueOf(id);
@@ -391,12 +416,11 @@ public class Model {
         return result;
     }
 
-
     /**
-     * Ask to local database the max Id of the ingredients table
+     * Gets the maximum ID of an ingredient from the database.
      *
-     * @param ingredients
-     * @return
+     * @param ingredients the instance of BBDDIngredients
+     * @return the maximum ID of an ingredient
      */
     public Integer getMaxIdIngredient(BBDDIngredients ingredients) {
 
@@ -405,10 +429,11 @@ public class Model {
     }
 
     /**
-     * Validates if the token saved still
+     * Performs automatic login using the provided token.
      *
-     * @param token
-     * @return
+     * @param token   the user token for authentication
+     * @param context the context of the application
+     * @return a DataResult object containing the result of the autologin request
      */
     public DataResult autologin(String token, Context context) {
         DataResult result = new DataResult();
@@ -434,12 +459,13 @@ public class Model {
 
 
     /**
-     * sends petition to create a new recipe
+     * Creates a new recipe.
      *
-     * @param recipe
-     * @param token
-     * @param file
-     * @return
+     * @param recipe  the recipe object to be created
+     * @param token   the user token for authentication
+     * @param file    the file associated with the recipe (e.g., image)
+     * @param context the context of the application
+     * @return a DataResult object containing the result of the create recipe request
      */
     public DataResult createRecipe(Recipe recipe, String token, File file, Context context) {
         DataResult result = new DataResult();
@@ -465,11 +491,13 @@ public class Model {
 
 
     /**
-     * Sends petition to recover the data of the profile of users
+     * Retrieves the user profile of a specific user.
      *
-     * @param token
-     * @param id
-     * @return
+     * @param token   the user token for authentication
+     * @param id      the ID of the user profile to retrieve
+     * @param context the context of the application
+     * @return the UserModel object representing the user profile
+     * @throws PersistException if there is a persistence-related exception
      */
     public UserModel userProfile(String token, long id, Context context) throws PersistException {
         UserModel userModel = new UserModel();
@@ -491,11 +519,13 @@ public class Model {
 
 
     /**
-     * Request all comments of the recipe
+     * Retrieves the comments of a recipe.
      *
-     * @param token
-     * @param id
-     * @return
+     * @param token   the user token for authentication
+     * @param id      the ID of the recipe
+     * @param context the context of the application
+     * @return a list of Comment objects representing the comments of the recipe
+     * @throws PersistException if there is a persistence-related exception
      */
     public List<Comment> getCommentsOfRecipe(String token, long id, Context context) throws PersistException {
         List<Comment> result = new ArrayList<>();
@@ -518,9 +548,11 @@ public class Model {
 
 
     /**
-     * Read an internal file and retrieve the token stored there
+     * Reads the content of a file.
      *
-     * @return the token or null
+     * @param cont     the context of the application
+     * @param filename the name of the file to read
+     * @return the content of the file as a string
      */
     public String readFile(Context cont, String filename) {
         // Gets an instance of the application context
@@ -558,11 +590,12 @@ public class Model {
     }
 
     /**
-     * Sends new petition to server to post a new comment
+     * Creates a new comment.
      *
-     * @param token
-     * @param comment
-     * @return
+     * @param token   the user token
+     * @param comment the comment to be created
+     * @param context the context of the application
+     * @return the result of the operation
      */
     public DataResult createNewComment(String token, Comment comment, Context context) {
         DataResult result = new DataResult();
@@ -588,12 +621,13 @@ public class Model {
 
 
     /**
-     * Send new follow to user
+     * Follows a user.
      *
-     * @param token
-     * @param userId
-     * @param num
-     * @return
+     * @param token   the user token
+     * @param userId  the ID of the user to follow
+     * @param num     a number value
+     * @param context the context of the application
+     * @return the result of the operation
      */
     public DataResult followUser(String token, int userId, int num, Context context) {
         String param = token + ":" + String.valueOf(num) + ":" + String.valueOf(userId);
@@ -620,10 +654,12 @@ public class Model {
 
 
     /**
-     * Gets list of the favoritesrecipes saved by the use
+     * Retrieves the user's favorite recipes.
      *
-     * @param token
-     * @return
+     * @param token   the user token
+     * @param context the context of the application
+     * @return a list of favorite recipes
+     * @throws PersistException if there is a persistence exception
      */
     public List<Recipe> getFavorites(String token, Context context) throws PersistException {
         List<Recipe> recipes = new ArrayList<>();
@@ -646,12 +682,13 @@ public class Model {
 
 
     /**
-     * ask server to change the password of the user
+     * Changes the user's password.
      *
-     * @param token
-     * @param pass
-     * @param newpass
-     * @return
+     * @param token   the user token
+     * @param pass    the current password
+     * @param newpass the new password
+     * @param context the context of the application
+     * @return the result of the change password operation
      */
     public DataResult changePass(String token, String pass, String newpass, Context context) {
         String param = token + ":" + pass + ":" + newpass;
@@ -678,11 +715,13 @@ public class Model {
 
 
     /**
-     * search the recipe by the searchQuery
+     * Searches for recipes based on the given search query.
      *
-     * @param token
-     * @param searchQuery
-     * @return
+     * @param token       the user token
+     * @param searchQuery the search query
+     * @param context     the context of the application
+     * @return a list of recipes matching the search query
+     * @throws PersistException if there is a problem with the database connection
      */
     public List<Recipe> searchRecipe(String token, String searchQuery, Context context) throws PersistException {
         String param = token + ":" + searchQuery;
@@ -705,11 +744,13 @@ public class Model {
     }
 
     /**
-     * search the recipe by the searchQuery
+     * Searches for recipes by category based on the given search query.
      *
-     * @param token
-     * @param searchQuery
-     * @return
+     * @param token       the user token
+     * @param searchQuery the search query
+     * @param context     the context of the application
+     * @return a list of recipes matching the search query by category
+     * @throws PersistException if there is a problem with the database connection
      */
     public List<Recipe> searchRecipeByCategory(String token, String searchQuery, Context context) throws PersistException {
         String param = token + ":" + searchQuery;

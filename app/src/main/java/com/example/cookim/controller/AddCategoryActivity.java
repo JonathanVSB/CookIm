@@ -43,6 +43,12 @@ public class AddCategoryActivity extends Activity {
 
     boolean bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9;
 
+    /**
+     * Called when the activity is starting or restarting.
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +107,7 @@ public class AddCategoryActivity extends Activity {
     }
 
     /**
-     * loads the actions of buttons
+     * Load the page and configure the button listeners.
      */
     private void loadPage() {
 

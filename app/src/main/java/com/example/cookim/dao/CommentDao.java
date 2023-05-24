@@ -34,13 +34,19 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class CommentDao {
 
-    NukeSSLCerts n;
     public CommentDao() {
-        n = new NukeSSLCerts();
-        n.nuke();
+
 
     }
 
+    /**
+     * Retrieves all comments from the specified path using a POST request.
+     *
+     * @param path   The URL path to retrieve the comments from.
+     * @param token  The authentication token.
+     * @param id     The ID used as a parameter in the request.
+     * @return A list of Comment objects representing the comments retrieved.
+     */
     public List<Comment> getAllComments(String path, String token, long id) {
         List<Comment> data = new ArrayList<>();
         String param = token + ":" + String.valueOf(id);
@@ -88,6 +94,12 @@ public class CommentDao {
         return data;
     }
 
+    /**
+     * Parses the JSON response from the input stream into a list of Comment objects.
+     *
+     * @param inputStream The input stream containing the JSON response.
+     * @return A list of Comment objects parsed from the JSON response.
+     */
     private List<Comment> parseCommentList(InputStream inputStream) {
         List<Comment> result = new ArrayList<>();
 
@@ -132,12 +144,12 @@ public class CommentDao {
     }
 
     /**
-     * create a new request to create a  new comment
+     * Adds a new comment to the specified path using the provided token and comment data.
      *
-     * @param path
-     * @param token
-     * @param comment
-     * @return
+     * @param path    The URL path to send the request to.
+     * @param token   The authentication token.
+     * @param comment The comment to be added.
+     * @return A DataResult object representing the result of the operation.
      */
     public DataResult addNewComment(String path, String token, Comment comment) {
         DataResult result = null;
@@ -190,10 +202,10 @@ public class CommentDao {
     }
 
     /**
-     * Reads the token received from server and saves it String variable
+     * Parses the response from an InputStream into a DataResult object.
      *
-     * @param inputStream
-     * @return
+     * @param inputStream The InputStream containing the response data.
+     * @return A DataResult object representing the parsed response, or null if there was an error.
      */
     public DataResult parseResponse(InputStream inputStream) {
 

@@ -42,10 +42,11 @@ public class UserDao {
     }
 
     /**
-     * Reads Http File and writes in internal Storage
+     * Sends a POST request to the specified URL and reads the response.
      *
-     * @param urlString  : Url to read File
-     * @param parameters : Parameters for the HTTP POST request
+     * @param urlString   the URL to send the request to
+     * @param parameters  the request parameters
+     * @return the result of the request
      */
     public DataResult readResponse(String urlString, String parameters) {
 
@@ -108,10 +109,10 @@ public class UserDao {
     }
 
     /**
-     * Reads the token received from server and saves it String variable
+     * Parses the JSON response from the InputStream and returns a DataResult object.
      *
-     * @param inputStream
-     * @return
+     * @param inputStream the InputStream containing the JSON response
+     * @return the parsed DataResult object
      */
     public DataResult parseResponse(InputStream inputStream) {
 
@@ -159,11 +160,12 @@ public class UserDao {
 
 
     /**
-     * creates a request to the path specified, using the token of the user as validation key
+     * Sends an HTTPS request to the specified URL with the provided token and reads the response to obtain a UserModel object.
      *
-     * @param urlString
-     * @param token
-     * @return
+     * @param urlString the URL to send the request to
+     * @param token the authentication token
+     * @return the UserModel object obtained from the response
+     * @throws PersistException if there is an error during the request or response parsing
      */
     public UserModel readUserResponse(String urlString, String token) throws PersistException {
         UserModel result = null;
@@ -219,14 +221,14 @@ public class UserDao {
         return result;
     }
 
+
+
     /**
-     * Reads the Json answer of the server and transforms it in DataResult object
+     * Parses the InputStream response into a UserModel object.
      *
-     * @param inputStream
-     * @return
+     * @param inputStream the InputStream containing the response
+     * @return the parsed UserModel object
      */
-
-
     public UserModel parseUserModel(InputStream inputStream) {
         UserModel result = null;
 
@@ -299,17 +301,17 @@ public class UserDao {
 
 
     /**
-     * Gets the data introduced by user in all camps and send petition to create this new user
-     * if the user adds profile image it sends the image to
+     * Validates a new user by sending a request with the user information and optional image file.
      *
-     * @param username
-     * @param password
-     * @param full_name
-     * @param email
-     * @param phone
-     * @param id_rol
-     * @param file
-     * @return
+     * @param username  the username of the new user
+     * @param password  the password of the new user
+     * @param full_name the full name of the new user
+     * @param email     the email of the new user
+     * @param phone     the phone number of the new user
+     * @param id_rol    the ID of the role for the new user
+     * @param file      the image file of the new user (can be null)
+     * @param path      the URL path for the request
+     * @return the DataResult object containing the response data
      */
     public DataResult validationNewUser(String username, String password, String full_name, String email, String phone, long id_rol, File file, String path) {
 //        String urlString = URL3 + "sign-in";
@@ -394,13 +396,11 @@ public class UserDao {
     }
 
     /**
-     * Autologin validation. sends the token an receives response from server
-     * if response =1 token is validated
-     * else token is not validated.
+     * Validates a token by sending a request with the token to the specified URL.
      *
-     * @param urlString
-     * @param token
-     * @return
+     * @param urlString the URL to send the request to
+     * @param token     the token to validate
+     * @return the DataResult object containing the response data
      */
     public DataResult validateToken(String urlString, String token) {
         DataResult result = null;
@@ -472,12 +472,13 @@ public class UserDao {
     }
 
     /**
-     * Search data of the other users
+     * Reads the response for retrieving data of another user from the specified path using the provided token and user ID.
      *
-     * @param path
-     * @param token
-     * @param id
-     * @return
+     * @param path  the path to send the request to
+     * @param token the token to authenticate the request
+     * @param id    the ID of the user to retrieve data for
+     * @return the UserModel object containing the user data
+     * @throws PersistException if there is an error during the request or response parsing
      */
     public UserModel readOtherUserResponse(String path, String token, long id) throws PersistException {
         UserModel result = null;
@@ -535,17 +536,18 @@ public class UserDao {
     }
 
     /**
-     * Updates the data of the user
+     * Edits the user data by sending a request to the specified path with the provided token, username, full name, email,
+     * phone, path_img, and file.
      *
-     * @param path
-     * @param token
-     * @param username
-     * @param full_name
-     * @param email
-     * @param phone
-     * @param path_img
-     * @param file
-     * @return
+     * @param path     the path to send the request to
+     * @param token    the token to authenticate the request
+     * @param username the username of the user
+     * @param full_name the full name of the user
+     * @param email    the email of the user
+     * @param phone    the phone number of the user
+     * @param path_img the image path of the user
+     * @param file     the image file of the user
+     * @return the DataResult object containing the result of the request
      */
     public DataResult editUserData(String path, String token, String username, String full_name, String email, String phone, String path_img, File file) {
         DataResult result = null;

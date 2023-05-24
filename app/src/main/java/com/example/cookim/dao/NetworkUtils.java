@@ -10,11 +10,12 @@ public class NetworkUtils {
 
 
     }
+
     /**
-     * Comprueba si hay una conexión de red activa
+     * Checks if a network connection is available.
      *
-     * @param context Contexto de la aplicación
-     * @return true si hay conexión a Internet, false de lo contrario
+     * @param context The context of the application.
+     * @return true if a network connection is available, false otherwise.
      */
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -82,7 +82,14 @@ public class AddRecipeActivity extends AppCompatActivity {
     BBDDIngredients dataBase;
     String token;
 
-
+    /**
+     * Called when the activity is starting or being recreated after previously being destroyed.
+     * Initializes the user interface and performs other setup tasks.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,7 +112,9 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     /**
-     * build the structure of all the elements
+     * Prepares the elements of the user interface for the activity.
+     * Sets up the necessary onClickListeners for various UI elements.
+     * When the elements are clicked, the method 'gestionateProcess' is called.
      */
     private void prepareElements() {
         binding.portraitPic.setOnClickListener(new View.OnClickListener() {
@@ -149,9 +158,8 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     /**
-     * receive cancel and continue button.
-     * if cancel button is pressed. resturns to home page
-     * if accpt button is pressed, send petition to create new Recipe
+     *Handles the different processes when clicking on various UI elements.
+     * @param v The View that was clicked.
      */
     private void gestionateProcess(View v) {
 
@@ -405,13 +413,13 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     /**
-     * Create a new Recipe with data of the view or return null
-     * @param file
-     * @param name
-     * @param description
-     * @param steps
-     * @param ingredients
-     * @return
+     *Creates a Recipe object with the given parameters.
+     *@param file The file associated with the recipe.
+     *@param name The name of the recipe.
+     *@param description The description of the recipe.
+     *@param steps The list of steps for the recipe.
+     *@param ingredients The list of ingredients for the recipe.
+     *@return The created Recipe object, or null if any of the parameters are null or empty.
      */
     private Recipe createRecipe(File file, String name, String description, List<Step> steps, List<Ingredient> ingredients) {
         Recipe recipe = null;
@@ -437,10 +445,8 @@ public class AddRecipeActivity extends AppCompatActivity {
 
 
     /**
-     * Refactors the step number if one row is deleted from tablelayout
-     *
-     * @param tlsteps
-     * @param
+     * Refactors the step numbers in the table layout after deleting a step.
+     * @param tlsteps The TableLayout containing the steps.
      */
     private void refactorSteps(TableLayout tlsteps) {
         // Refactor the step number if one is deleted
@@ -459,15 +465,10 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     /**
-     * Search for an image in storage and sets the imageview with
-     *
-     * @param requestCode The integer request code originally supplied to
-     *                    startActivityForResult(), allowing you to identify who this
-     *                    result came from.
-     * @param resultCode  The integer result code returned by the child activity
-     *                    through its setResult().
-     * @param data        An Intent, which can return result data to the caller
-     *                    (various data can be attached to Intent "extras").
+     * Handles the results of activities launched for selecting images from the gallery.
+     * @param requestCode The request code passed to startActivityForResult().
+     * @param resultCode The result code returned by the child activity through its setResult().
+     * @param data An Intent that carries the result data.
      */
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -489,11 +490,10 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     /**
-     * @param requestCode  The request code passed in
-     * @param permissions  The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *                     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     * Handles the user's response to the permission request.
+     * @param requestCode The code originally provided to requestPermissions().
+     * @param permissions The requested permissions.
+     * @param grantResults The grant results for the corresponding permissions.
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -508,9 +508,10 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     /**
-     * Load the Image in the imageView
-     *
-     * @param data
+     * Loads the selected image from the gallery.
+     * @param data The intent containing the selected image data.
+     * @param view The view to set the image on.
+     * @return The File object representing the selected image.
      */
     private File loadImage(Intent data, View view) {
         Uri selectedImage = data.getData();
@@ -523,7 +524,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
         Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
 
-        // Establecer la imagen en función del 'View' que se le pase
+        // Set the image based on the 'View' passed to it
         if (view == binding.portraitPic) {
             binding.portraitPic.setImageBitmap(bitmap);
         } else {
@@ -542,8 +543,6 @@ public class AddRecipeActivity extends AppCompatActivity {
      */
     private boolean checkFields(Recipe recipe) {
         boolean correct = false;
-
-
         return correct;
     }
 

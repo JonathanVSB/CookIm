@@ -27,6 +27,12 @@ public class EditPasswordActivity extends Activity {
     DataResult result;
     Handler handler;
 
+    /**
+     * Called when the activity is created.
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,9 +65,8 @@ public class EditPasswordActivity extends Activity {
     }
 
     /**
-     * Process the actions of the view
-     *
-     * @param v
+     * Handles the actions performed on views.
+     * @param v The view on which the action is performed.
      */
     private void gestionateActions(View v) {
         if (v.getId() == binding.ivcancel.getId()) {
@@ -132,9 +137,8 @@ public class EditPasswordActivity extends Activity {
     }
 
     /**
-     * prevents the user to introduce very short password
-     *
-     * @return
+     * Checks if the password is too weak.
+     * @return true if the password is strong enough, false otherwise.
      */
     private boolean toWeakPass() {
         String pass = binding.tvnewPass.getText().toString();
@@ -145,9 +149,8 @@ public class EditPasswordActivity extends Activity {
     }
 
     /**
-     * Check the fields of the view to check if any of them is empty
-     *
-     * @return
+     * Checks if any of the required fields are empty.
+     * @return true if any of the fields are empty, false otherwise.
      */
     private boolean areFieldsEmpty() {
         return binding.tvnewPass.getText().toString().isEmpty()||

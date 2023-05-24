@@ -38,6 +38,11 @@ public class SearchRecipeActivity extends Activity {
     long myId;
     List<Recipe> recipeList;
 
+    /**
+     * Called when the activity is starting. Initializes the search recipe activity.
+     *
+     * @param savedInstanceState The saved instance state bundle.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +76,7 @@ public class SearchRecipeActivity extends Activity {
     }
 
     /**
-     * loads the spinner with items from String XML
+     * Loads the spinner with options from a string array resource.
      */
     private void loadSpinner() {
         Spinner spin = binding.filterSpinner;
@@ -84,7 +89,8 @@ public class SearchRecipeActivity extends Activity {
 
 
     /**
-     * creates the elements to make the view work
+     * Loads the search page and performs a recipe search based on the user's input.
+     * Displays the search results in a table view.
      */
     private void loadPage() {
         binding.msg.setVisibility(View.GONE);
@@ -181,6 +187,10 @@ public class SearchRecipeActivity extends Activity {
         });
     }
 
+    /**
+     * Handles the click events of the items in the bottom navigation view.
+     * Navigates to different activities based on the selected item.
+     */
     private void bottomNavigationViewClick() {
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {

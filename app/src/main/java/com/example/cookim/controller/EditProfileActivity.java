@@ -56,6 +56,16 @@ public class EditProfileActivity extends Activity {
     Intent intent;
     private File file;
 
+    /**
+     * Sets up the activity for editing a user profile.
+     * It initializes the necessary variables, retrieves the user information from the intent, and loads the view with the user data.
+     * It also handles the saving of the profile image to a temporary file.
+     * If the token is missing or empty, it redirects to the login page.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,7 +132,12 @@ public class EditProfileActivity extends Activity {
     }
 
     /**
-     * Loads the view with the data of given user
+     * Loads the user data into the view fields.
+     * Checks each field in the user model and sets the corresponding values in the view.
+     * If a field is not empty, it sets the value in the view.
+     * If the user has a profile image, it downloads and displays the image using Glide library.
+     *
+     * @param user The user model containing the user data.
      */
     private void loadView(UserModel user) {
         //complete all camps.
@@ -190,9 +205,10 @@ public class EditProfileActivity extends Activity {
     }
 
     /**
-     * Process the acions selected by the user
+     * Handles the actions performed by the user on the view.
+     * Checks the ID of the clicked view and performs the corresponding action.
      *
-     * @param view
+     * @param view The view that triggered the action.
      */
     private void gestionateActions(View view) {
 
@@ -287,15 +303,14 @@ public class EditProfileActivity extends Activity {
     }
 
     /**
-     * Search for an image in storage and sets the imageview with
+     * Called when an activity launched by this activity exits, giving the requestCode, resultCode,
+     * and data associated with it.
      *
-     * @param requestCode The integer request code originally supplied to
-     *                    startActivityForResult(), allowing you to identify who this
-     *                    result came from.
-     * @param resultCode  The integer result code returned by the child activity
-     *                    through its setResult().
-     * @param data        An Intent, which can return result data to the caller
-     *                    (various data can be attached to Intent "extras").
+     * @param requestCode The integer request code originally supplied to startActivityForResult(),
+     *                    allowing you to identify who this result came from.
+     * @param resultCode  The integer result code returned by the child activity through its setResult().
+     * @param data        An Intent, which can return result data to the caller (various data can be
+     *                    attached to Intent "extras").
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -312,11 +327,14 @@ public class EditProfileActivity extends Activity {
     }
 
     /**
-     * @param requestCode  The request code passed in
+     * Callback for the result from requesting permissions. This method is invoked for every call on
+     * ActivityCompat.requestPermissions().
+     *
+     * @param requestCode  The request code passed in ActivityCompat.requestPermissions().
      * @param permissions  The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *                     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     * @param grantResults The grant results for the corresponding permissions. This array is the same
+     *                     length as the requested permissions array. The elements of this array are
+     *                     either PackageManager.PERMISSION_GRANTED or PackageManager.PERMISSION_DENIED.
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -332,9 +350,10 @@ public class EditProfileActivity extends Activity {
     }
 
     /**
-     * Load the Image in the imageView
+     * Load an image selected from the gallery and display it in the profile image view.
      *
-     * @param data
+     * @param data The intent containing the image data.
+     * @return The File object representing the loaded image file.
      */
     private File loadImage(Intent data) {
         Uri selectedImage = data.getData();
@@ -352,9 +371,9 @@ public class EditProfileActivity extends Activity {
     }
 
     /**
-     * Check the fields of the view to check if any of them is empty
+     * Check if any of the input fields (username, full name, email, phone) are empty.
      *
-     * @return
+     * @return true if any of the fields are empty, false otherwise.
      */
     private boolean areFieldsEmpty() {
         return binding.tvUsername.getText().toString().equals("") ||
@@ -366,11 +385,9 @@ public class EditProfileActivity extends Activity {
 
 
     /**
-     * Checks if the email has the correct structure
-     * Email shall contain this characters: "@", "."
-     * Also email can't be empty
+     * Check if the email field is valid.
      *
-     * @return
+     * @return true if the email is valid, false otherwise.
      */
     private boolean isEmailValid() {
         String email = binding.tvEmail.getText().toString().trim();
@@ -398,9 +415,9 @@ public class EditProfileActivity extends Activity {
     }
 
     /**
-     * checks the number to prevents empty fields and wrong format
+     * Check if the phone number field is valid.
      *
-     * @return
+     * @return true if the phone number is valid, false otherwise.
      */
     private boolean isPhoneNumberValid() {
         String phoneNumber = binding.tvPhone.getText().toString().trim();
@@ -411,11 +428,10 @@ public class EditProfileActivity extends Activity {
     }
 
     /**
-     * Checks if the phone number have any alphabetic character
-     * if the number contains any, returns false
+     * Check if a given string consists only of numeric characters.
      *
-     * @param str
-     * @return
+     * @param str the string to check
+     * @return true if the string is numeric, false otherwise
      */
     private boolean isNumeric(String str) {
         try {

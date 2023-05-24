@@ -30,6 +30,17 @@ public class PresentationActivity extends Activity {
     ExecutorService executor;
 
 
+    /**
+     * Called when the activity is starting. This is where most initialization
+     * should go: calling setContentView(int) to inflate the activity's UI,
+     * using findViewById to programmatically interact with widgets in the UI,
+     * and initializing the activity's data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *                           previously being shut down, this Bundle contains
+     *                           the data it most recently supplied in
+     *                           onSaveInstanceState(Bundle). Note: Otherwise, it is null.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

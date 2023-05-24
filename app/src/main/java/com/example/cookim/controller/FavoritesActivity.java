@@ -42,6 +42,11 @@ public class FavoritesActivity extends Activity {
     List<Recipe> recipes;
     long myId;
 
+    /**
+     * Called when the activity is starting. Initializes the activity and sets up the UI elements.
+     *
+     * @param savedInstanceState the saved instance state bundle
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,8 +86,7 @@ public class FavoritesActivity extends Activity {
     }
 
     /**
-     * Ask to server, the list of recipes saved as favorites
-     * and displays it
+     * Loads the favorite recipes data from the model and updates the UI.
      */
     private void loadData() {
 
@@ -117,7 +121,7 @@ public class FavoritesActivity extends Activity {
     /**
      * displays the data in the view
      *
-     * @param recipes
+     * @param recipes The list of favorite recipes to be loaded.
      */
     private void loadView(List<Recipe> recipes) {
 
@@ -243,9 +247,11 @@ public class FavoritesActivity extends Activity {
     }
 
     /**
-     * @param num
-     * @param id
-     * @return
+     * Saves a recipe with the specified parameters.
+     *
+     * @param num The number value (1 or 0) indicating whether to save or unsave the recipe.
+     * @param id The ID of the recipe to be saved.
+     * @return The data result of the save operation.
      */
     private DataResult saveRecipe(int num, String id) {
         String numero = String.valueOf(num);
@@ -265,9 +271,11 @@ public class FavoritesActivity extends Activity {
     }
 
     /**
-     * @param num
-     * @param id
-     * @return
+     * Sends a like for a recipe with the specified parameters.
+     *
+     * @param num The number value (1 or 0) indicating whether to like or unlike the recipe.
+     * @param id The ID of the recipe to be liked.
+     * @return The data result of the like operation.
      */
     private DataResult sendLike(int num, String id) {
         String numero = String.valueOf(num);
@@ -287,7 +295,7 @@ public class FavoritesActivity extends Activity {
     }
 
     /**
-     *
+     * Handles the click events for items in the bottom navigation view.
      */
     private void bottomNavigationViewClick() {
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {

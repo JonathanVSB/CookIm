@@ -64,6 +64,11 @@ public class SignActivity extends AppCompatActivity {
     ExecutorService executor;
     Handler handler;
 
+    /**
+     * Method called when the activity is created.
+     * It is responsible for initializing the elements of the activity, such as the model, the controller and the executor,
+     * and configure the view by inflating the corresponding layout.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +84,10 @@ public class SignActivity extends AppCompatActivity {
         initElements();
     }
 
+    /**
+     * Initializes the elements of the activity.
+     * Configures the listeners for login buttons and profile image.
+     */
     private void initElements() {
         binding.btSignin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,12 +105,11 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * Control the actions of the view
-     * if the user clicks sign in without the correct params, displays the error message
-     * else sends the new data
-     * if the user clicks the empty picture, the app allows him to chose one from his gallery
+     * Performs corresponding actions when login buttons or profile picture is clicked.
+     * If the login button is clicked, it checks the fields and displays error messages if necessary.
+     * If the profile image is clicked, it launches an activity to select an image from the gallery.
      *
-     * @param v
+     * @param v Clicked view (login button or profile picture)
      */
     private void signinActions(View v) {
         if (v.getId() == binding.btSignin.getId()) {
@@ -153,8 +161,10 @@ public class SignActivity extends AppCompatActivity {
 
 
     /**
-     * Gets the data of the view an sends new user to server
-     * If the user chose
+     * Send a new user to the server and perform the corresponding actions based on the result.
+     * If a profile image was selected, the image is also sent along with the user data.
+     *
+     * @param user UserModel object representing the new user
      */
     private void sendNewUser(UserModel user) {
 
@@ -212,9 +222,9 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * Check the fields of the view to check if any of them is empty
+     * Checks if the input fields are empty.
      *
-     * @return
+     * @return true if any of the input fields is empty, false otherwise
      */
     private boolean areFieldsEmpty() {
         return binding.etUsername.getText().toString().equals("") ||
@@ -226,9 +236,9 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * prevents the user to introduce very short password
+     * Checks if the password is too weak.
      *
-     * @return
+     * @return true if the password is weak (length less than 6), false otherwise
      */
     private boolean toWeakPass() {
         String pass = binding.etPassword.getText().toString();
@@ -239,11 +249,9 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * Checks if the email has the correct structure
-     * Email shall contain this characters: "@", "."
-     * Also email can't be empty
+     * Checks if the email address is valid.
      *
-     * @return
+     * @return true if the email address is valid, false otherwise
      */
     private boolean isEmailValid() {
         String email = binding.etEmail.getText().toString().trim();
@@ -271,9 +279,9 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * checks the number to prevents empty fields and wrong format
+     * Checks if the phone number is valid.
      *
-     * @return
+     * @return true if the phone number is valid, false otherwise
      */
     private boolean isPhoneNumberValid() {
         String phoneNumber = binding.etTel.getText().toString().trim();
@@ -284,11 +292,10 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * Checks if the phone number have any alphabetic character
-     * if the number contains any, returns false
+     * Checks if a given string is numeric.
      *
-     * @param str
-     * @return
+     * @param str the string to be checked
+     * @return true if the string is numeric, false otherwise
      */
     private boolean isNumeric(String str) {
         try {
@@ -301,15 +308,11 @@ public class SignActivity extends AppCompatActivity {
 
 
     /**
-     * Search for an image in storage and sets the imageview with
+     * Handles the result of an activity that was started for a result.
      *
-     * @param requestCode The integer request code originally supplied to
-     *                    startActivityForResult(), allowing you to identify who this
-     *                    result came from.
-     * @param resultCode  The integer result code returned by the child activity
-     *                    through its setResult().
-     * @param data        An Intent, which can return result data to the caller
-     *                    (various data can be attached to Intent "extras").
+     * @param requestCode the request code passed to startActivityForResult()
+     * @param resultCode  the result code returned by the child activity
+     * @param data        an Intent that contains the result data
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -327,11 +330,11 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * @param requestCode  The request code passed in
-     * @param permissions  The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *                     which is either {@link android.content.pm.PackageManager#PERMISSION_GRANTED}
-     *                     or {@link android.content.pm.PackageManager#PERMISSION_DENIED}. Never null.
+     * Callback for the result of a permission request.
+     *
+     * @param requestCode  the request code passed to requestPermissions()
+     * @param permissions  the requested permissions
+     * @param grantResults the grant results for the corresponding permissions
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -347,9 +350,10 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * Load the Image in the imageView
+     * Load the selected image from the intent data and display it in the profile image view.
      *
-     * @param data
+     * @param data the intent data containing the image URI
+     * @return the file representing the selected image
      */
     private File loadImage(Intent data) {
         Uri selectedImage = data.getData();
@@ -366,17 +370,18 @@ public class SignActivity extends AppCompatActivity {
         return new File(picturePath);
     }
 
+    /**
+     * Display the home page by starting the HomeActivity.
+     */
     private void showHomePage() {
         Intent intent = new Intent(this, HomeActivity.class);
-
-
         startActivity(intent);
     }
 
     /**
-     * saves the token received by the server in a file only accessible from the application.
+     * Save the token to a file.
      *
-     * @param token
+     * @param token The token string to be saved.
      */
     private void saveToken(String token) {
         // Gets an instance of the application context
@@ -398,9 +403,10 @@ public class SignActivity extends AppCompatActivity {
     }
 
     /**
-     * Encrypt String received
-     * @param input
-     * @return
+     * Generate the SHA-256 hash of a given input string.
+     *
+     * @param input The input string to generate the hash from.
+     * @return The SHA-256 hash of the input string.
      */
     public static String getSHA256(String input) {
         try {

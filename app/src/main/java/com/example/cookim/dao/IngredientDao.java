@@ -24,14 +24,14 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class IngredientDao {
 
-    NukeSSLCerts n;
-
-    public IngredientDao(){
-        n = new NukeSSLCerts();
-        n.nuke();
-
-    }
-
+    /**
+     * Retrieves a list of ingredients from a specified path using a token and ID.
+     *
+     * @param path  The path to retrieve the ingredients from.
+     * @param token The authentication token.
+     * @param id    The ID associated with the ingredients.
+     * @return A list of Ingredient objects representing the retrieved ingredients.
+     */
     public List<Ingredient> getAll(String path, String token, int id) {
         List<Ingredient> list = new ArrayList<>();
         String param = token + ":" + String.valueOf(id);
@@ -77,6 +77,12 @@ public class IngredientDao {
 
     }
 
+    /**
+     * Parses the JSON response from the InputStream and extracts a list of Ingredient objects.
+     *
+     * @param inputStream The InputStream containing the JSON response.
+     * @return A list of Ingredient objects parsed from the JSON response.
+     */
     public List<Ingredient> parseIngredientList(InputStream inputStream) {
         List<Ingredient> result = new ArrayList<>();
 
@@ -117,10 +123,10 @@ public class IngredientDao {
     }
 
     /**
-     * Search the max id number of ingredients in local database
+     * Retrieves the maximum ingredient ID from the "Ingrediente" table in the database.
      *
-     * @param ingredients
-     * @return
+     * @param ingredients The instance of BBDDIngredients representing the database.
+     * @return The maximum ingredient ID, or -1 if an error occurred.
      */
     public int getMaxIngredientId(BBDDIngredients ingredients) {
         int maxId = -1;

@@ -49,6 +49,20 @@ public class CommentActivity extends Activity {
     List<Comment> commnets;
     DataResult result;
 
+    /**
+     *Method called when the comment activity is created.
+     *  Performs the following tasks:
+     *  Sets up the activity layout.
+     *  Retrieves the authentication token.
+     *  Sets up the listener for the input text field.
+     *  Displays existing comments.
+     *  Sets up the listeners for the "Cancel" and "Send" buttons.
+     *  If there is no authentication token, redirects to the login page.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,7 +113,8 @@ public class CommentActivity extends Activity {
     }
 
     /**
-     * check the params to create a new coment and send petition
+     * Create a comment with the ID of the given line.
+     * @param id The ID of the comment.
      */
     private void createComment(int id) {
 
@@ -150,9 +165,8 @@ public class CommentActivity extends Activity {
     }
 
     /**
-     * reload the page of comments
-     *
-     * @param id
+     * Loads the CommentActivity with the specified ID.
+     * @param id The ID of the recipe to load.
      */
     private void loadPage(int id) {
         Intent intent = new Intent(this, CommentActivity.class);
@@ -161,9 +175,8 @@ public class CommentActivity extends Activity {
     }
 
     /**
-     * Method to control an inform the user about te length of his comment
-     * if text becomes red, it means this text is too long
-     * else, the text remains black
+     * Sets up a text change listener for the EditText.
+     * It changes the text color of the EditText based on the length of the text.
      */
     private void setupEditTextListener() {
         binding.etComment.addTextChangedListener(new TextWatcher() {
@@ -192,9 +205,8 @@ public class CommentActivity extends Activity {
 
 
     /**
-     * Loads all comments to the view
-     *
-     * @param id
+     * Loads the comments for a specific recipe ID.
+     * @param id The ID of the recipe to load the comments for.
      */
     private void loadComments(long id) {
 

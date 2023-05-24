@@ -50,7 +50,13 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
     int id;
     long myId;
 
-
+    /**
+     * Called when the activity is starting or restarting.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     *                           this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     *                           Note: Otherwise, it is null.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,10 +145,10 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
 
 
     /**
-     * load the data of the user in the view
+     * Loads the user's profile page with their information and recipes.
      *
-     * @param user
-     * @param recipes
+     * @param user    The UserModel containing the user's information.
+     * @param recipes The list of recipes belonging to the user.
      */
     private void loadMyPage(UserModel user, List<Recipe> recipes) {
         binding.tvUsername.setText(user.getUsername());
@@ -303,10 +309,10 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
     }
 
     /**
-     * Asks server to remove Recipe from his own recipe list
+     * Removes a recipe from the user's profile.
      *
-     * @param token
-     * @param id
+     * @param token The authentication token for the user.
+     * @param id    The ID of the recipe to be removed.
      */
     private void removeRecipe(String token, int id) {
         executor.execute(new Runnable() {
@@ -360,9 +366,9 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
     }
 
     /**
-     * display the details of the recipe selected
+     * Displays the details of a recipe.
      *
-     * @param id
+     * @param id The ID of the recipe to be displayed.
      */
     public void displayDetails(int id) {
         Intent intent = new Intent(this, RecipeStepsActivity.class);
@@ -370,6 +376,9 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
         startActivity(intent);
     }
 
+    /**
+     * Sets the click listener for the items in the bottom navigation view.
+     */
     private void bottomNavigationViewClick() {
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {

@@ -44,6 +44,17 @@ public class RecipeStepsActivity extends Activity {
     //    TextView tv;
     private ItemStepContentBinding bind;
 
+    /**
+     * Called when the activity is starting. This is where most initialization
+     * should go: calling setContentView(int) to inflate the activity's UI,
+     * using findViewById to programmatically interact with widgets in the UI,
+     * and initializing the activity's data.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *                           previously being shut down, this Bundle contains
+     *                           the data it most recently supplied in
+     *                           onSaveInstanceState(Bundle). Note: Otherwise, it is null.
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,9 +115,9 @@ public class RecipeStepsActivity extends Activity {
     }
 
     /**
-     * Load the data of the steps page using the data of the recipe
+     * Loads the recipe details and displays them on the screen.
      *
-     * @param recipe
+     * @param recipe The recipe object containing the details to be displayed.
      */
     private void loadPage(Recipe recipe) {
         if (recipe != null) {
@@ -305,7 +316,7 @@ public class RecipeStepsActivity extends Activity {
 
                 if (result != null && result.getResult() != null && result.getResult().equals("1")) {
                     try {
-                       binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
+                        binding.btSave.setImageResource(recipe.isSaved() ? R.drawable.oven2 : R.drawable.oven);
                     } catch (Exception e) {
                         System.out.println(e.toString());
                     }
@@ -329,10 +340,11 @@ public class RecipeStepsActivity extends Activity {
     }
 
     /**
-     * Likes the recipe
-     * @param num
-     * @param id
-     * @return
+     * Sends a like or unlike action for a recipe to the server.
+     *
+     * @param num The value representing the like action (1 for like, 0 for unlike).
+     * @param id The ID of the recipe.
+     * @return The result of the like action.
      */
     private DataResult sendLike(int num, String id) {
         String numero = String.valueOf(num);
@@ -352,10 +364,11 @@ public class RecipeStepsActivity extends Activity {
     }
 
     /**
-     * saves the Recipe
-     * @param num
-     * @param id
-     * @return
+     * Saves or unsaves a recipe on the server.
+     *
+     * @param num The value representing the save action (1 for save, 0 for unsave).
+     * @param id The ID of the recipe.
+     * @return The result of the save action.
      */
     private DataResult saveRecipe(int num, String id) {
         String numero = String.valueOf(num);

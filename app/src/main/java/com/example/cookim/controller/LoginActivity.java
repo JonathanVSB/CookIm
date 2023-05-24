@@ -38,6 +38,14 @@ public class LoginActivity extends AppCompatActivity {
     Model model;
     Controller controller;
 
+    /**
+     * Called when the activity is starting. Performs initialization of the activity, such as
+     * inflating the layout, setting up UI elements, and initializing the model and controller.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut
+     *                           down then this Bundle contains the data it most recently supplied
+     *                           in onSaveInstanceState(Bundle). Note: Otherwise, it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,10 +101,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
     /**
-     * Gets the parameters introduced by the user to log in the app
-     * to prepare a validation of them.
+     * Performs the actions associated with the login page elements.
      *
-     * @param v
+     * @param v The View object that represents the clicked element.
      */
     private void loginPageActions(View v) {
         if (v.getId() == binding.btLogin.getId()) {
@@ -138,9 +145,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
     /**
-     * Prepares the http request and gestionated the action if validation is correct
+     * Performs validation for the login model.
      *
-     * @param loginModel
+     * @param loginModel The login model containing the username and password.
      */
     private void validation(LoginModel loginModel) {
         String username = loginModel.getUserName();
@@ -189,9 +196,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * saves the token received by the server in a file only accessible from the application.
+     * Saves the token to a file.
      *
-     * @param token
+     * @param token The token to be saved.
      */
     private void saveToken(String token) {
         // Gets an instance of the application context
@@ -213,9 +220,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Encrypt String received
-     * @param input
-     * @return
+     * Generates the SHA-256 hash of the input string.
+     *
+     * @param input The input string to be hashed.
+     * @return The SHA-256 hash of the input string.
      */
     public static String getSHA256(String input) {
         try {

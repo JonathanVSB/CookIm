@@ -14,6 +14,11 @@ import javax.net.ssl.X509TrustManager;
 public class NukeSSLCerts {
     protected static final String TAG = "NukeSSLCerts";
 
+    /**
+     * Disables SSL certificate validation.
+     * WARNING: This method disables SSL certificate validation, which can be a security risk.
+     * Use with caution and only in exceptional cases where SSL certificate validation needs to be bypassed.
+     */
     public void nuke() {
         try {
             TrustManager[] trustAllCerts = new TrustManager[]{

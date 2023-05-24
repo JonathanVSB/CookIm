@@ -37,15 +37,17 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 
 public class RecipeDao {
-    NukeSSLCerts n;
     public RecipeDao() {
-        n = new NukeSSLCerts();
-        n.nuke();
+
 
     }
 
     /**
-     * Creates HTTP petition, to get the data of all recipes
+     * Loads recipes from the specified path.
+     *
+     * @param path the URL path to load recipes from
+     * @return a list of Recipe objects
+     * @throws PersistException if there is an error in the persistence layer
      */
     public List<Recipe> loadRecipes(String path) throws PersistException {
         List<Recipe> recipes = new ArrayList<>();
@@ -91,11 +93,11 @@ public class RecipeDao {
     }
 
     /**
-     * gets the body response of HTTP request and returnsit as String
+     * Retrieves the response body from the HttpURLConnection.
      *
-     * @param con
-     * @return
-     * @throws IOException
+     * @param con the HttpURLConnection object
+     * @return the response body as a string
+     * @throws IOException if an error occurs while reading the response body
      */
     public String getReponseBody(HttpURLConnection con) throws IOException {
         BufferedReader br;
@@ -120,10 +122,11 @@ public class RecipeDao {
 
 
     /**
-     * Reads Http File and writes in internal Storage
+     * Sends an HTTP POST request to the specified URL with the given parameters and reads the response.
      *
-     * @param urlString  : Url to read File
-     * @param parameters : Parameters for the HTTP POST request
+     * @param urlString   the URL to send the request to
+     * @param parameters  the parameters to include in the request
+     * @return the parsed DataResult object representing the response, or null if an error occurs
      */
     public DataResult readResponse(String urlString, String parameters) {
 
@@ -178,10 +181,10 @@ public class RecipeDao {
     }
 
     /**
-     * Reads the token received from server and saves it String variable
+     * Parses the JSON response from the InputStream into a DataResult object.
      *
-     * @param inputStream
-     * @return
+     * @param inputStream the InputStream containing the JSON response
+     * @return the parsed DataResult object, or null if an error occurs
      */
     public DataResult parseResponse(InputStream inputStream) {
 
@@ -228,14 +231,13 @@ public class RecipeDao {
     }
 
     /**
-     * Sends the token of the user. if finds this session else, returns null. Then search the recipe
-     * by his id. if find matches, return the recipe and the steps
-     * else returns null recipe
+     * Loads the recipe steps from the specified path for the given recipe ID and token.
      *
-     * @param path
-     * @param id
-     * @param token
-     * @return
+     * @param path   the URL path to load the recipe steps from
+     * @param id     the ID of the recipe
+     * @param token  the authentication token
+     * @return the loaded Recipe object, or null if an error occurs
+     * @throws PersistException if a timeout occurs during the request
      */
     public Recipe loadRecipeSteps(String path, int id, String token) throws PersistException {
 
@@ -292,10 +294,11 @@ public class RecipeDao {
     }
 
     /**
-     * Parses the json response into Recipe object
+     * Parses the recipe data from the InputStream and constructs a Recipe object.
      *
-     * @param inputStream
-     * @return
+     * @param inputStream the InputStream containing the recipe data
+     * @return the parsed Recipe object, or null if an error occurs
+     * @throws PersistException if a timeout occurs during the request
      */
     public Recipe parseRecipe(InputStream inputStream) throws PersistException {
         Recipe result = null;
@@ -377,12 +380,12 @@ public class RecipeDao {
                             steps.add(new Step(stepId, recipe_id, step_number, stepDescription, stepImg));
                         }
 
-                       // List<Category> categoryList = new ArrayList<>();
+                        // List<Category> categoryList = new ArrayList<>();
                         //JsonArray categoryArray = dataObject.getAsJsonArray("ingredients");
                         //for (JsonElement categoryElement : categoryArray) {
-                          //  JsonObject categoryObject = categoryElement.getAsJsonObject();
-                            //String categoryName = categoryObject.get("name").getAsString();
-                            //categoryList.add(new Category(categoryName));
+                        //  JsonObject categoryObject = categoryElement.getAsJsonObject();
+                        //String categoryName = categoryObject.get("name").getAsString();
+                        //categoryList.add(new Category(categoryName));
                         //}
 
                         result = new Recipe(id, user_id, name, description, path_img, liked,saved, rating, likes, user, path, steps, ingredients);
@@ -416,11 +419,12 @@ public class RecipeDao {
     }
 
     /**
-     * search all recipes of the user using his token as validation key
+     * Loads the list of user recipes from the specified path using the provided parameters.
      *
-     * @param path
-     * @param param
-     * @return
+     * @param path the URL path for the request
+     * @param param the request parameter
+     * @return the list of loaded recipes
+     * @throws PersistException if a timeout occurs during the request
      */
     public List<Recipe> loadMyRecipes(String path, String param) throws PersistException {
         List<Recipe> recipes = new ArrayList<>();
@@ -476,10 +480,11 @@ public class RecipeDao {
     }
 
     /**
-     * Parses the Json response into Recipe List
+     * Parses the JSON response from the InputStream and returns a list of Recipe objects.
      *
-     * @param inputStream
-     * @return
+     * @param inputStream the InputStream containing the JSON response
+     * @return a list of parsed Recipe objects
+     * @throws PersistException if an error occurs during parsing or if a timeout occurs during the request
      */
     public List<Recipe> parseRecipeList(InputStream inputStream) throws PersistException {
         List<Recipe> result = new ArrayList<>();
@@ -566,12 +571,13 @@ public class RecipeDao {
 
 
     /**
-     * send pttion to add new Recipe to server
+     * Sends a POST request to the specified path to add a new recipe.
      *
-     * @param path
-     * @param token
-     * @param recipe
-     * @return
+     * @param path   the URL path to send the request to
+     * @param token  the authentication token for the request
+     * @param recipe the Recipe object to add
+     * @param file   the image file associated with the recipe (can be null)
+     * @return the result of the request
      */
     public DataResult addRecipe(String path, String token, Recipe recipe, File file) {
         DataResult result = null;
