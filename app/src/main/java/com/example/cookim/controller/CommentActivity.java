@@ -161,7 +161,7 @@ public class CommentActivity extends Activity {
             loadPage(id);
         } else {
 
-            controller.displayErrorMessage(CommentActivity.this, "El comentario no ha puede estar vacio ni superar los 280 caracteres");
+            controller.displayErrorMessage(CommentActivity.this, "El comentario no puede estar vacio ni superar los 280 caracteres");
 
 
         }

@@ -64,7 +64,7 @@
         android:layout_marginTop="10dp"
         >
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
             android:id="@+id/screen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,51 +80,52 @@
 
             </TableLayout>
 
-
-
-
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/textField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintBottom_toTopOf="@id/Space"
-        >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <EditText
             android:id="@+id/etComment"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:minHeight="50dp"
-            android:layout_weight="1"
+            android:layout_height="0dp"
             android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
             android:background="@drawable/rounded_search_view"
             android:hint="Enter your comment..."
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:gravity="center_vertical"
-            />
+            android:maxLength="280"
+            app:layout_constraintBottom_toBottomOf="@+id/btSend"
+            app:layout_constraintEnd_toStartOf="@+id/btSend"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/btSend" />
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/btSend"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="5dp"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_send2"/>
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_send2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Space
         android:id="@+id/Space"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
        />
 

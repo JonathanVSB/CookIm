@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TableRow;
@@ -63,16 +64,11 @@ public class SearchRecipeActivity extends Activity {
 
 
         if (token != null && !token.isEmpty()) {
-
             loadPage();
             loadSpinner();
         } else {
-
             controller.displayLogInPage(this, LoginActivity.class);
-
         }
-
-
     }
 
     /**
@@ -80,13 +76,11 @@ public class SearchRecipeActivity extends Activity {
      */
     private void loadSpinner() {
         Spinner spin = binding.filterSpinner;
-
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.spinner_options, android.R.layout.simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spin.setAdapter(adapter);
     }
-
 
     /**
      * Loads the search page and performs a recipe search based on the user's input.
@@ -105,19 +99,15 @@ public class SearchRecipeActivity extends Activity {
 
                                 String selectedFilter = binding.filterSpinner.getSelectedItem().toString();
 
-
-                                if (selectedFilter.equals("Recetas")){
+                                if (selectedFilter.equals("Recetas")) {
                                     recipeList = model.searchRecipe(token, query, getApplicationContext());
-                                }else if (selectedFilter.equals("Categoria")){
+                                } else if (selectedFilter.equals("Categoria")) {
                                     String query = binding.searchBar.getQuery().toString();
                                     String firstLetter = query.substring(0, 1).toUpperCase();
                                     String modifiedQuery = firstLetter + query.substring(1);
 
                                     recipeList = model.searchRecipeByCategory(token, modifiedQuery, getApplicationContext());
-
                                 }
-
-
                                 if (recipeList != null) {
 
                                     handler.post(new Runnable() {
@@ -126,7 +116,7 @@ public class SearchRecipeActivity extends Activity {
                                             binding.msg.setVisibility(View.GONE);
                                             binding.tableView.removeAllViews();
 
-                                            if (recipeList.size()!=0){
+                                            if (recipeList.size() != 0) {
                                                 for (Recipe recipe : recipeList) {
                                                     TableRow row = new TableRow(SearchRecipeActivity.this);
                                                     ItemRecipeResultBinding resultBinding = ItemRecipeResultBinding.inflate(getLayoutInflater());
@@ -150,14 +140,10 @@ public class SearchRecipeActivity extends Activity {
                                                     row.addView(resultBinding.getRoot());
                                                     binding.tableView.addView(row);
                                                 }
-                                            }else{
+                                            } else {
                                                 binding.tableView.removeAllViews();
                                                 binding.msg.setVisibility(View.VISIBLE);
-
-
                                             }
-
-
 
                                         }
                                     });
@@ -167,7 +153,7 @@ public class SearchRecipeActivity extends Activity {
                                 }
 
                             } catch (PersistException e) {
-                                controller.displayErrorView(SearchRecipeActivity.this,e.getCode());
+                                controller.displayErrorView(SearchRecipeActivity.this, e.getCode());
                             }
 
 
@@ -185,6 +171,17 @@ public class SearchRecipeActivity extends Activity {
                 return false;
             }
         });
+        binding.filterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                binding.tableView.removeAllViews();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     /**
@@ -192,6 +189,7 @@ public class SearchRecipeActivity extends Activity {
      * Navigates to different activities based on the selected item.
      */
     private void bottomNavigationViewClick() {
+        binding.bottomNavView.setSelectedItemId(R.id.searchrecipe);
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.home:

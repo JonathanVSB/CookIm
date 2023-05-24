@@ -384,12 +384,15 @@ public class MyProfileActivity extends Activity implements PopupMenu.OnMenuItemC
             switch (item.getItemId()) {
                 case R.id.home:
                     controller.displayActivity(this, HomeActivity.class);
+                    finish();
                     return true;
                 case R.id.addrecipe:
                     controller.displayActivity(this, AddRecipeActivity.class);
+                    finish();
                     return true;
                 case R.id.searchrecipe:
                     controller.displayActivity(this, SearchRecipeActivity.class);
+                    finish();
                     return true;
                 default:
                     return false;

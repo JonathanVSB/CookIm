@@ -9,7 +9,7 @@
         android:id="@+id/tvHeader"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="40dp"
         android:fontFamily="@font/ubuntubold"
         android:text="Welcome"
         android:textAlignment="center"
@@ -25,7 +25,7 @@
         android:layout_width="210dp"
         android:layout_height="100dp"
         android:layout_marginTop="20dp"
-        android:src="@drawable/restaurantapp"
+        android:src="@drawable/ic_logo2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvHeader" />
@@ -59,14 +59,7 @@
         android:layout_height="50dp"
         app:layout_constraintTop_toBottomOf="@id/btGoogle" />
 
-    <Switch
-        android:id="@+id/swlogoption"
-        android:layout_width="105dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/space5"
 
-        />
 
     <TextView
         android:id="@+id/errormsg"
@@ -78,7 +71,7 @@
         android:textColor="@color/Red"
         android:textSize="15dp"
         android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@id/swlogoption"
+        app:layout_constraintTop_toBottomOf="@id/space5"
 
         />
 

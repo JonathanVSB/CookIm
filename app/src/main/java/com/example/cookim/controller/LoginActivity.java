@@ -163,14 +163,9 @@ public class LoginActivity extends AppCompatActivity {
                     if (result.getResult().equals("1")) {
                         String token = result.getData().toString();
                         saveToken(result.getData().toString());
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Post Execute
-                                showHomePage();
 
-                            }
-                        });
+                        controller.displayActivity(getApplicationContext(), HomeActivity.class);
+                        finish();
                     } else if (result.getResult().equals("0000")) {
                         controller.displayActivity(getApplicationContext(),NoConnectionActivity.class);
                     } else {

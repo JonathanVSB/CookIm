@@ -109,6 +109,12 @@ public class HomeActivity extends Activity implements HomeListener {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.bottomNavView.setSelectedItemId(R.id.home);
+    }
+
 
     /**
      * Validació de la versió
@@ -442,6 +448,7 @@ public class HomeActivity extends Activity implements HomeListener {
     }
 
     private void bottomNavigationViewClick() {
+
         binding.bottomNavView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.home:
