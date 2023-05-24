@@ -8,10 +8,9 @@ import java.io.FileInputStream;
 
 public class Path {
 
-    Context cont;
-
 
     public final String PATH = "https://91.107.198.64:443/Cookim/" ;
+    //192.168.1.55
 
 
 

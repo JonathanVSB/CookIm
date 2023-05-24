@@ -24,6 +24,14 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class IngredientDao {
 
+    NukeSSLCerts n;
+
+    public IngredientDao(){
+        n = new NukeSSLCerts();
+        n.nuke();
+
+    }
+
     public List<Ingredient> getAll(String path, String token, int id) {
         List<Ingredient> list = new ArrayList<>();
         String param = token + ":" + String.valueOf(id);

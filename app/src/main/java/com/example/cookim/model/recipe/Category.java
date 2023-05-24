@@ -2,10 +2,8 @@ package com.example.cookim.model.recipe;
 
 public class Category {
 
-    int id;
+    long id;
     String name;
-    String desciption;
-    String icon_path;
 
 
     public Category(String name) {

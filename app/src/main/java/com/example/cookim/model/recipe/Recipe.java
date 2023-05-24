@@ -267,23 +267,4 @@ public class Recipe {
         this.categoryList = categoryList;
     }
 
-///METHODS
-
-//    private String encodeFileToBase64(File file) {
-//        String code= "";
-//        try {
-//            FileInputStream inputStream = new FileInputStream(file);
-//            byte[] bytes = new byte[(int) file.length()];
-//            inputStream.read(bytes);
-//            inputStream.close();
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                code = Base64.getEncoder().encodeToString(bytes);
-//                return code;
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//        return code;
-//    }
 }

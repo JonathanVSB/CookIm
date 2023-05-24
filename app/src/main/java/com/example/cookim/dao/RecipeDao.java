@@ -37,8 +37,10 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 
 public class RecipeDao {
+    NukeSSLCerts n;
     public RecipeDao() {
-
+        n = new NukeSSLCerts();
+        n.nuke();
 
     }
 

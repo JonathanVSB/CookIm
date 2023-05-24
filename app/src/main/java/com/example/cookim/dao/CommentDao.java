@@ -34,8 +34,10 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class CommentDao {
 
+    NukeSSLCerts n;
     public CommentDao() {
-
+        n = new NukeSSLCerts();
+        n.nuke();
 
     }
 

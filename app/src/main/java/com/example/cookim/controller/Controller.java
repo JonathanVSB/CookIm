@@ -18,8 +18,6 @@ import java.util.logging.Handler;
 
 public class Controller extends Activity {
 
-    Model model;
-
 
     public Controller() {
 
