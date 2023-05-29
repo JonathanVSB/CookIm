@@ -35,7 +35,7 @@
         android:backgroundTint="@color/black"
         android:hint="Username"
         android:singleLine="true"
-        android:text="Jojos"
+        android:text=""
         android:imeOptions="actionNext"/>
 
 
@@ -50,7 +50,7 @@
         android:hint="Password"
         android:layout_marginTop="15dp"
         android:inputType="textPassword"
-        android:text="Jonathan"/>
+        android:text=""/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etFullname"
@@ -63,7 +63,7 @@
         android:hint="Full name"
         android:singleLine="true"
         android:layout_marginTop="18dp"
-        android:text="Jonathan Segura"/>
+        android:text=""/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etEmail"
@@ -76,7 +76,7 @@
         android:hint="Email"
         android:singleLine="true"
         android:layout_marginTop="15dp"
-        android:text="Jojos@gmail.com"/>
+        android:text=""/>
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etTel"
@@ -90,7 +90,7 @@
         android:singleLine="true"
         android:inputType="phone"
         android:layout_marginTop="15dp"
-        android:text="777747744"/>
+        android:text=""/>
 
     <Space
         android:id="@+id/Space2"

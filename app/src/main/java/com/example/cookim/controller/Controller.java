@@ -184,11 +184,11 @@ public class Controller extends Activity {
      * Displays the category activity with recipe JSON data.
      * @param context The context from which the category activity is launched.
      * @param Class The class of the category activity to display.
-     * @param recipeJson The JSON data representing the recipe.
+     * @param recipe_id The JSON data representing the recipe.
      */
-    public void displayCategoryActivity(Context context, Class<?> Class, String recipeJson) {
+    public void displayCategoryActivity(Context context, Class<?> Class, long recipe_id) {
         Intent intent = new Intent(context, Class);
-        intent.putExtra("recipeJson", recipeJson);
+        intent.putExtra("recipe_id", recipe_id);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }

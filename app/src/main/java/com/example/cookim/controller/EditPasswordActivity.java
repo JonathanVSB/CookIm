@@ -14,6 +14,9 @@ import com.example.cookim.databinding.ActivityEditPasswordBinding;
 import com.example.cookim.model.DataResult;
 import com.example.cookim.model.Model;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -90,7 +93,10 @@ public class EditPasswordActivity extends Activity {
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            result = model.changePass(token, binding.tvPass.getText().toString(), binding.tvnewPass.getText().toString(), getApplicationContext());
+                            String currentPass = getSHA256(binding.tvPass.getText().toString());
+                            String newPass = getSHA256( binding.tvnewPass.getText().toString());
+
+                            result = model.changePass(token,currentPass, newPass, getApplicationContext());
 
                             if (result.getResult().equals("1")) {
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
@@ -160,4 +166,31 @@ public class EditPasswordActivity extends Activity {
                 binding.tvnewPass2.getText().toString().isEmpty();
 
     }
+
+
+    /**
+     * Generate the SHA-256 hash of a given input string.
+     *
+     * @param input The input string to generate the hash from.
+     * @return The SHA-256 hash of the input string.
+     */
+    public static String getSHA256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("Error al generar hash SHA-256: " + e.getMessage());
+            return null;
+        }
+    }
+
 }

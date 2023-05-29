@@ -11,6 +11,7 @@ import com.example.cookim.dao.RecipeDao;
 import com.example.cookim.dao.UserDao;
 import com.example.cookim.exceptions.OpResult;
 import com.example.cookim.exceptions.PersistException;
+import com.example.cookim.model.recipe.Category;
 import com.example.cookim.model.recipe.Comment;
 import com.example.cookim.model.recipe.Ingredient;
 import com.example.cookim.model.recipe.Recipe;
@@ -257,10 +258,10 @@ public class Model {
     /**
      * Edits user data.
      *
-     * @param token    the user's authentication token
-     * @param user     the user object containing updated data
-     * @param file     the updated profile image file
-     * @param context  the application context
+     * @param token   the user's authentication token
+     * @param user    the user object containing updated data
+     * @param file    the updated profile image file
+     * @param context the application context
      * @return the result of the edit data operation
      */
     public DataResult editData(String token, UserModel user, File file, Context context) {
@@ -289,9 +290,9 @@ public class Model {
     /**
      * Loads the steps of a recipe.
      *
-     * @param id       the ID of the recipe
-     * @param token    the user's authentication token
-     * @param context  the application context
+     * @param id      the ID of the recipe
+     * @param token   the user's authentication token
+     * @param context the application context
      * @return the recipe object with loaded steps
      * @throws PersistException if there is an error during the operation
      */
@@ -770,6 +771,44 @@ public class Model {
         }
 
         return recipes;
+    }
+
+    /**
+     * Updates the category of the recipe
+     *
+     * @param token
+     * @param id
+     * @param cat
+     * @return
+     */
+    public DataResult updateCategory(String token, long id, List<Category> cat){
+        String param = token + ":" + id + ":" +cat.size() ;
+        String categories = "";
+        for (Category category:cat) {
+            categories = categories + ":" + category.getName();
+
+        }
+        DataResult result = new DataResult();
+        param = param+categories;
+
+        // check network conn
+        if (!networkUtils.isNetworkAvailable(context)) {
+            result.setResult("0000");
+            result.setData("No connection");
+            return result;
+        }
+
+        try {
+            result = recipeDao.readCategoryResponse(path.ADDCATEGORY, param, cat);
+        } catch (Exception e) {
+            //
+            // Log.e("Change password error", "Error during change password request: " + e.toString());
+            result.setResult("0001");
+            result.setData("Error during change password request");
+        }
+
+        return result;
+
     }
 
 }

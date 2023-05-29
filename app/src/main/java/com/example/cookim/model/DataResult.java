@@ -10,6 +10,7 @@ public class DataResult implements Serializable {
     String result;
 
     Object data;
+    long recipeId;
 
 
 
@@ -20,10 +21,23 @@ public class DataResult implements Serializable {
 
     }
 
+    public DataResult(String result, Object data, long id) {
+        this.result = result;
+        this.data = data;
+        this.recipeId = id;
+    }
 
     public DataResult() {
 
 
+    }
+
+    public long getRecipe_id() {
+        return recipeId;
+    }
+
+    public void setRecipe_id(long recipe_id) {
+        this.recipeId = recipe_id;
     }
 
     public DataResult(String result, Object data) {

@@ -287,7 +287,9 @@ public class HomeActivity extends Activity implements HomeListener {
         });
     }
 
-
+    /**
+     * end user session and removes his token from database
+     */
     private void logout() {
         executor.execute(new Runnable() {
             @Override
@@ -308,6 +310,10 @@ public class HomeActivity extends Activity implements HomeListener {
         binding.homeActivityContent.closeDrawer(GravityCompat.START);
     }
 
+    /**
+     * Loads home with recipeList
+     * @param a
+     */
     private void loadHomePage(String a) {
 
         try {

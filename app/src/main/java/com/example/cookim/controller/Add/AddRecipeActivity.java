@@ -250,8 +250,9 @@ public class AddRecipeActivity extends AppCompatActivity {
                                 Gson gson = new Gson();
 
                                 String recipeJson = gson.toJson(recipe);
+                                long id =1;
 
-                                controller.displayCategoryActivity(getApplicationContext(), AddCategoryActivity.class, recipeJson);
+                                controller.displayCategoryActivity(getApplicationContext(), AddCategoryActivity.class, id);
 
                             } else {
                                 controller.displayErrorMessage(AddRecipeActivity.this, "La receta contiene datos no válidos");

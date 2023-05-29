@@ -39,4 +39,5 @@ public class Path {
     public final String EDITDATA = PATH + "my-profile/modify-account";
     public final String CHANGEPASS = PATH + "my-profile/modify-password";
     public final String SEARCHCATEGORY = PATH + "search-recipes/category";
+    public final String ADDCATEGORY = PATH + "recipe/assing-category-recipe";
 }

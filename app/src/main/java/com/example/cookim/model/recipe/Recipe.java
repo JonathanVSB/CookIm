@@ -235,15 +235,13 @@ public class Recipe {
     }
 
     public File getFile() {
-        if (this.file == null && this.path_img != null) {
-            this.file = new File(this.path_img);
-        }
-        return this.file;
+        return file;
     }
 
     public void setFile(File file) {
-        this.path_img = file.getPath();
+        this.file = file;
     }
+
     public boolean isSaved() {
         return saved;
     }

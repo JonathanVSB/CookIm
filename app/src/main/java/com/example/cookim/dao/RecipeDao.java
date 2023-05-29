@@ -124,8 +124,8 @@ public class RecipeDao {
     /**
      * Sends an HTTP POST request to the specified URL with the given parameters and reads the response.
      *
-     * @param urlString   the URL to send the request to
-     * @param parameters  the parameters to include in the request
+     * @param urlString  the URL to send the request to
+     * @param parameters the parameters to include in the request
      * @return the parsed DataResult object representing the response, or null if an error occurs
      */
     public DataResult readResponse(String urlString, String parameters) {
@@ -233,9 +233,9 @@ public class RecipeDao {
     /**
      * Loads the recipe steps from the specified path for the given recipe ID and token.
      *
-     * @param path   the URL path to load the recipe steps from
-     * @param id     the ID of the recipe
-     * @param token  the authentication token
+     * @param path  the URL path to load the recipe steps from
+     * @param id    the ID of the recipe
+     * @param token the authentication token
      * @return the loaded Recipe object, or null if an error occurs
      * @throws PersistException if a timeout occurs during the request
      */
@@ -340,7 +340,7 @@ public class RecipeDao {
                         String name = dataObject.get("name").getAsString();
                         String description = dataObject.get("description").getAsString();
                         String path_img = "";
-                        if (dataObject.has("path_img")){
+                        if (dataObject.has("path_img")) {
                             path_img = dataObject.get("path_img").getAsString();
                         }
 
@@ -350,10 +350,10 @@ public class RecipeDao {
                         String path = dataObject.get("path").getAsString();
                         boolean liked = false;
                         boolean saved = false;
-                        if (dataObject.has("liked")){
+                        if (dataObject.has("liked")) {
                             liked = dataObject.get("liked").getAsBoolean();
                         }
-                        if (dataObject.has("saved")){
+                        if (dataObject.has("saved")) {
                             saved = dataObject.get("saved").getAsBoolean();
                         }
 
@@ -365,7 +365,6 @@ public class RecipeDao {
                             String ingredientName = ingredientObject.get("name").getAsString();
                             ingredients.add(new Ingredient(ingredientId, ingredientName));
                         }
-
 
 
                         List<Step> steps = new ArrayList<>();
@@ -388,7 +387,7 @@ public class RecipeDao {
                         //categoryList.add(new Category(categoryName));
                         //}
 
-                        result = new Recipe(id, user_id, name, description, path_img, liked,saved, rating, likes, user, path, steps, ingredients);
+                        result = new Recipe(id, user_id, name, description, path_img, liked, saved, rating, likes, user, path, steps, ingredients);
                     } else {
                         // Debugging statement
                         result = null;
@@ -421,7 +420,7 @@ public class RecipeDao {
     /**
      * Loads the list of user recipes from the specified path using the provided parameters.
      *
-     * @param path the URL path for the request
+     * @param path  the URL path for the request
      * @param param the request parameter
      * @return the list of loaded recipes
      * @throws PersistException if a timeout occurs during the request
@@ -523,14 +522,14 @@ public class RecipeDao {
                 int user_id = recipeObject.get("id_user").getAsInt();
                 String name = recipeObject.get("name").getAsString();
                 String description = recipeObject.get("description").getAsString();
-                String path_img ="";
-                if (recipeObject.has("path_img")){
+                String path_img = "";
+                if (recipeObject.has("path_img")) {
                     path_img = recipeObject.get("path_img").getAsString();
                 }
                 double rating = recipeObject.get("rating").getAsDouble();
                 int likes = recipeObject.get("likes").getAsInt();
                 String username = "";
-                if (recipeObject.has("user_name")){
+                if (recipeObject.has("user_name")) {
                     username = recipeObject.get("user_name").getAsString();
                 }
 
@@ -540,7 +539,7 @@ public class RecipeDao {
                 boolean saved = recipeObject.has("saved") && recipeObject.get("saved").getAsBoolean();
 
                 // Creates a new Recipe object with the extracted data
-                Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes,username);
+                Recipe recipe = new Recipe(id, user_id, name, description, path_img, rating, likes, username);
 
                 // Set liked and saved properties of the recipe
                 recipe.setLiked(liked);
@@ -604,20 +603,6 @@ public class RecipeDao {
             wr.writeBytes("--" + boundary + "\r\n");
             wr.writeBytes("Content-Disposition: form-data; name=\"recipe\"\r\n\r\n" + gson.toJson(recipe) + "\r\n");
 
-            // Send file
-            if (file != null) {
-                wr.writeBytes("--" + boundary + "\r\n");
-                wr.writeBytes("Content-Disposition: form-data; name=\"image\"; filename=\"" + file.getName() + "\"\r\n");
-                wr.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + "\r\n\r\n");
-                FileInputStream inputStream = new FileInputStream(file);
-                byte[] buffer = new byte[4096];
-                int bytesRead = -1;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    wr.write(buffer, 0, bytesRead);
-                }
-                wr.writeBytes("\r\n");
-                inputStream.close();
-            }
 
             List<Ingredient> ingredients = recipe.getIngredients();
             for (int i = 0; i < ingredients.size(); i++) {
@@ -626,19 +611,6 @@ public class RecipeDao {
 
                 System.out.println("Ingredients [" + i + "]: " + ingredients.get(i));
             }
-
-            List<Category> cat = recipe.getCategoryList();
-            if(cat != null) {
-                for (int i = 0; i < cat.size(); i++) {
-                    wr.writeBytes("--" + boundary + "\r\n");
-                    wr.writeBytes("Content-Disposition: form-data; name=\"categories[" + i + "]\"\r\n\r\n" + gson.toJson(cat.get(i)) + "\r\n");
-
-                    System.out.println("Categoría [" + i + "]: " + cat.get(i));
-                }
-            } else {
-
-            }
-
 
 
             // Send steps as JSON and images
@@ -666,6 +638,22 @@ public class RecipeDao {
                     inputStream.close();
                 }
             }
+
+            // Send file
+            if (file != null) {
+                wr.writeBytes("--" + boundary + "\r\n");
+                wr.writeBytes("Content-Disposition: form-data; name=\"image\"; filename=\"" + file.getName() + "\"\r\n");
+                wr.writeBytes("Content-Type: " + URLConnection.guessContentTypeFromName(file.getName()) + "\r\n\r\n");
+                FileInputStream inputStream = new FileInputStream(file);
+                byte[] buffer = new byte[4096];
+                int bytesRead = -1;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    wr.write(buffer, 0, bytesRead);
+                }
+                wr.writeBytes("\r\n");
+                inputStream.close();
+            }
+
 
             wr.writeBytes("--" + boundary + "--\r\n");
             wr.flush();
@@ -703,6 +691,67 @@ public class RecipeDao {
         return result;
     }
 
+    /**
+     * @param path
+     * @param param
+     * @param cat
+     * @return
+     */
+    public DataResult readCategoryResponse(String path, String param, List<Category> cat) {
+        DataResult result = null;
+
+        try {
+            // HTTP request
+            System.out.println("ENTRA  " + path);
+            URL url = new URL(path);
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            connection.setRequestProperty("User-Agent", "");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestMethod("POST");
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            String authHeader = "Bearer " + param;
+            connection.setRequestProperty("Authorization", authHeader);
+
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
+
+            // Write parameters to the request
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                wr.write(param.getBytes(StandardCharsets.UTF_8));
+            }
+
+            connection.setConnectTimeout(15 * 1000);
+            connection.setReadTimeout(15 * 1000);
+
+            connection.connect();
+
+            if (connection != null) {
+                // read Stream
+                InputStream inputStream = connection.getInputStream();
+
+                // parse the response into DataResult object
+                result = parseResponse(inputStream);
+
+                inputStream.close();
+            }
+
+        } catch (SocketTimeoutException e) {
+            // timeout Exception
+            //Log.e("readResponse error", "Request timed out: " + e.toString());
+            result = new DataResult();
+            result.setResult("0002");
+            result.setData("Request timed out");
+        } catch (Exception e) {
+            Log.e("readResponse error", "Error during HTTPS request: " + e.toString());
+
+            result = new DataResult();
+            result.setResult("0001");
+            result.setData("Error during HTTPS request");
+        }
+        return result;
+    }
 
 }
 

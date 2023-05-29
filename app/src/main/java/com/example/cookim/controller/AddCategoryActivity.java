@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
@@ -40,6 +41,7 @@ public class AddCategoryActivity extends Activity {
     List<Category> categoryList;
     List<Step> stepsList;
     Recipe recipe;
+    long recipe_id;
 
     boolean bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9;
 
@@ -64,24 +66,12 @@ public class AddCategoryActivity extends Activity {
         categoryList = new ArrayList<>();
         token = model.readFile(getApplicationContext(), "token");
 
-        String recipeJson = getIntent().getStringExtra("recipeJson");
-        Gson gson = new Gson();
-        recipe = gson.fromJson(recipeJson, Recipe.class);
+        Intent intent = getIntent();
 
-
-        File recipeFile = new File(recipe.path_img);
-        recipe.file = recipeFile;
-
-        stepsList = recipe.getSteps();
-        if (stepsList != null) {
-            for (Step step : stepsList) {
-                File stepFile = new File(step.getPath());
-                step.file = stepFile;
-            }
-        }
+        recipe_id = intent.getLongExtra("recipe_id", -1);
 
         initBoolean();
-        if (recipe != null) {
+        if (recipe_id != -1) {
 
             loadPage();
 
@@ -170,7 +160,7 @@ public class AddCategoryActivity extends Activity {
                     Drawable gradientDrawable = getResources().getDrawable(R.drawable.bg_button_pressed);
                     binding.button3.setBackground(gradientDrawable);
 
-                    Category cat = new Category("Fast food");
+                    Category cat = new Category("FastFood");
                     categoryList.add(cat);
                     bt3 = true;
                 } else {
@@ -178,7 +168,7 @@ public class AddCategoryActivity extends Activity {
                     binding.button3.setBackground(gradientDrawable);
 
                     for (int i = 0; i < categoryList.size(); i++) {
-                        if (categoryList.get(i).getName().equals("Fast food")) {
+                        if (categoryList.get(i).getName().equals("FastFood")) {
                             categoryList.remove(i);
                         }
                     }
@@ -355,15 +345,16 @@ public class AddCategoryActivity extends Activity {
                         @Override
                         public void run() {
 
-                            DataResult result = model.createRecipe(recipe, token, recipe.getFile(), getApplicationContext());
+                            DataResult result = model.updateCategory(token, recipe_id, categoryList);
 
                             if (result.getResult().equals("1")) {
                                 controller.displayActivity(getApplicationContext(), HomeActivity.class);
                             } else if (result.getResult().equals("0001")) {
+                                //model.removeRecipe(token,(int)recipe_id, getApplicationContext());
                                 controller.displayActivity(getApplicationContext(), NoConnectionActivity.class);
 
                             } else {
-
+                                model.removeRecipe(token,(int)recipe_id, getApplicationContext());
                             }
 
                         }
